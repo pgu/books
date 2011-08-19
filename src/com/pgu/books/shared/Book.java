@@ -12,13 +12,17 @@ public class Book implements Serializable {
         super();
     }
 
-    public Book(final String author, final String editor, final int year, final String comment, final String title,
+    public Book(final String author, //
+            final String title, //
+            final String editor, //
+            final String year, //
+            final String comment, //
             final String category) {
         super();
         this.author = author;
+        this.title = title;
         this.editor = editor;
         this.year = year;
-        this.title = title;
         this.comment = comment;
         this.category = category;
     }
@@ -28,7 +32,7 @@ public class Book implements Serializable {
 
     private String author;
     private String editor;
-    private int year;
+    private String year;
     private String title;
     private String comment;
     private String category;
@@ -57,11 +61,11 @@ public class Book implements Serializable {
         this.editor = editor;
     }
 
-    public int getYear() {
+    public String getYear() {
         return year;
     }
 
-    public void setYear(final int year) {
+    public void setYear(final String year) {
         this.year = year;
     }
 

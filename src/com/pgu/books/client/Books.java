@@ -36,14 +36,14 @@ public class Books implements EntryPoint {
 
                     @Override
                     public void onSuccess(final Void result) {
-                        Window.alert("done!");
+                        Window.alert("done for " + cat);
                     }
                 });
             }
         });
 
         categories.addItem("Adonais_poesia");
-        categories.addItem("Arte_historis_musica");
+        categories.addItem("Arte_historia_musica");
         categories.addItem("Biblioteca_el_sol");
         categories.addItem("Budismagibrujocult");
         categories.addItem("Errores_de_pegado");
