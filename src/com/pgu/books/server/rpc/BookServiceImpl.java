@@ -1,5 +1,7 @@
 package com.pgu.books.server.rpc;
 
+import java.util.List;
+
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.googlecode.objectify.Objectify;
 import com.googlecode.objectify.ObjectifyService;
@@ -14,10 +16,11 @@ public class BookServiceImpl extends RemoteServiceServlet implements BookService
     }
 
     @Override
-    public void createBooks() {
+    public void createBooks(final String cat) {
         final Objectify ofy = ObjectifyService.begin();
 
-        ofy.put(new Book("Concha Zardoya", "Rialp", 1946, "Pájaros del nuevo mundo XXVII", ""));
+        final List<Book> books = BooksDB.DB.get(cat);
+        ofy.put(books);
 
     }
 

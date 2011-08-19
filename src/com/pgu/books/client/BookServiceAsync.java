@@ -4,6 +4,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public interface BookServiceAsync {
 
-    void createBooks(AsyncCallback<Void> asyncCallback);
+    void createBooks(String cat, AsyncCallback<Void> asyncCallback);
 
 }

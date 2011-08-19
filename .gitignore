@@ -1,6 +1,7 @@
 .classpath
 .project
 .settings/
+.gwt/
 war/books/
 war/WEB-INF/deploy/
 war/WEB-INF/lib/

@@ -12,13 +12,15 @@ public class Book implements Serializable {
         super();
     }
 
-    public Book(final String author, final String editor, final int year, final String title, final String comment) {
+    public Book(final String author, final String editor, final int year, final String comment, final String title,
+            final String category) {
         super();
         this.author = author;
         this.editor = editor;
         this.year = year;
         this.title = title;
         this.comment = comment;
+        this.category = category;
     }
 
     @Id
@@ -29,6 +31,7 @@ public class Book implements Serializable {
     private int year;
     private String title;
     private String comment;
+    private String category;
 
     public Long getId() {
         return id;
@@ -76,6 +79,14 @@ public class Book implements Serializable {
 
     public void setComment(final String comment) {
         this.comment = comment;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(final String category) {
+        this.category = category;
     }
 
 }
