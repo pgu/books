@@ -22,6 +22,8 @@ public class BookServiceImpl extends RemoteServiceServlet implements BookService
         final List<Book> books = BooksDB.DB.get(cat);
         ofy.put(books);
 
+        // ofy.query(Book.class).filter("author", "toto").list();
+
     }
 
 }
