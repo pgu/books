@@ -4,12 +4,10 @@ import java.io.Serializable;
 
 import javax.persistence.Id;
 
+@SuppressWarnings("serial")
 public class Book implements Serializable {
 
-    private static final long serialVersionUID = -8092579229454462886L;
-
     public Book() {
-        super();
     }
 
     public Book(final String author, //
@@ -18,7 +16,6 @@ public class Book implements Serializable {
             final String year, //
             final String comment, //
             final String category) {
-        super();
         this.author = author;
         this.title = title;
         this.editor = editor;

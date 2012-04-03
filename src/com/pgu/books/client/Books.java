@@ -4,24 +4,56 @@ import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.pgu.books.client.ui.Dashboard;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
  */
 public class Books implements EntryPoint {
+
+    public static final String TAG_BOOKS = "BOOKS";
+
     private final BookServiceAsync bookService = GWT.create(BookService.class);
 
     @Override
     public void onModuleLoad() {
+
+        final Dashboard dashboard = new Dashboard();
+        RootPanel.get().add(dashboard);
+
+        // history
+        final String initToken = History.getToken();
+        if (initToken.isEmpty()) {
+            History.newItem(TAG_BOOKS);
+        }
+
+        History.addValueChangeHandler(new ValueChangeHandler<String>() {
+
+            @Override
+            public void onValueChange(final ValueChangeEvent<String> event) {
+                final String tag = event.getValue();
+                if (TAG_BOOKS.equals(tag)) {
+                    dashboard.showBooks();
+                } else {
+                    GWT.log("other tag [" + tag + "]");
+                }
+            }
+        });
+        History.fireCurrentHistoryState();
+
+        // //////////////////////////////
         final Button btn = new Button("Generate");
         final ListBox categories = new ListBox();
-        RootPanel.get().add(categories);
-        RootPanel.get().add(btn);
+        // RootPanel.get().add(categories);
+        // RootPanel.get().add(btn);
 
         btn.addClickHandler(new ClickHandler() {
 
