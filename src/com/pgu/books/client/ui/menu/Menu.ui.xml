@@ -6,6 +6,7 @@
         }
     </ui:style>
     <g:VerticalPanel>
-        <g:Hyperlink styleName="{style.important}" ui:field="booksLink" />
+        <g:Hyperlink ui:field="booksLink" />
+        <g:Hyperlink ui:field="adminLink" />
     </g:VerticalPanel>
 </ui:UiBinder> 

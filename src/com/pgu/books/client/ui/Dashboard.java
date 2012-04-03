@@ -9,6 +9,7 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.pgu.books.client.ui.book.BookBoard;
 import com.pgu.books.client.ui.menu.Menu;
 
 public class Dashboard extends Composite {
@@ -28,10 +29,10 @@ public class Dashboard extends Composite {
 
         dashboard.add(new HTML("Libros Harriet"), DockPanel.NORTH);
         dashboard.add(new Menu(), DockPanel.WEST);
-        dashboard.add(new HTML("east..."), DockPanel.EAST);
 
-        final HTML contents = new HTML("center");
-        final ScrollPanel scroller = new ScrollPanel(contents);
+        // final HTML contents = new HTML("center");
+        final BookBoard bookBoard = new BookBoard();
+        final ScrollPanel scroller = new ScrollPanel(bookBoard);
         scroller.setSize("800px", "600px");
         dashboard.add(scroller, DockPanel.CENTER);
 
@@ -39,6 +40,9 @@ public class Dashboard extends Composite {
     }
 
     public void showBooks() {
+    }
+
+    public void showAdmin() {
     }
 
 }

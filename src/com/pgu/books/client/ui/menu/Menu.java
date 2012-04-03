@@ -16,10 +16,11 @@ public class Menu extends Composite {
     }
 
     @UiField(provided = true)
-    Hyperlink booksLink;
+    Hyperlink booksLink, adminLink;
 
     public Menu() {
         booksLink = new Hyperlink("Libros", Books.TAG_BOOKS);
+        adminLink = new Hyperlink("Admin", Books.TAG_ADMIN);
         initWidget(uiBinder.createAndBindUi(this));
     }
 

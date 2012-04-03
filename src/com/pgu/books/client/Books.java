@@ -19,7 +19,8 @@ import com.pgu.books.client.ui.Dashboard;
  */
 public class Books implements EntryPoint {
 
-    public static final String TAG_BOOKS = "BOOKS";
+    public static final String TAG_BOOKS = "books";
+    public static final String TAG_ADMIN = "admin";
 
     private final BookServiceAsync bookService = GWT.create(BookService.class);
 
@@ -40,8 +41,13 @@ public class Books implements EntryPoint {
             @Override
             public void onValueChange(final ValueChangeEvent<String> event) {
                 final String tag = event.getValue();
+
                 if (TAG_BOOKS.equals(tag)) {
                     dashboard.showBooks();
+
+                } else if (TAG_ADMIN.equals(tag)) {
+                    dashboard.showAdmin();
+
                 } else {
                     GWT.log("other tag [" + tag + "]");
                 }
