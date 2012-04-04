@@ -31,12 +31,12 @@ public class Dashboard extends Composite {
     DockPanel booksBoard;
 
     public Dashboard() {
-        buildDashboard();
+        buildBooksBoard();
 
         initWidget(uiBinder.createAndBindUi(this));
     }
 
-    private void buildDashboard() {
+    private void buildBooksBoard() {
         booksBoard = new DockPanel();
         booksBoard.setSpacing(4);
         booksBoard.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
