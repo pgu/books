@@ -60,4 +60,9 @@ public class Dashboard extends Composite {
         graphs.setVisible(true);
     }
 
+    public void showImport() {
+        dashboard.setVisible(false);
+        graphs.setVisible(false);
+    }
+
 }

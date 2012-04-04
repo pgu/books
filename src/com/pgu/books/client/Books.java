@@ -21,6 +21,7 @@ public class Books implements EntryPoint {
 
     public static final String TAG_BOOKS = "books";
     public static final String TAG_GRAPHS = "graphs";
+    public static final String TAG_IMPORT = "import";
 
     private final BookServiceAsync bookService = GWT.create(BookService.class);
 
@@ -47,6 +48,9 @@ public class Books implements EntryPoint {
 
                 } else if (TAG_GRAPHS.equals(tag)) {
                     dashboard.showGraphs();
+
+                } else if (TAG_IMPORT.equals(tag)) {
+                    dashboard.showImport();
 
                 } else {
                     GWT.log("other tag [" + tag + "]");
