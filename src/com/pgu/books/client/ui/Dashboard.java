@@ -62,10 +62,8 @@ public class Dashboard extends Composite {
         show(booksImport);
     }
 
-    private final Widget[] widgetCenters = new Widget[] { booksBoard, graphs, booksImport };
-
     private void show(final Widget widgetToShow) {
-        for (final Widget w : widgetCenters) {
+        for (final Widget w : new Widget[] { booksBoard, graphs, booksImport }) {
             if (w == null) {
                 continue;
             }

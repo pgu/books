@@ -25,7 +25,7 @@ public class MenuAdmin extends Composite {
     public MenuAdmin() {
         booksLink = new Hyperlink("Libros", Books.TAG_BOOKS);
         graphsLink = new Hyperlink("Gráficos", Books.TAG_GRAPHS);
-        importLink = new Hyperlink("Import", Books.TAG_GRAPHS);
+        importLink = new Hyperlink("Import", Books.TAG_IMPORT);
 
         initWidget(uiBinder.createAndBindUi(this));
 
