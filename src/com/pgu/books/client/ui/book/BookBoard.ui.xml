@@ -4,12 +4,29 @@
  xmlns:c="urn:import:com.google.gwt.user.cellview.client" >
  
     <ui:style>
-        .important {
-            font-weight: bold;
+        .cellTable {
+            border-bottom: 1px solid #ccc;
+            text-align: left;
+            margin-bottom: 4px;    
         }
     </ui:style>
     
     <g:HTMLPanel>
-        <c:CellTable ui:field="grid"></c:CellTable>
-    </g:HTMLPanel>
+        <table cellspacing='0' cellpadding='0' style='width:100%;'>
+          <tr>
+            <td valign='top'>
+              <c:CellTable
+                addStyleNames='{style.cellTable}'
+                pageSize='3'
+                ui:field='grid' />
+            </td>
+          </tr>
+          <tr>
+            <td align='center'>
+              <c:SimplePager ui:field='pager' />
+            </td>
+          </tr>
+        </table>
+    </g:HTMLPanel>    
+
 </ui:UiBinder> 
