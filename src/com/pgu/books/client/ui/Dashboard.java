@@ -66,6 +66,9 @@ public class Dashboard extends Composite {
 
     private void show(final Widget widgetToShow) {
         for (final Widget w : widgetCenters) {
+            if (w == null) {
+                continue;
+            }
             w.setVisible(w.equals(widgetToShow));
         }
     }
