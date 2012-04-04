@@ -1,4 +1,4 @@
-package com.pgu.books.client.ui.book;
+package com.pgu.books.client.ui.books.board;
 
 import java.util.Arrays;
 import java.util.List;
@@ -17,7 +17,7 @@ import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.HasData;
 import com.pgu.books.shared.Book;
 
-public class BookBoard extends Composite {
+public class BooksBoard extends Composite {
 
     private static List<Book> BOOKS = Arrays.asList( //
             new Book("authorA", "titleA", "editorA", "yearA", "commentA", "categoryA"), //
@@ -28,9 +28,9 @@ public class BookBoard extends Composite {
             new Book("authorF", "titleF", "editorF", "yearF", "commentF", "categoryF") //
             );
 
-    private static BookBoardUiBinder uiBinder = GWT.create(BookBoardUiBinder.class);
+    private static BooksBoardUiBinder uiBinder = GWT.create(BooksBoardUiBinder.class);
 
-    interface BookBoardUiBinder extends UiBinder<Widget, BookBoard> {
+    interface BooksBoardUiBinder extends UiBinder<Widget, BooksBoard> {
     }
 
     @UiField(provided = true)
@@ -39,7 +39,7 @@ public class BookBoard extends Composite {
     @UiField(provided = true)
     SimplePager pager;
 
-    public BookBoard() {
+    public BooksBoard() {
 
         //
         // books grid

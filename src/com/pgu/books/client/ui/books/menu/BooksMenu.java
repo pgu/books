@@ -1,4 +1,4 @@
-package com.pgu.books.client.ui.menu;
+package com.pgu.books.client.ui.books.menu;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -10,11 +10,11 @@ import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
 import com.google.gwt.user.client.ui.SuggestBox;
 import com.google.gwt.user.client.ui.Widget;
 
-public class Menu extends Composite {
+public class BooksMenu extends Composite {
 
-    private static MenuUiBinder uiBinder = GWT.create(MenuUiBinder.class);
+    private static BooksMenuUiBinder uiBinder = GWT.create(BooksMenuUiBinder.class);
 
-    interface MenuUiBinder extends UiBinder<Widget, Menu> {
+    interface BooksMenuUiBinder extends UiBinder<Widget, BooksMenu> {
     }
 
     @UiField
@@ -27,7 +27,7 @@ public class Menu extends Composite {
     SuggestBox suggestBox;
 
     // il va contenir les liens vers books, et les graphes
-    public Menu() {
+    public BooksMenu() {
         //
         // suggest box
         final MultiWordSuggestOracle oracle = new MultiWordSuggestOracle();

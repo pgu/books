@@ -1,4 +1,4 @@
-package com.pgu.books.client.ui.filters;
+package com.pgu.books.client.ui.books.filters;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Unit;
@@ -17,11 +17,11 @@ import com.google.gwt.user.client.ui.StackLayoutPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-public class Filters extends Composite {
+public class BooksFilters extends Composite {
 
-    private static FiltersUiBinder uiBinder = GWT.create(FiltersUiBinder.class);
+    private static BooksFiltersUiBinder uiBinder = GWT.create(BooksFiltersUiBinder.class);
 
-    interface FiltersUiBinder extends UiBinder<Widget, Filters> {
+    interface BooksFiltersUiBinder extends UiBinder<Widget, BooksFilters> {
     }
 
     @UiField
@@ -30,7 +30,7 @@ public class Filters extends Composite {
     @UiField(provided = true)
     StackLayoutPanel stackPanel;
 
-    public Filters() {
+    public BooksFilters() {
 
         stackPanel = new StackLayoutPanel(Unit.EM);
         stackPanel.setPixelSize(200, 400);

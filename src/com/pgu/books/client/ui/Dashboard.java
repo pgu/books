@@ -9,9 +9,9 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.pgu.books.client.ui.book.BookBoard;
-import com.pgu.books.client.ui.filters.Filters;
-import com.pgu.books.client.ui.menu.Menu;
+import com.pgu.books.client.ui.books.board.BooksBoard;
+import com.pgu.books.client.ui.books.filters.BooksFilters;
+import com.pgu.books.client.ui.books.menu.BooksMenu;
 import com.pgu.books.client.ui.menuAdmin.MenuAdmin;
 
 public class Dashboard extends Composite {
@@ -28,7 +28,7 @@ public class Dashboard extends Composite {
     HTMLPanel graphs, booksImport;
 
     @UiField(provided = true)
-    DockPanel dashboard;
+    DockPanel booksBoard;
 
     public Dashboard() {
         buildDashboard();
@@ -37,21 +37,21 @@ public class Dashboard extends Composite {
     }
 
     private void buildDashboard() {
-        dashboard = new DockPanel();
-        dashboard.setSpacing(4);
-        dashboard.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+        booksBoard = new DockPanel();
+        booksBoard.setSpacing(4);
+        booksBoard.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 
-        dashboard.add(new Menu(), DockPanel.NORTH);
-        dashboard.add(new Filters(), DockPanel.WEST);
+        booksBoard.add(new BooksMenu(), DockPanel.NORTH);
+        booksBoard.add(new BooksFilters(), DockPanel.WEST);
 
-        final BookBoard bookBoard = new BookBoard();
+        final BooksBoard bookBoard = new BooksBoard();
         final ScrollPanel scroller = new ScrollPanel(bookBoard);
         scroller.setSize("800px", "600px");
-        dashboard.add(scroller, DockPanel.CENTER);
+        booksBoard.add(scroller, DockPanel.CENTER);
     }
 
     public void showBooks() {
-        show(dashboard);
+        show(booksBoard);
     }
 
     public void showGraphs() {
@@ -62,7 +62,7 @@ public class Dashboard extends Composite {
         show(booksImport);
     }
 
-    private final Widget[] widgetCenters = new Widget[] { dashboard, graphs };
+    private final Widget[] widgetCenters = new Widget[] { booksBoard, graphs };
 
     private void show(final Widget widgetToShow) {
         for (final Widget w : widgetCenters) {
