@@ -26,10 +26,8 @@ public class BooksMenu extends Composite {
     @UiField(provided = true)
     SuggestBox suggestBox;
 
-    // il va contenir les liens vers books, et les graphes
     public BooksMenu() {
-        //
-        // suggest box
+
         final MultiWordSuggestOracle oracle = new MultiWordSuggestOracle();
         final String[] words = new String[] { "toto", "titi", "tata" };
         for (int i = 0; i < words.length; ++i) {
