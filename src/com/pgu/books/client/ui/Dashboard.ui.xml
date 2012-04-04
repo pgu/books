@@ -1,9 +1,15 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
-<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder" xmlns:g="urn:import:com.google.gwt.user.client.ui">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder" 
+    xmlns:g="urn:import:com.google.gwt.user.client.ui"
+    xmlns:pgu="urn:import:com.pgu.books.client.ui.menuAdmin">
     <ui:style>
         .dashboard {
             border: 3px solid #e7e7e7;
         }
     </ui:style>
-    <g:DockPanel ui:field="dashboard" styleName="{style.dashboard}"></g:DockPanel>
+    <g:HTMLPanel>
+        <pgu:MenuAdmin ui:field="menuAdmin" />
+        <g:DockPanel ui:field="dashboard" styleName="{style.dashboard}"></g:DockPanel>
+        <g:HTMLPanel ui:field="graphs"><g:Label>graphs</g:Label></g:HTMLPanel>
+    </g:HTMLPanel>
 </ui:UiBinder> 
