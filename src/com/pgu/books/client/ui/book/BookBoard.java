@@ -47,6 +47,8 @@ public class BookBoard extends Composite {
 
     public BookBoard() {
 
+        // TODO PGU add filters
+
         buildCellTableWithPager();
 
         grid.setRowCount(BOOKS.size(), true);
@@ -68,6 +70,7 @@ public class BookBoard extends Composite {
         // https://developers.google.com/web-toolkit/doc/latest/DevGuideUiCellWidgets
         // https://developers.google.com/web-toolkit/doc/latest/DevGuideUiCellTable
         // http://gwt.google.com/samples/Showcase/Showcase.html#!CwCellTable
+        // http://www.mytechtip.com/2010/11/gwt-celltable-example-using_8168.html
         initWidget(uiBinder.createAndBindUi(this));
     }
 
