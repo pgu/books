@@ -42,8 +42,6 @@ public class BookBoard extends Composite {
         grid.addColumn(titleColumn, "Titulo");
 
         grid.setRowCount(BOOKS.size(), true);
-
-        // Push the data into the widget.
         grid.setRowData(0, BOOKS);
 
         // https://developers.google.com/web-toolkit/doc/latest/DevGuideUiCellWidgets
