@@ -25,7 +25,7 @@ public class Dashboard extends Composite {
     MenuAdmin menuAdmin;
 
     @UiField
-    HTMLPanel graphs;
+    HTMLPanel graphs, booksImport;
 
     @UiField(provided = true)
     DockPanel dashboard;
@@ -59,7 +59,7 @@ public class Dashboard extends Composite {
     }
 
     public void showImport() {
-        // TODO PGU
+        show(booksImport);
     }
 
     private final Widget[] widgetCenters = new Widget[] { dashboard, graphs };

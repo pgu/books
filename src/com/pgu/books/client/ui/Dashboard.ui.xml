@@ -11,5 +11,6 @@
         <pgu:MenuAdmin ui:field="menuAdmin" />
         <g:DockPanel ui:field="dashboard" styleName="{style.dashboard}"></g:DockPanel>
         <g:HTMLPanel ui:field="graphs"><g:Label>graphs</g:Label></g:HTMLPanel>
+        <g:HTMLPanel ui:field="booksImport"><g:Label>booksImport</g:Label></g:HTMLPanel>
     </g:HTMLPanel>
 </ui:UiBinder> 
