@@ -3,7 +3,7 @@
     <ui:style>
         .title {
             font-size: 2.5em;
-            padding: 2px 2px 10px 5px;
+            padding: 2px 20px 10px 5px;
         }
     </ui:style>
     <g:HorizontalPanel ui:field="menu" >
