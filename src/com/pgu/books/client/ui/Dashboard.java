@@ -51,18 +51,23 @@ public class Dashboard extends Composite {
     }
 
     public void showBooks() {
-        dashboard.setVisible(true);
-        graphs.setVisible(false);
+        show(dashboard);
     }
 
     public void showGraphs() {
-        dashboard.setVisible(false);
-        graphs.setVisible(true);
+        show(graphs);
     }
 
     public void showImport() {
-        dashboard.setVisible(false);
-        graphs.setVisible(false);
+        // TODO PGU
+    }
+
+    private final Widget[] widgetCenters = new Widget[] { dashboard, graphs };
+
+    private void show(final Widget widgetToShow) {
+        for (final Widget w : widgetCenters) {
+            w.setVisible(w.equals(widgetToShow));
+        }
     }
 
 }
