@@ -16,28 +16,6 @@
         <table cellspacing='0' cellpadding='0' style='width:100%;'>
           <tr>
             <td valign='top'>
-                <div>Busca un libro</div>
-                <g:SuggestBox ui:field='suggestBox'>
-                </g:SuggestBox>
-            </td>
-          </tr>
-          <tr>
-            <td valign='top'>
-                <g:DisclosurePanel ui:field='filters'>
-                    <g:header>Filtros</g:header>
-                    <g:HorizontalPanel ui:field="rowFilters">
-                        <g:Button ui:field="authorFilter">Autor</g:Button>
-                        <g:Button ui:field="titleFilter">Título</g:Button>
-                        <g:Button ui:field="editorFilter">Editor</g:Button>
-                        <g:Button ui:field="yearFilter">Año</g:Button>
-                        <g:Button ui:field="commentFilter">Comentario</g:Button>
-                        <g:Button ui:field="categoryFilter">Categoría</g:Button>
-                    </g:HorizontalPanel>
-                </g:DisclosurePanel>
-            </td>
-          </tr>
-          <tr>
-            <td valign='top'>
               <c:CellTable
                 addStyleNames='{style.cellTable}'
                 pageSize='3'

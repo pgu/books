@@ -5,12 +5,13 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DockPanel;
-import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.pgu.books.client.ui.book.BookBoard;
+import com.pgu.books.client.ui.filters.Filters;
 import com.pgu.books.client.ui.menu.Menu;
+import com.pgu.books.client.ui.menuAdmin.MenuAdmin;
 
 public class Dashboard extends Composite {
 
@@ -27,8 +28,9 @@ public class Dashboard extends Composite {
         dashboard.setSpacing(4);
         dashboard.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 
-        dashboard.add(new HTML("Libros Harriet"), DockPanel.NORTH);
-        dashboard.add(new Menu(), DockPanel.WEST);
+        dashboard.add(new MenuAdmin(), DockPanel.NORTH);
+        dashboard.add(new Menu(), DockPanel.NORTH);
+        dashboard.add(new Filters(), DockPanel.WEST);
 
         // final HTML contents = new HTML("center");
         final BookBoard bookBoard = new BookBoard();
@@ -42,7 +44,7 @@ public class Dashboard extends Composite {
     public void showBooks() {
     }
 
-    public void showAdmin() {
+    public void showGraphs() {
     }
 
 }

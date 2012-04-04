@@ -3,10 +3,12 @@ package com.pgu.books.client.ui.menu;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.Hyperlink;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
+import com.google.gwt.user.client.ui.SuggestBox;
 import com.google.gwt.user.client.ui.Widget;
-import com.pgu.books.client.Books;
 
 public class Menu extends Composite {
 
@@ -15,12 +17,27 @@ public class Menu extends Composite {
     interface MenuUiBinder extends UiBinder<Widget, Menu> {
     }
 
-    @UiField(provided = true)
-    Hyperlink booksLink, adminLink;
+    @UiField
+    Label title;
 
+    @UiField
+    Button busca;
+
+    @UiField(provided = true)
+    SuggestBox suggestBox;
+
+    // il va contenir les liens vers books, et les graphes
     public Menu() {
-        booksLink = new Hyperlink("Libros", Books.TAG_BOOKS);
-        adminLink = new Hyperlink("Admin", Books.TAG_ADMIN);
+        //
+        // suggest box
+        final MultiWordSuggestOracle oracle = new MultiWordSuggestOracle();
+        final String[] words = new String[] { "toto", "titi", "tata" };
+        for (int i = 0; i < words.length; ++i) {
+            oracle.add(words[i]);
+        }
+
+        suggestBox = new SuggestBox(oracle);
+
         initWidget(uiBinder.createAndBindUi(this));
     }
 

@@ -5,8 +5,9 @@
             font-weight: bold;
         }
     </ui:style>
-    <g:VerticalPanel>
-        <g:Hyperlink ui:field="booksLink" />
-        <g:Hyperlink ui:field="adminLink" />
-    </g:VerticalPanel>
+    <g:HorizontalPanel>
+        <g:Label ui:field="title" >Libros Harriet</g:Label>
+        <g:SuggestBox ui:field="suggestBox"></g:SuggestBox>
+        <g:Button ui:field="busca">Busca</g:Button>
+    </g:HorizontalPanel>
 </ui:UiBinder> 
