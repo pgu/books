@@ -1,0 +1,4 @@
+authorA;titleA;editorA;yearA;commentA;categoryA
+authorB;titleB;editorB;yearB;commentB;categoryB
+authorC;titleC;editorC;yearC;commentC;categoryC
+authorD;titleD;editorD;yearD;commentD;categoryD

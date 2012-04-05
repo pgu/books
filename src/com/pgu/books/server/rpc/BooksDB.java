@@ -30,13 +30,11 @@ public class BooksDB {
         DB.put("Fsillon", new ArrayList<Book>());
         fillFsillon();
         DB.put("Galicia_ling_miscelanea", new ArrayList<Book>());
-        // TODO
-        fillGalicia_ling_miscelanea();
+        fillGalicia_ling_miscelanea(); // TODO
         DB.put("Libros_antiguos", new ArrayList<Book>());
         fillLibrosAntiguos();
         DB.put("Libros_austral", new ArrayList<Book>());
-        // TODO
-        fillLibrosAustral();
+        fillLibrosAustral(); // TODO
         DB.put("Liternovela_ex_espanola", new ArrayList<Book>());
         fillLiternovela_ex_espanola();
         DB.put("Losada", new ArrayList<Book>());
@@ -46,8 +44,7 @@ public class BooksDB {
         DB.put("Lradio", new ArrayList<Book>());
         fillLradio();
         DB.put("Poesia_esp_y_extranjera", new ArrayList<Book>());
-        // TODO
-        fillPoesiaespyext();
+        fillPoesiaespyext(); // TODO
         DB.put("Psicologia_y_medicina", new ArrayList<Book>());
         fillPsicologiaymedicina();
         DB.put("Repes_frances_italoport", new ArrayList<Book>());

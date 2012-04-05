@@ -58,7 +58,7 @@ public class BooksImport extends Composite implements BooksImportUI {
     Grid                                        categories;
 
     @UiField
-    Button                                      btnAll;
+    Button                                      btnAll, btnTest;
 
     private BooksImportPresenter                presenter;
     private final HashMap<String, ToggleButton> title2btns = new HashMap<String, ToggleButton>();
@@ -125,4 +125,8 @@ public class BooksImport extends Composite implements BooksImportUI {
         }
     }
 
+    @UiHandler("btnTest")
+    public void clickTest(final ClickEvent e) {
+        presenter.testImport();
+    }
 }

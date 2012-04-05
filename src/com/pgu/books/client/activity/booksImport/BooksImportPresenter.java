@@ -4,4 +4,6 @@ public interface BooksImportPresenter {
 
     void createBooks(String categoryTitle);
 
+    void testImport();
+
 }

@@ -3,5 +3,6 @@
     <g:HTMLPanel>
         <g:Grid ui:field="categories"></g:Grid>
         <g:Button ui:field="btnAll">** ALL **</g:Button>
+        <g:Button ui:field="btnTest">****** TEST ******</g:Button>
     </g:HTMLPanel>
 </ui:UiBinder> 

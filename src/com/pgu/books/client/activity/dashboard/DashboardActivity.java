@@ -1,6 +1,7 @@
 package com.pgu.books.client.activity.dashboard;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.pgu.books.client.BookService;
 import com.pgu.books.client.BookServiceAsync;
@@ -46,6 +47,22 @@ public class DashboardActivity implements DashboardPresenter, BooksImportPresent
 
     public void buildCharts() {
         dashboardUI.buildCharts();
+    }
+
+    @Override
+    public void testImport() {
+        bookService.testImport(new AsyncCallback<Void>() {
+
+            @Override
+            public void onSuccess(final Void result) {
+                Window.alert("success");
+            }
+
+            @Override
+            public void onFailure(final Throwable caught) {
+                Window.alert("fail");
+            }
+        });
     }
 
 }
