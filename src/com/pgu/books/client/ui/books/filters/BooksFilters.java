@@ -16,6 +16,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.StackLayoutPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -41,7 +42,7 @@ public class BooksFilters extends Composite {
     public BooksFilters() {
 
         stackPanel = new StackLayoutPanel(Unit.EM);
-        stackPanel.setPixelSize(200, 400);
+        stackPanel.setPixelSize(200, 550);
 
         addFilter(authors, "Autores");
         addFilter(editors, "Editores");
@@ -49,7 +50,14 @@ public class BooksFilters extends Composite {
 
         initWidget(uiBinder.createAndBindUi(this));
 
-        fillFilter(Arrays.asList("AutorA", "AutorB"), authors);
+        fillFilter(Arrays.asList( //
+                "AutorA", "AutorB", "AutorA", "AutorB", "AutorA", "AutorB", //
+                "AutorA", "AutorB", "AutorA", "AutorB", "AutorA", "AutorB", //
+                "AutorA", "AutorB", "AutorA", "AutorB", "AutorA", "AutorB", //
+                "AutorA", "AutorB", "AutorA", "AutorB", "AutorA", "AutorB", //
+                "AutorA", "AutorB", "AutorA", "AutorB", "AutorA", "AutorB", //
+                "AutorA", "AutorB", "AutorA", "AutorB", "AutorA", "AutorB" //
+        ), authors);
         fillFilter(Arrays.asList("EditorA", "EditorB"), editors);
         fillFilter(Arrays.asList("CategoríaA", "CategoríaB"), categories);
     }
@@ -57,7 +65,7 @@ public class BooksFilters extends Composite {
     private void addFilter(final CellPanel container, final String title) {
         container.setWidth("100%");
         container.setSpacing(4);
-        stackPanel.add(new SimplePanel(container), createHeader(title), 4);
+        stackPanel.add(new ScrollPanel(container), createHeader(title), 4);
     }
 
     private void fillFilter(final List<String> values, final CellPanel container) {
