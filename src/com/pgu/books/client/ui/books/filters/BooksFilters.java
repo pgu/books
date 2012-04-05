@@ -13,6 +13,7 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CellPanel;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -65,7 +66,22 @@ public class BooksFilters extends Composite {
     private void addFilter(final CellPanel container, final String title) {
         container.setWidth("100%");
         container.setSpacing(4);
-        stackPanel.add(new ScrollPanel(container), createHeader(title), 4);
+
+        final HorizontalPanel btns = new HorizontalPanel();
+        btns.setWidth("100%");
+        btns.add(new Button("Clear"));
+        btns.add(new Button("Todos"));
+
+        final DisclosurePanel dp = new DisclosurePanel("selección");
+        dp.setWidth("100%");
+        dp.add(btns);
+
+        final VerticalPanel vp = new VerticalPanel();
+        vp.setWidth("100%");
+        vp.add(dp);
+        vp.add(container);
+
+        stackPanel.add(new ScrollPanel(vp), createHeader(title), 4);
     }
 
     private void fillFilter(final List<String> values, final CellPanel container) {
