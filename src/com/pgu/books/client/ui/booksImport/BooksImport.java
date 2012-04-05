@@ -68,7 +68,7 @@ public class BooksImport extends Composite implements BooksImportUI {
             @Override
             public void onClick(final ClickEvent event) {
                 toggle.setEnabled(false);
-                presenter.createBooks(toggle.getText());
+                presenter.importBooks(toggle.getText());
             }
         };
     }
@@ -93,7 +93,7 @@ public class BooksImport extends Composite implements BooksImportUI {
     @UiHandler("btnAll")
     public void clickAllCategories(final ClickEvent e) {
         for (final String title : BookCategory.titles) {
-            presenter.createBooks(title);
+            presenter.importBooks(title);
         }
     }
 

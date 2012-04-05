@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.List;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.googlecode.objectify.Objectify;
@@ -20,24 +19,19 @@ public class BookServiceImpl extends RemoteServiceServlet implements BookService
         ObjectifyService.register(Book.class);
     }
 
-    @Override
-    public void createBooks(final String cat) {
-        final Objectify ofy = ObjectifyService.begin();
-
-        final List<Book> books = BooksDB.DB.get(cat);
-        ofy.put(books);
-
-        // ofy.query(Book.class).filter("author", "toto").list();
-
-    }
+    // final Objectify ofy = ObjectifyService.begin();
+    // final List<Book> books = BooksDB.DB.get(cat);
+    // ofy.put(books);
+    // ofy.query(Book.class).filter("author", "toto").list();
 
     @Override
     public void testImport() {
         importBooks(BookCategory.titles.get(0));
     }
 
-    private void importBooks(final String filename) {
-        final InputStream is = getServletContext().getResourceAsStream("/WEB-INF/books/" + filename + ".txt");
+    @Override
+    public void importBooks(final String categoryTitle) {
+        final InputStream is = getServletContext().getResourceAsStream("/WEB-INF/books/" + categoryTitle + ".txt");
         final BufferedReader br = new BufferedReader(new InputStreamReader(is));
         final Objectify ofy = ObjectifyService.begin();
         try {
@@ -60,13 +54,6 @@ public class BookServiceImpl extends RemoteServiceServlet implements BookService
 
         } catch (final IOException e) {
             e.printStackTrace();
-        }
-    }
-
-    @Override
-    public void importAllBooks() {
-        for (final String title : BookCategory.titles) {
-            importBooks(title);
         }
     }
 

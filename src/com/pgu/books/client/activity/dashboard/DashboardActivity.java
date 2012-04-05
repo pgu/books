@@ -17,7 +17,7 @@ public class DashboardActivity implements DashboardPresenter, BooksImportPresent
 
     private final BookServiceAsync bookService = GWT.create(BookService.class);
 
-    private Dashboard              dashboardUI;
+    private Dashboard dashboardUI;
 
     public Dashboard start() {
         if (null == dashboardUI) {
@@ -29,8 +29,8 @@ public class DashboardActivity implements DashboardPresenter, BooksImportPresent
     }
 
     @Override
-    public void createBooks(final String categoryTitle) {
-        bookService.createBooks(categoryTitle, new AsyncCallback<Void>() {
+    public void importBooks(final String categoryTitle) {
+        bookService.importBooks(categoryTitle, new AsyncCallback<Void>() {
 
             @Override
             public void onFailure(final Throwable caught) {
