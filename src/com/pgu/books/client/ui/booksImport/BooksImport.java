@@ -47,22 +47,25 @@ public class BooksImport extends Composite {
     interface BooksImportUiBinder extends UiBinder<Widget, BooksImport> {
     }
 
-    @UiField
+    @UiField(provided = true)
     Grid categories;
 
     public BooksImport() {
-        initWidget(uiBinder.createAndBindUi(this));
-
         final int cols = 6;
         int rows = categoryTitles.size() / cols;
         if (categoryTitles.size() % cols > 0) {
             rows++;
         }
 
+        categories = new Grid(rows, cols);
+
+        initWidget(uiBinder.createAndBindUi(this));
+
         int i = 0;
         for (int row = 0; row < rows; row++) {
             for (int col = 0; col < cols; col++) {
-                categories.setWidget(row, col, new ToggleButton(categoryTitles.get(i++)));
+                ToggleButton toggle = new ToggleButton(categoryTitles.get(i++));
+                categories.setWidget(row, col, toggle);
             }
         }
 
