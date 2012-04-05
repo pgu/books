@@ -12,6 +12,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.pgu.books.client.ui.books.board.BooksBoard;
 import com.pgu.books.client.ui.books.filters.BooksFilters;
 import com.pgu.books.client.ui.books.menu.BooksMenu;
+import com.pgu.books.client.ui.booksImport.BooksImport;
 import com.pgu.books.client.ui.menuAdmin.MenuAdmin;
 
 public class Dashboard extends Composite {
@@ -22,13 +23,16 @@ public class Dashboard extends Composite {
     }
 
     @UiField
-    MenuAdmin menuAdmin;
+    MenuAdmin   menuAdmin;
 
     @UiField
-    HTMLPanel graphs, booksImport;
+    HTMLPanel   graphs;
+
+    @UiField
+    BooksImport booksImport;
 
     @UiField(provided = true)
-    DockPanel booksBoard;
+    DockPanel   booksBoard;
 
     public Dashboard() {
         buildBooksBoard();
