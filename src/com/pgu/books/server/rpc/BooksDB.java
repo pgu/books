@@ -11,8 +11,6 @@ public class BooksDB {
 
     public final static Map<String, List<Book>> DB = new HashMap<String, List<Book>>();
     static {
-        DB.put("Galicia_ling_miscelanea", new ArrayList<Book>());
-        fillGalicia_ling_miscelanea(); // TODO
         DB.put("Libros_antiguos", new ArrayList<Book>());
         fillLibrosAntiguos();
         DB.put("Libros_austral", new ArrayList<Book>());
@@ -4228,11 +4226,6 @@ public class BooksDB {
         b.add(new Book("Anatole France", "El figón de la reina patoja", "Hachete", "1946", "ARTE HISTORIA MUSICA,2ª ed.", "LibrosAntiguos"));
         b.add(new Book("Louis Ferdinand Céline", "Mea culpa", "Sur", "1937", "ARTE HISTORIA MUSICA", "LibrosAntiguos"));
 
-    }
-
-    // TODO
-    private static void fillGalicia_ling_miscelanea() {
-        DB.get("Galicia_ling_miscelanea");
     }
 
 }
