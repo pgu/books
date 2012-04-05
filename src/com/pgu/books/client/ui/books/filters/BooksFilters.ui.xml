@@ -1,8 +1,16 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder" xmlns:g="urn:import:com.google.gwt.user.client.ui">
+    <ui:style>
+    	.btnApplyFilters {
+    		font-weight: bold;
+    		width: 200px; 
+    		height: 42px;
+    		margin-top: 6px;
+    	}
+    </ui:style>
     <g:HTMLPanel>
         <g:StackLayoutPanel ui:field="stackPanel">
         </g:StackLayoutPanel>
-        <g:Button ui:field="btnApplyFilters">Aplicar los filtros</g:Button>
+        <g:Button ui:field="btnApplyFilters" addStyleNames="{style.btnApplyFilters}">Aplicar los filtros</g:Button>
     </g:HTMLPanel>
 </ui:UiBinder> 
