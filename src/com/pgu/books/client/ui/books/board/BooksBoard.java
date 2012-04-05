@@ -1,6 +1,6 @@
 package com.pgu.books.client.ui.books.board;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gwt.core.client.GWT;
@@ -19,14 +19,12 @@ import com.pgu.books.shared.Book;
 
 public class BooksBoard extends Composite {
 
-    private static List<Book> BOOKS = Arrays.asList( //
-            new Book("authorA", "titleA", "editorA", "yearA", "commentA", "categoryA"), //
-            new Book("authorB", "titleB", "editorB", "yearB", "commentB", "categoryB"), //
-            new Book("authorC", "titleC", "editorC", "yearC", "commentC", "categoryC"), //
-            new Book("authorD", "titleD", "editorD", "yearD", "commentD", "categoryD"), //
-            new Book("authorE", "titleE", "editorE", "yearE", "commentE", "categoryE"), //
-            new Book("authorF", "titleF", "editorF", "yearF", "commentF", "categoryF") //
-            );
+    private static List<Book>         BOOKS    = new ArrayList<Book>();
+    static {
+        for (int i = 0; i < 100; i++) {
+            BOOKS.add(new Book("author" + i, "title" + i, "editor" + i, "year" + i, "comment" + i, "category" + i)); //
+        }
+    }
 
     private static BooksBoardUiBinder uiBinder = GWT.create(BooksBoardUiBinder.class);
 
@@ -37,7 +35,7 @@ public class BooksBoard extends Composite {
     CellTable<Book> grid;
 
     @UiField(provided = true)
-    SimplePager pager;
+    SimplePager     pager;
 
     public BooksBoard() {
 
@@ -121,8 +119,8 @@ public class BooksBoard extends Composite {
             }
         };
 
-        grid.addColumn(authorColumn, "Autor");
         grid.addColumn(titleColumn, "Título");
+        grid.addColumn(authorColumn, "Autor");
         grid.addColumn(editorColumn, "Editor");
         grid.addColumn(yearColumn, "Año");
         grid.addColumn(commentColumn, "Comentario");
