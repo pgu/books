@@ -3,6 +3,6 @@
     <g:HTMLPanel>
         <g:StackLayoutPanel ui:field="stackPanel">
         </g:StackLayoutPanel>
-        <g:Button ui:field="applyFilters">Aplicar los filtros</g:Button>
+        <g:Button ui:field="btnApplyFilters">Aplicar los filtros</g:Button>
     </g:HTMLPanel>
 </ui:UiBinder> 

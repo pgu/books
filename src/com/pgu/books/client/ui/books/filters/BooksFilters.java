@@ -25,7 +25,7 @@ public class BooksFilters extends Composite {
     }
 
     @UiField
-    Button applyFilters;
+    Button           btnApplyFilters;
 
     @UiField(provided = true)
     StackLayoutPanel stackPanel;
@@ -35,17 +35,15 @@ public class BooksFilters extends Composite {
         stackPanel = new StackLayoutPanel(Unit.EM);
         stackPanel.setPixelSize(200, 400);
 
-        final Widget autorFilter = createHeaderWidget("Autores");
+        addAuthorsFilter();
+        addEditorsFilter();
+        addCategoriesFilter();
 
-        final VerticalPanel authorPanel = new VerticalPanel();
-        authorPanel.setSpacing(4);
-        for (final String filter : new String[] { "autorA", "autorB" }) {
-            authorPanel.add(new CheckBox(filter));
-        }
-        stackPanel.add(new SimplePanel(authorPanel), autorFilter, 4);
+        initWidget(uiBinder.createAndBindUi(this));
+    }
 
-        // ///////
-        final Widget titleFilter = createHeaderWidget("Titulos");
+    private void addCategoriesFilter() {
+        final Widget titleFilter = createHeaderWidget("Editor");
 
         final VerticalPanel titlePanel = new VerticalPanel();
         titlePanel.setSpacing(4);
@@ -53,21 +51,45 @@ public class BooksFilters extends Composite {
             titlePanel.add(new CheckBox(filter));
         }
         stackPanel.add(new SimplePanel(titlePanel), titleFilter, 4);
+    }
 
-        initWidget(uiBinder.createAndBindUi(this));
+    private void addEditorsFilter() {
+        final Widget titleFilter = createHeaderWidget("Editor");
+
+        final VerticalPanel titlePanel = new VerticalPanel();
+        titlePanel.setSpacing(4);
+        for (final String filter : new String[] { "tituloA", "tituloB" }) {
+            titlePanel.add(new CheckBox(filter));
+        }
+        stackPanel.add(new SimplePanel(titlePanel), titleFilter, 4);
+    }
+
+    private void addAuthorsFilter() {
+        final Widget authorFilter = createHeaderWidget("Autores");
+
+        final VerticalPanel authorPanel = new VerticalPanel();
+        authorPanel.setSpacing(4);
+        for (final String filter : new String[] { "autorA", "autorB" }) {
+            authorPanel.add(new CheckBox(filter));
+        }
+        stackPanel.add(new SimplePanel(authorPanel), authorFilter, 4);
     }
 
     private Widget createHeaderWidget(final String text) {
+
+        final HTML headerText = new HTML(text);
+        headerText.getElement().getStyle().setFontSize(1.5, Unit.EM);
+
         final HorizontalPanel hPanel = new HorizontalPanel();
         hPanel.setHeight("100%");
         hPanel.setSpacing(0);
         hPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
-        final HTML headerText = new HTML(text);
         hPanel.add(headerText);
+
         return new SimplePanel(hPanel);
     }
 
-    @UiHandler("applyFilters")
+    @UiHandler("btnApplyFilters")
     public void applyFilters(final ClickEvent e) {
         GWT.log("apply filters");
     }
