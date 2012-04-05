@@ -37,7 +37,7 @@ public class BookServiceImpl extends RemoteServiceServlet implements BookService
     }
 
     private void importBooks(final String filename) {
-        final InputStream is = getServletContext().getResourceAsStream("/WEB-INF/books/" + filename + "txt");
+        final InputStream is = getServletContext().getResourceAsStream("/WEB-INF/books/" + filename + ".txt");
         final BufferedReader br = new BufferedReader(new InputStreamReader(is));
         final Objectify ofy = ObjectifyService.begin();
         try {
