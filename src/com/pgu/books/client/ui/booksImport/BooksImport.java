@@ -1,6 +1,7 @@
 package com.pgu.books.client.ui.booksImport;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import com.google.gwt.core.client.GWT;
@@ -8,6 +9,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.ToggleButton;
@@ -51,9 +53,10 @@ public class BooksImport extends Composite implements BooksImportUI {
     }
 
     @UiField(provided = true)
-    Grid                         categories;
+    Grid                                        categories;
 
-    private BooksImportPresenter presenter;
+    private BooksImportPresenter                presenter;
+    private final HashMap<String, ToggleButton> title2btns = new HashMap<String, ToggleButton>();
 
     public BooksImport() {
         final int cols = 6;
@@ -69,18 +72,28 @@ public class BooksImport extends Composite implements BooksImportUI {
         int i = 0;
         for (int row = 0; row < rows; row++) {
             for (int col = 0; col < cols; col++) {
-                final ToggleButton toggle = new ToggleButton(categoryTitles.get(i++));
-                toggle.addClickHandler(new ClickHandler() {
 
-                    @Override
-                    public void onClick(final ClickEvent event) {
-                        presenter.createBooks(toggle.getText());
-                    }
-                });
+                final String title = categoryTitles.get(i++);
+
+                final ToggleButton toggle = new ToggleButton(title);
+                toggle.addClickHandler(newClickOnToggle(toggle));
+
                 categories.setWidget(row, col, toggle);
+                title2btns.put(title, toggle);
             }
         }
 
+    }
+
+    private ClickHandler newClickOnToggle(final ToggleButton toggle) {
+        return new ClickHandler() {
+
+            @Override
+            public void onClick(final ClickEvent event) {
+                toggle.setEnabled(false);
+                presenter.createBooks(toggle.getText());
+            }
+        };
     }
 
     @Override
@@ -90,14 +103,14 @@ public class BooksImport extends Composite implements BooksImportUI {
 
     @Override
     public void enableImport(final String categoryTitle) {
-        // TODO Auto-generated method stub
-
+        title2btns.get(categoryTitle).setEnabled(true);
+        Window.alert("Error");
     }
 
     @Override
     public void disableImport(final String categoryTitle) {
-        // TODO Auto-generated method stub
-
+        title2btns.get(categoryTitle).setEnabled(false);
+        Window.alert("OK :-)");
     }
 
 }
