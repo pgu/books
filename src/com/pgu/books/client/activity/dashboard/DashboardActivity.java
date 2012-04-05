@@ -1,30 +1,47 @@
 package com.pgu.books.client.activity.dashboard;
 
-import com.pgu.books.client.presenter.booksImport.BooksImportPresenter;
-import com.pgu.books.client.presenter.booksImport.BooksImportPresenterImpl;
-import com.pgu.books.client.presenter.dashboard.DashboardPresenter;
-import com.pgu.books.client.presenter.dashboard.DashboardPresenterImpl;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.pgu.books.client.BookService;
+import com.pgu.books.client.BookServiceAsync;
+import com.pgu.books.client.activity.booksImport.BooksImportPresenter;
 import com.pgu.books.client.ui.Dashboard;
 
-public class DashboardActivity {
+public class DashboardActivity implements DashboardPresenter, BooksImportPresenter {
 
     public static DashboardActivity INSTANCE = new DashboardActivity();
 
     private DashboardActivity() {
     }
 
-    private final DashboardPresenter   dashboardPresenter   = new DashboardPresenterImpl();
-    private Dashboard                  dashboardUI;
+    private final BookServiceAsync bookService = GWT.create(BookService.class);
 
-    private final BooksImportPresenter booksImportPresenter = new BooksImportPresenterImpl();
+    private Dashboard              dashboardUI;
 
-    public Dashboard getDashboardUI() {
+    public Dashboard start() {
         if (null == dashboardUI) {
             dashboardUI = new Dashboard();
-            dashboardUI.setPresenter(dashboardPresenter);
-            dashboardUI.getBooksImportUI().setPresenter(booksImportPresenter);
+            dashboardUI.setPresenter(this);
+            dashboardUI.getBooksImportUI().setPresenter(this);
         }
         return dashboardUI;
+    }
+
+    @Override
+    public void createBooks(final String categoryTitle) {
+        bookService.createBooks(categoryTitle, new AsyncCallback<Void>() {
+
+            @Override
+            public void onFailure(final Throwable caught) {
+                dashboardUI.getBooksImportUI().enableImport(categoryTitle);
+            }
+
+            @Override
+            public void onSuccess(final Void result) {
+                dashboardUI.getBooksImportUI().disableImport(categoryTitle);
+            }
+        });
+
     }
 
 }

@@ -1,4 +1,4 @@
-package com.pgu.books.client.presenter.booksImport;
+package com.pgu.books.client.activity.booksImport;
 
 public interface BooksImportPresenter {
 

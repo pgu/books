@@ -21,7 +21,7 @@ public class Books implements EntryPoint {
     @Override
     public void onModuleLoad() {
 
-        final Dashboard dashboard = DashboardActivity.INSTANCE.getDashboardUI();
+        final Dashboard dashboard = DashboardActivity.INSTANCE.start();
         RootPanel.get().add(dashboard);
 
         // history

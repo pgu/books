@@ -9,7 +9,7 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.pgu.books.client.presenter.dashboard.DashboardPresenter;
+import com.pgu.books.client.activity.dashboard.DashboardPresenter;
 import com.pgu.books.client.ui.books.board.BooksBoard;
 import com.pgu.books.client.ui.books.filters.BooksFilters;
 import com.pgu.books.client.ui.books.menu.BooksMenu;

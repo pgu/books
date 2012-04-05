@@ -12,7 +12,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.ToggleButton;
 import com.google.gwt.user.client.ui.Widget;
-import com.pgu.books.client.presenter.booksImport.BooksImportPresenter;
+import com.pgu.books.client.activity.booksImport.BooksImportPresenter;
 
 public class BooksImport extends Composite implements BooksImportUI {
 
@@ -86,6 +86,18 @@ public class BooksImport extends Composite implements BooksImportUI {
     @Override
     public void setPresenter(final BooksImportPresenter presenter) {
         this.presenter = presenter;
+    }
+
+    @Override
+    public void enableImport(final String categoryTitle) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void disableImport(final String categoryTitle) {
+        // TODO Auto-generated method stub
+
     }
 
 }
