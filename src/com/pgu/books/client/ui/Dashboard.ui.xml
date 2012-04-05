@@ -11,7 +11,7 @@
     <g:HTMLPanel>
         <ma:MenuAdmin ui:field="menuAdmin" />
         <g:DockPanel ui:field="booksBoard" styleName="{style.dashboard}"></g:DockPanel>
-        <g:HTMLPanel ui:field="graphs"><g:Label>graphs</g:Label></g:HTMLPanel>
+        <g:HTMLPanel ui:field="charts"><g:Label>charts</g:Label></g:HTMLPanel>
         <bi:BooksImport ui:field="booksImport"></bi:BooksImport>
     </g:HTMLPanel>
 </ui:UiBinder> 

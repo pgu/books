@@ -44,4 +44,8 @@ public class DashboardActivity implements DashboardPresenter, BooksImportPresent
 
     }
 
+    public void buildCharts() {
+        dashboardUI.buildCharts();
+    }
+
 }

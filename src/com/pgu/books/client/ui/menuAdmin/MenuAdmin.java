@@ -20,11 +20,11 @@ public class MenuAdmin extends Composite {
     HorizontalPanel menu;
 
     @UiField(provided = true)
-    Hyperlink booksLink, graphsLink, importLink;
+    Hyperlink       booksLink, graphsLink, importLink;
 
     public MenuAdmin() {
         booksLink = new Hyperlink("Libros", Books.TAG_BOOKS);
-        graphsLink = new Hyperlink("Gráficos", Books.TAG_GRAPHS);
+        graphsLink = new Hyperlink("Gráficos", Books.TAG_CHARTS);
         importLink = new Hyperlink("Import", Books.TAG_IMPORT);
 
         initWidget(uiBinder.createAndBindUi(this));
