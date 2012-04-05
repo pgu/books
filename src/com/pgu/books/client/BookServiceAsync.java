@@ -8,4 +8,6 @@ public interface BookServiceAsync {
 
     void testImport(AsyncCallback<Void> asyncCallback);
 
+    void importAllBooks(AsyncCallback<Void> asyncCallback);
+
 }

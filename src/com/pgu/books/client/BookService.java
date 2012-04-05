@@ -8,6 +8,8 @@ public interface BookService extends RemoteService {
 
     void createBooks(String cat);
 
+    void importAllBooks();
+
     void testImport();
 
 }
