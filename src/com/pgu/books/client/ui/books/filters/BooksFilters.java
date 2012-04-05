@@ -1,5 +1,8 @@
 package com.pgu.books.client.ui.books.filters;
 
+import java.util.Arrays;
+import java.util.List;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -7,6 +10,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.CellPanel;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTML;
@@ -25,57 +29,45 @@ public class BooksFilters extends Composite {
     }
 
     @UiField
-    Button           btnApplyFilters;
+    Button                      btnApplyFilters;
 
     @UiField(provided = true)
-    StackLayoutPanel stackPanel;
+    StackLayoutPanel            stackPanel;
+
+    private final VerticalPanel authors    = new VerticalPanel();
+    private final VerticalPanel editors    = new VerticalPanel();
+    private final VerticalPanel categories = new VerticalPanel();
 
     public BooksFilters() {
 
         stackPanel = new StackLayoutPanel(Unit.EM);
         stackPanel.setPixelSize(200, 400);
 
-        addAuthorsFilter();
-        addEditorsFilter();
-        addCategoriesFilter();
+        addFilter(authors, "Autores");
+        addFilter(editors, "Editores");
+        addFilter(categories, "Categorías");
 
         initWidget(uiBinder.createAndBindUi(this));
+
+        fillFilter(Arrays.asList("AutorA", "AutorB"), authors);
+        fillFilter(Arrays.asList("EditorA", "EditorB"), editors);
+        fillFilter(Arrays.asList("CategoríaA", "CategoríaB"), categories);
     }
 
-    private void addCategoriesFilter() {
-        final Widget titleFilter = createHeaderWidget("Editor");
+    private void addFilter(final CellPanel container, final String title) {
+        container.setWidth("100%");
+        container.setSpacing(4);
+        stackPanel.add(new SimplePanel(container), createHeader(title), 4);
+    }
 
-        final VerticalPanel titlePanel = new VerticalPanel();
-        titlePanel.setSpacing(4);
-        for (final String filter : new String[] { "tituloA", "tituloB" }) {
-            titlePanel.add(new CheckBox(filter));
+    private void fillFilter(final List<String> values, final CellPanel container) {
+        for (final String v : values) {
+            final CheckBox cb = new CheckBox(v);
+            container.add(cb);
         }
-        stackPanel.add(new SimplePanel(titlePanel), titleFilter, 4);
     }
 
-    private void addEditorsFilter() {
-        final Widget titleFilter = createHeaderWidget("Editor");
-
-        final VerticalPanel titlePanel = new VerticalPanel();
-        titlePanel.setSpacing(4);
-        for (final String filter : new String[] { "tituloA", "tituloB" }) {
-            titlePanel.add(new CheckBox(filter));
-        }
-        stackPanel.add(new SimplePanel(titlePanel), titleFilter, 4);
-    }
-
-    private void addAuthorsFilter() {
-        final Widget authorFilter = createHeaderWidget("Autores");
-
-        final VerticalPanel authorPanel = new VerticalPanel();
-        authorPanel.setSpacing(4);
-        for (final String filter : new String[] { "autorA", "autorB" }) {
-            authorPanel.add(new CheckBox(filter));
-        }
-        stackPanel.add(new SimplePanel(authorPanel), authorFilter, 4);
-    }
-
-    private Widget createHeaderWidget(final String text) {
+    private Widget createHeader(final String text) {
 
         final HTML headerText = new HTML(text);
         headerText.getElement().getStyle().setFontSize(1.5, Unit.EM);
