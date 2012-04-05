@@ -1,5 +1,7 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder" xmlns:g="urn:import:com.google.gwt.user.client.ui">
-    <g:Grid ui:field="categories">
-    </g:Grid>
+    <VerticalPanel>
+        <g:Grid ui:field="categories"></g:Grid>
+        <g:Button ui:field="btnAll">All</g:Button>
+    </VerticalPanel>
 </ui:UiBinder> 

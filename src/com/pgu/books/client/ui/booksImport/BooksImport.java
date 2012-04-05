@@ -9,7 +9,9 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.ToggleButton;
@@ -54,6 +56,9 @@ public class BooksImport extends Composite implements BooksImportUI {
 
     @UiField(provided = true)
     Grid                                        categories;
+
+    @UiField
+    Button                                      btnAll;
 
     private BooksImportPresenter                presenter;
     private final HashMap<String, ToggleButton> title2btns = new HashMap<String, ToggleButton>();
@@ -104,13 +109,20 @@ public class BooksImport extends Composite implements BooksImportUI {
     @Override
     public void enableImport(final String categoryTitle) {
         title2btns.get(categoryTitle).setEnabled(true);
-        Window.alert("Error");
+        Window.alert(categoryTitle + ": Error");
     }
 
     @Override
     public void disableImport(final String categoryTitle) {
         title2btns.get(categoryTitle).setEnabled(false);
-        Window.alert("OK :-)");
+        Window.alert(categoryTitle + ": OK :-)");
+    }
+
+    @UiHandler("btnAll")
+    public void clickAllCategories(final ClickEvent e) {
+        for (final String title : categoryTitles) {
+            presenter.createBooks(title);
+        }
     }
 
 }
