@@ -18,10 +18,10 @@ public class BooksMenu extends Composite {
     }
 
     @UiField
-    Label title;
+    Label      title;
 
     @UiField
-    Button busca;
+    Button     btnSearch;
 
     @UiField(provided = true)
     SuggestBox suggestBox;
