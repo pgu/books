@@ -9,10 +9,12 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.pgu.books.client.presenter.dashboard.DashboardPresenter;
 import com.pgu.books.client.ui.books.board.BooksBoard;
 import com.pgu.books.client.ui.books.filters.BooksFilters;
 import com.pgu.books.client.ui.books.menu.BooksMenu;
 import com.pgu.books.client.ui.booksImport.BooksImport;
+import com.pgu.books.client.ui.booksImport.BooksImportUI;
 import com.pgu.books.client.ui.menuAdmin.MenuAdmin;
 
 public class Dashboard extends Composite {
@@ -73,6 +75,16 @@ public class Dashboard extends Composite {
             }
             w.setVisible(w.equals(widgetToShow));
         }
+    }
+
+    private DashboardPresenter dashboardPresenter;
+
+    public void setPresenter(final DashboardPresenter dashboardPresenter) {
+        this.dashboardPresenter = dashboardPresenter;
+    }
+
+    public BooksImportUI getBooksImportUI() {
+        return booksImport;
     }
 
 }
