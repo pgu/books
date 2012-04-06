@@ -71,6 +71,8 @@ public class DashboardActivity implements DashboardPresenter, BooksImportPresent
 
     @Override
     public void fetchBooks(final int start, final int length) {
+        GWT.log("start -> " + start + ", " + "length -> " + length);
+
         dashboardUI.getBooksBoardUI().initFetch();
 
         bookService.countBooks(new AsyncCallbackApp<Integer>() {

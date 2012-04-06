@@ -126,21 +126,20 @@ public class BooksBoard extends Composite {
     }
 
     public void showBooks(final ArrayList<Book> books) {
-        GWT.log("fetch books " + books.size());
-
         this.books = books;
         isGettingNbBooks = false;
+
         updateGrid();
     }
 
     public void setNbBooks(final Integer count) {
         nbBooks = count;
         isGettingBooks = false;
+
         updateGrid();
     }
 
     private void updateGrid() {
-        GWT.log("... update grid ...");
         if (isGettingBooks) {
             return;
         }
@@ -156,17 +155,11 @@ public class BooksBoard extends Composite {
         final AsyncDataProvider<Book> provider = new AsyncDataProvider<Book>() {
             @Override
             protected void onRangeChanged(final HasData<Book> display) {
-                GWT.log("... on range changed ...");
 
                 currentStart = display.getVisibleRange().getStart();
                 final int length = display.getVisibleRange().getLength();
-                presenter.fetchBooks(currentStart, length);
 
-                // mock version                
-                //                int end = start + display.getVisibleRange().getLength();
-                //                end = end >= BOOKS.size() ? BOOKS.size() : end;
-                //                final List<Book> sub = BOOKS.subList(start, end);
-                //                updateRowData(start, sub);
+                presenter.fetchBooks(currentStart, length);
             }
         };
         provider.addDataDisplay(grid);
