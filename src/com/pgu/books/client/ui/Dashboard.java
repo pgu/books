@@ -34,16 +34,18 @@ public class Dashboard extends Composite {
     }
 
     @UiField
-    MenuAdmin   menuAdmin;
+    MenuAdmin          menuAdmin;
 
     @UiField
-    HTMLPanel   charts;
+    HTMLPanel          charts;
 
     @UiField
-    BooksImport booksImport;
+    BooksImport        booksImport;
 
     @UiField(provided = true)
-    DockPanel   booksBoard;
+    DockPanel          booksDock;
+
+    private BooksBoard booksBoard;
 
     public Dashboard() {
         buildBooksBoard();
@@ -52,21 +54,21 @@ public class Dashboard extends Composite {
     }
 
     private void buildBooksBoard() {
-        booksBoard = new DockPanel();
-        booksBoard.setSpacing(4);
-        booksBoard.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+        booksDock = new DockPanel();
+        booksDock.setSpacing(4);
+        booksDock.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 
-        booksBoard.add(new BooksMenu(), DockPanel.NORTH);
-        booksBoard.add(new BooksFilters(), DockPanel.WEST);
+        booksDock.add(new BooksMenu(), DockPanel.NORTH);
+        booksDock.add(new BooksFilters(), DockPanel.WEST);
 
-        final BooksBoard bookBoard = new BooksBoard();
-        final ScrollPanel scroller = new ScrollPanel(bookBoard);
+        booksBoard = new BooksBoard();
+        final ScrollPanel scroller = new ScrollPanel(booksBoard);
         scroller.setSize("800px", "600px");
-        booksBoard.add(scroller, DockPanel.CENTER);
+        booksDock.add(scroller, DockPanel.CENTER);
     }
 
     public void showBooks() {
-        show(booksBoard);
+        show(booksDock);
     }
 
     public void showCharts() {
@@ -78,7 +80,7 @@ public class Dashboard extends Composite {
     }
 
     private void show(final Widget widgetToShow) {
-        for (final Widget w : new Widget[] { booksBoard, charts, booksImport }) {
+        for (final Widget w : new Widget[] { booksDock, charts, booksImport }) {
             if (w == null) {
                 continue;
             }
@@ -164,5 +166,9 @@ public class Dashboard extends Composite {
         data.setValue(1, 0, "Sleep");
         data.setValue(1, 1, 10);
         return data;
+    }
+
+    public BooksBoard getBooksBoardUI() {
+        return booksBoard;
     }
 }
