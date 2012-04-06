@@ -9,7 +9,6 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
-import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.visualization.client.AbstractDataTable;
 import com.google.gwt.visualization.client.AbstractDataTable.ColumnType;
@@ -62,9 +61,9 @@ public class Dashboard extends Composite {
         booksDock.add(new BooksFilters(), DockPanel.WEST);
 
         booksBoard = new BooksBoard();
-        final ScrollPanel scroller = new ScrollPanel(booksBoard);
-        scroller.setSize("800px", "600px");
-        booksDock.add(scroller, DockPanel.CENTER);
+        booksBoard.setHeight("600px");
+        booksBoard.setWidth("800px");
+        booksDock.add(booksBoard, DockPanel.CENTER);
     }
 
     public void showBooks() {

@@ -11,23 +11,26 @@
         }
     </ui:style>
     
-    <g:HTMLPanel>
-    
-        <table cellspacing='0' cellpadding='0' style='width:100%;'>
-          <tr>
-            <td valign='top'>
-              <c:CellTable
+    <g:DockLayoutPanel unit="EM">
+        <g:center>
+            <c:DataGrid 
+                ui:field="grid"
                 addStyleNames='{style.cellTable}'
                 pageSize='20'
-                ui:field='grid' />
-            </td>
-          </tr>
-          <tr>
-            <td align='center'>
-              <c:SimplePager ui:field='pager' />
-            </td>
-          </tr>
-        </table>
-    </g:HTMLPanel>    
+            />
+        </g:center>
+
+        <g:south size="3">
+            <g:HTMLPanel>
+                <table style="width:100%">
+                    <tr>
+                        <td align='center'>
+                            <c:SimplePager ui:field='pager' />
+                        </td>
+                    </tr>
+                </table>
+            </g:HTMLPanel>
+        </g:south>    
+    </g:DockLayoutPanel>    
 
 </ui:UiBinder> 

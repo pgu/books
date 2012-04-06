@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.cellview.client.CellTable;
+import com.google.gwt.user.cellview.client.DataGrid;
 import com.google.gwt.user.cellview.client.HasKeyboardSelectionPolicy.KeyboardSelectionPolicy;
 import com.google.gwt.user.cellview.client.SimplePager;
 import com.google.gwt.user.cellview.client.SimplePager.TextLocation;
@@ -32,7 +32,7 @@ public class BooksBoard extends Composite {
     }
 
     @UiField(provided = true)
-    CellTable<Book>             grid;
+    DataGrid<Book>              grid;
 
     @UiField(provided = true)
     SimplePager                 pager;
@@ -55,8 +55,8 @@ public class BooksBoard extends Composite {
     }
 
     private void buildCellTableWithPager() {
-        grid = new CellTable<Book>();
-        grid.setWidth("100%", true);
+        grid = new DataGrid<Book>();
+        grid.setWidth("100%");
         grid.setKeyboardSelectionPolicy(KeyboardSelectionPolicy.ENABLED);
 
         final SimplePager.Resources pagerResources = GWT.create(SimplePager.Resources.class);
