@@ -148,11 +148,13 @@ public class BooksBoard extends Composite {
         }
 
         grid.setRowCount(nbBooks);
-        grid.setRowData(currentStart, books);
+        provider.updateRowData(currentStart, books);
     }
 
+    private AsyncDataProvider<Book> provider;
+
     public void initFetchBooks() {
-        final AsyncDataProvider<Book> provider = new AsyncDataProvider<Book>() {
+        provider = new AsyncDataProvider<Book>() {
             @Override
             protected void onRangeChanged(final HasData<Book> display) {
 
@@ -163,7 +165,6 @@ public class BooksBoard extends Composite {
             }
         };
         provider.addDataDisplay(grid);
-        provider.updateRowCount(nbBooks, true);
     }
 
 }
