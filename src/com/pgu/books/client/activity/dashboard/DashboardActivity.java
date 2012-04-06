@@ -74,12 +74,17 @@ public class DashboardActivity implements DashboardPresenter, BooksImportPresent
         GWT.log("start -> " + start + ", " + "length -> " + length);
 
         dashboardUI.getBooksBoardUI().initFetch();
-
         bookService.countBooks(new AsyncCallbackApp<Integer>() {
 
             @Override
             public void onSuccess(final Integer count) {
                 dashboardUI.getBooksBoardUI().setNbBooks(count);
+            }
+
+            @Override
+            public void onFailure(final Throwable caught) {
+                super.onFailure(caught);
+                dashboardUI.getBooksBoardUI().setNbBooks(0);
             }
 
         });
@@ -89,6 +94,12 @@ public class DashboardActivity implements DashboardPresenter, BooksImportPresent
             @Override
             public void onSuccess(final ArrayList<Book> books) {
                 dashboardUI.getBooksBoardUI().showBooks(books);
+            }
+
+            @Override
+            public void onFailure(final Throwable caught) {
+                super.onFailure(caught);
+                dashboardUI.getBooksBoardUI().showBooks(new ArrayList<Book>());
             }
 
         });

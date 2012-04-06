@@ -147,7 +147,8 @@ public class BooksBoard extends Composite {
             return;
         }
 
-        grid.setRowCount(nbBooks);
+        //        grid.setVisibleRangeAndClearData(grid.getVisibleRange(), false);
+        grid.setRowCount(nbBooks, false);
         provider.updateRowData(currentStart, books);
     }
 
@@ -157,6 +158,8 @@ public class BooksBoard extends Composite {
         provider = new AsyncDataProvider<Book>() {
             @Override
             protected void onRangeChanged(final HasData<Book> display) {
+
+                GWT.log("gridStart: " + grid.getPageStart() + ", currentStart: " + display.getVisibleRange().getStart());
 
                 currentStart = display.getVisibleRange().getStart();
                 final int length = display.getVisibleRange().getLength();
