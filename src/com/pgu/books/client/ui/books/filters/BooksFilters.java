@@ -57,7 +57,7 @@ public class BooksFilters extends Composite {
         initWidget(uiBinder.createAndBindUi(this));
 
         fillFilter(Arrays.asList( //
-                "Angel Crespo", "MiguelTorga", "Pierre Emmanuel", "Saint John Perse", "AutorA", "AutorB", //
+                "Angel Crespo", "Miguel Torga", "Pierre Emmanuel", "Saint John Perse", "AutorA", "AutorB", //
                 "AutorA", "AutorB", "AutorA", "AutorB", "AutorA", "AutorB", //
                 "AutorA", "AutorB", "AutorA", "AutorB", "AutorA", "AutorB", //
                 "AutorA", "AutorB", "AutorA", "AutorB", "AutorA", "AutorB", //
@@ -144,7 +144,7 @@ public class BooksFilters extends Composite {
         for (int i = 0; i < container.getWidgetCount(); i++) {
             final CheckBox cb = (CheckBox) container.getWidget(i);
             if (cb.getValue()) {
-                selecteds.add(cb.getName());
+                selecteds.add(cb.getText());
             }
         }
         return selecteds;
