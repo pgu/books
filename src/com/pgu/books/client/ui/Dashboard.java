@@ -18,7 +18,7 @@ import com.google.gwt.visualization.client.events.SelectHandler;
 import com.google.gwt.visualization.client.visualizations.corechart.PieChart;
 import com.google.gwt.visualization.client.visualizations.corechart.PieChart.PieOptions;
 import com.pgu.books.client.activity.dashboard.DashboardPresenter;
-import com.pgu.books.client.ui.books.board.BooksBoard;
+import com.pgu.books.client.ui.books.board.Booksboard;
 import com.pgu.books.client.ui.books.filters.BooksFilters;
 import com.pgu.books.client.ui.books.search.BooksSearch;
 import com.pgu.books.client.ui.booksImport.BooksImport;
@@ -33,37 +33,42 @@ public class Dashboard extends Composite {
     }
 
     @UiField
-    MenuAdmin          menuAdmin;
+    MenuAdmin menuAdmin;
 
     @UiField
-    HTMLPanel          charts;
+    HTMLPanel charts;
 
     @UiField
-    BooksImport        booksImport;
+    BooksImport booksImport;
 
     @UiField(provided = true)
-    DockPanel          booksDock;
+    DockPanel booksDock;
 
-    private BooksBoard booksBoard;
+    private Booksboard booksboard;
+    private BooksFilters booksFilters;
+    private BooksSearch booksSearch;
 
     public Dashboard() {
-        buildBooksBoard();
+        buildBooksboard();
 
         initWidget(uiBinder.createAndBindUi(this));
     }
 
-    private void buildBooksBoard() {
+    private void buildBooksboard() {
         booksDock = new DockPanel();
         booksDock.setSpacing(4);
         booksDock.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 
-        booksDock.add(new BooksSearch(), DockPanel.NORTH);
-        booksDock.add(new BooksFilters(), DockPanel.WEST);
+        booksSearch = new BooksSearch();
+        booksFilters = new BooksFilters();
 
-        booksBoard = new BooksBoard();
-        booksBoard.setHeight("600px");
-        booksBoard.setWidth("800px");
-        booksDock.add(booksBoard, DockPanel.CENTER);
+        booksDock.add(booksSearch, DockPanel.NORTH);
+        booksDock.add(booksFilters, DockPanel.WEST);
+
+        booksboard = new Booksboard();
+        booksboard.setHeight("600px");
+        booksboard.setWidth("800px");
+        booksDock.add(booksboard, DockPanel.CENTER);
     }
 
     public void showBooks() {
@@ -97,7 +102,7 @@ public class Dashboard extends Composite {
         return booksImport;
     }
 
-    //    http://code.google.com/p/gwt-google-apis/wiki/VisualizationGettingStarted
+    // http://code.google.com/p/gwt-google-apis/wiki/VisualizationGettingStarted
     public void buildCharts() {
         final PieChart pie = new PieChart(createTable(), createOptions());
 
@@ -167,7 +172,11 @@ public class Dashboard extends Composite {
         return data;
     }
 
-    public BooksBoard getBooksBoardUI() {
-        return booksBoard;
+    public Booksboard getBooksboardUI() {
+        return booksboard;
+    }
+
+    public BooksFilters getBooksFiltersUI() {
+        return booksFilters;
     }
 }

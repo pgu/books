@@ -1,5 +1,6 @@
 package com.pgu.books.client.ui.books.filters;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -23,6 +24,7 @@ import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.StackLayoutPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.pgu.books.client.activity.books.filters.BooksFiltersPresenter;
 
 public class BooksFilters extends Composite {
 
@@ -40,6 +42,8 @@ public class BooksFilters extends Composite {
     private final VerticalPanel authors = new VerticalPanel();
     private final VerticalPanel editors = new VerticalPanel();
     private final VerticalPanel categories = new VerticalPanel();
+
+    private BooksFiltersPresenter presenter;
 
     public BooksFilters() {
 
@@ -127,7 +131,16 @@ public class BooksFilters extends Composite {
 
     @UiHandler("btnApplyFilters")
     public void applyFilters(final ClickEvent e) {
-        GWT.log("apply filters");
+
+        final ArrayList<String> selectedAuthors = new ArrayList<String>();
+        final ArrayList<String> selectedEditors = new ArrayList<String>();
+        final ArrayList<String> selectedCategories = new ArrayList<String>();
+        // TODO PGU
+        presenter.fetchBooks(selectedAuthors, selectedEditors, selectedCategories);
+    }
+
+    public void setPresenter(final BooksFiltersPresenter presenter) {
+        this.presenter = presenter;
     }
 
 }

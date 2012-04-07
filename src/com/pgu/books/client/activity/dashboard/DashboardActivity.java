@@ -7,13 +7,19 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.pgu.books.client.BookService;
 import com.pgu.books.client.BookServiceAsync;
-import com.pgu.books.client.activity.books.board.BooksBoardPresenter;
+import com.pgu.books.client.activity.books.board.BooksboardPresenter;
+import com.pgu.books.client.activity.books.filters.BooksFiltersPresenter;
 import com.pgu.books.client.activity.booksImport.BooksImportPresenter;
 import com.pgu.books.client.app.AsyncCallbackApp;
 import com.pgu.books.client.ui.Dashboard;
 import com.pgu.books.shared.Book;
 
-public class DashboardActivity implements DashboardPresenter, BooksImportPresenter, BooksBoardPresenter {
+public class DashboardActivity implements //
+        DashboardPresenter, //
+        BooksImportPresenter, //
+        BooksboardPresenter, //
+        BooksFiltersPresenter //
+{
 
     public static DashboardActivity INSTANCE = new DashboardActivity();
 
@@ -22,16 +28,17 @@ public class DashboardActivity implements DashboardPresenter, BooksImportPresent
 
     private final BookServiceAsync bookService = GWT.create(BookService.class);
 
-    private Dashboard              dashboardUI;
+    private Dashboard dashboardUI;
 
     public Dashboard start() {
         if (null == dashboardUI) {
             dashboardUI = new Dashboard();
             dashboardUI.setPresenter(this);
             dashboardUI.getBooksImportUI().setPresenter(this);
-            dashboardUI.getBooksBoardUI().setPresenter(this);
+            dashboardUI.getBooksboardUI().setPresenter(this);
+            dashboardUI.getBooksFiltersUI().setPresenter(this);
 
-            dashboardUI.getBooksBoardUI().initFetchBooks();
+            dashboardUI.getBooksboardUI().initFetchBooks();
         }
         return dashboardUI;
     }
@@ -73,18 +80,18 @@ public class DashboardActivity implements DashboardPresenter, BooksImportPresent
     public void fetchBooks(final int start, final int length) {
         GWT.log("start -> " + start + ", " + "length -> " + length);
 
-        dashboardUI.getBooksBoardUI().initFetch();
+        dashboardUI.getBooksboardUI().initFetch();
         bookService.countBooks(new AsyncCallbackApp<Integer>() {
 
             @Override
             public void onSuccess(final Integer count) {
-                dashboardUI.getBooksBoardUI().setNbBooks(count);
+                dashboardUI.getBooksboardUI().setNbBooks(count);
             }
 
             @Override
             public void onFailure(final Throwable caught) {
                 super.onFailure(caught);
-                dashboardUI.getBooksBoardUI().setNbBooks(0);
+                dashboardUI.getBooksboardUI().setNbBooks(0);
             }
 
         });
@@ -93,16 +100,22 @@ public class DashboardActivity implements DashboardPresenter, BooksImportPresent
 
             @Override
             public void onSuccess(final ArrayList<Book> books) {
-                dashboardUI.getBooksBoardUI().showBooks(books);
+                dashboardUI.getBooksboardUI().showBooks(books);
             }
 
             @Override
             public void onFailure(final Throwable caught) {
                 super.onFailure(caught);
-                dashboardUI.getBooksBoardUI().showBooks(new ArrayList<Book>());
+                dashboardUI.getBooksboardUI().showBooks(new ArrayList<Book>());
             }
 
         });
+    }
+
+    @Override
+    public void fetchBooks(final ArrayList<String> selectedAuthors, final ArrayList<String> selectedEditors,
+            final ArrayList<String> selectedCategories) {
+        // TODO PGU
     }
 
 }
