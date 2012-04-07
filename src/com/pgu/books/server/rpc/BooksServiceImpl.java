@@ -79,15 +79,15 @@ public class BooksServiceImpl extends RemoteServiceServlet implements BooksServi
     private void applyFilters(final BooksFiltersDTO filtersDTO, final Query<Book> query) {
 
         if (!filtersDTO.getSelectedAuthors().isEmpty()) {
-            query.filter("author", filtersDTO.getSelectedAuthors());
+            query.filter("author in", filtersDTO.getSelectedAuthors());
         }
 
         if (!filtersDTO.getSelectedEditors().isEmpty()) {
-            query.filter("editor", filtersDTO.getSelectedEditors());
+            query.filter("editor in", filtersDTO.getSelectedEditors());
         }
 
         if (!filtersDTO.getSelectedCategories().isEmpty()) {
-            query.filter("category", filtersDTO.getSelectedCategories());
+            query.filter("category in", filtersDTO.getSelectedCategories());
         }
     }
 
