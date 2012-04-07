@@ -11,6 +11,7 @@ import com.google.gwt.user.cellview.client.SimplePager;
 import com.google.gwt.user.cellview.client.SimplePager.TextLocation;
 import com.google.gwt.user.cellview.client.TextColumn;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.HasData;
@@ -58,6 +59,7 @@ public class Booksboard extends Composite {
         grid = new DataGrid<Book>();
         grid.setWidth("100%");
         grid.setKeyboardSelectionPolicy(KeyboardSelectionPolicy.ENABLED);
+        grid.setEmptyTableWidget(new Label("Ningún libro"));
 
         final SimplePager.Resources pagerResources = GWT.create(SimplePager.Resources.class);
         pager = new SimplePager(TextLocation.CENTER, pagerResources, false, 0, true);
