@@ -64,7 +64,7 @@ public class BooksFilters extends Composite {
                 "AutorA", "AutorB", "AutorA", "AutorB", "AutorA", "AutorB", //
                 "AutorA", "AutorB", "AutorA", "AutorB", "AutorA", "AutorB" //
         ), authors);
-        fillFilter(Arrays.asList("EditorA", "EditorB"), editors);
+        fillFilter(Arrays.asList("Rialp", "EditorA", "EditorB"), editors);
         fillFilter(Arrays.asList("CategoríaA", "CategoríaB"), categories);
     }
 
