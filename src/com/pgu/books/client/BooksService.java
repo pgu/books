@@ -18,4 +18,6 @@ public interface BooksService extends RemoteService {
 
     int countBooks(BooksFiltersDTO filtersDTO);
 
+    void delete();
+
 }

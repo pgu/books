@@ -99,4 +99,8 @@ public class BooksServiceImpl extends RemoteServiceServlet implements BooksServi
         }
     }
 
+    @Override
+    public void delete() {
+    }
+
 }

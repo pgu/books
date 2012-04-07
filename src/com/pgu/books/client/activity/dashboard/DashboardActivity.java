@@ -27,7 +27,7 @@ public class DashboardActivity implements //
     private DashboardActivity() {
     }
 
-    private final BooksServiceAsync bookService = GWT.create(BooksService.class);
+    private final BooksServiceAsync booksService = GWT.create(BooksService.class);
 
     private Dashboard dashboardUI;
 
@@ -46,7 +46,7 @@ public class DashboardActivity implements //
 
     @Override
     public void importBooks(final String categoryTitle) {
-        bookService.importBooks(categoryTitle, new AsyncCallback<Void>() {
+        booksService.importBooks(categoryTitle, new AsyncCallback<Void>() {
 
             @Override
             public void onFailure(final Throwable caught) {
@@ -67,7 +67,7 @@ public class DashboardActivity implements //
 
     @Override
     public void testImport() {
-        bookService.testImport(new AsyncCallbackApp<Void>() {
+        booksService.testImport(new AsyncCallbackApp<Void>() {
 
             @Override
             public void onSuccess(final Void result) {
@@ -83,7 +83,7 @@ public class DashboardActivity implements //
 
         dashboardUI.getBooksboardUI().initFetch();
 
-        bookService.countBooks(filtersDTO, new AsyncCallbackApp<Integer>() {
+        booksService.countBooks(filtersDTO, new AsyncCallbackApp<Integer>() {
 
             @Override
             public void onSuccess(final Integer count) {
@@ -99,7 +99,7 @@ public class DashboardActivity implements //
 
         });
 
-        bookService.fetchBooks(filtersDTO, start, length, new AsyncCallbackApp<ArrayList<Book>>() {
+        booksService.fetchBooks(filtersDTO, start, length, new AsyncCallbackApp<ArrayList<Book>>() {
 
             @Override
             public void onSuccess(final ArrayList<Book> books) {
@@ -130,6 +130,18 @@ public class DashboardActivity implements //
                 .categories(selectedCategories);
 
         fetchBooks(0, dashboardUI.getBooksboardUI().getLength());
+    }
+
+    @Override
+    public void deleteBooks() {
+        booksService.delete(new AsyncCallbackApp<Void>() {
+
+            @Override
+            public void onSuccess(final Void result) {
+                Window.alert("Done");
+            }
+
+        });
     }
 
 }

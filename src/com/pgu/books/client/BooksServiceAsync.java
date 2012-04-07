@@ -16,4 +16,6 @@ public interface BooksServiceAsync {
 
     void fetchBooks(BooksFiltersDTO filtersDTO, int start, int length, AsyncCallback<ArrayList<Book>> asyncCallbackApp);
 
+    void delete(AsyncCallback<Void> asyncCallbackApp);
+
 }

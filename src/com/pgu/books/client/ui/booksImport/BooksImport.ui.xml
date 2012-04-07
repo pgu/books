@@ -2,6 +2,7 @@
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder" xmlns:g="urn:import:com.google.gwt.user.client.ui">
     <g:HTMLPanel>
         <g:Grid ui:field="categories"></g:Grid>
+        <g:Button ui:field="btnDelete">* DELETE *</g:Button>
         <g:Button ui:field="btnAll">** ALL **</g:Button>
         <g:Button ui:field="btnTest">****** TEST ******</g:Button>
     </g:HTMLPanel>

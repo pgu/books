@@ -6,4 +6,6 @@ public interface BooksImportPresenter {
 
     void testImport();
 
+    void deleteBooks();
+
 }
