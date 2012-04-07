@@ -8,6 +8,6 @@ public interface BooksImportUI {
 
     void enableImport(String categoryTitle);
 
-    void disableImport(String categoryTitle);
+    void disableImport(String categoryTitle, String importResult);
 
 }

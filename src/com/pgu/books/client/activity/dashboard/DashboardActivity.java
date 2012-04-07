@@ -46,7 +46,7 @@ public class DashboardActivity implements //
 
     @Override
     public void importBooks(final String categoryTitle) {
-        booksService.importBooks(categoryTitle, new AsyncCallback<Void>() {
+        booksService.importBooks(categoryTitle, new AsyncCallback<String>() {
 
             @Override
             public void onFailure(final Throwable caught) {
@@ -54,8 +54,8 @@ public class DashboardActivity implements //
             }
 
             @Override
-            public void onSuccess(final Void result) {
-                dashboardUI.getBooksImportUI().disableImport(categoryTitle);
+            public void onSuccess(final String importResult) {
+                dashboardUI.getBooksImportUI().disableImport(categoryTitle, importResult);
             }
         });
 
@@ -67,11 +67,11 @@ public class DashboardActivity implements //
 
     @Override
     public void testImport() {
-        booksService.testImport(new AsyncCallbackApp<Void>() {
+        booksService.testImport(new AsyncCallbackApp<String>() {
 
             @Override
-            public void onSuccess(final Void result) {
-                Window.alert("success");
+            public void onSuccess(final String importResult) {
+                Window.alert("success: " + importResult);
             }
 
         });

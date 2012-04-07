@@ -30,20 +30,26 @@ public class BooksServiceImpl extends RemoteServiceServlet implements BooksServi
     // ofy.query(Book.class).filter("author", "toto").list();
 
     @Override
-    public void testImport() {
-        importBooks(BookCategory.titles.get(0));
+    public String testImport() {
+        return importBooks(BookCategory.titles.get(0));
     }
 
     @Override
-    public void importBooks(final String categoryTitle) {
+    public String importBooks(final String categoryTitle) {
         final InputStream is = getServletContext().getResourceAsStream("/WEB-INF/books/" + categoryTitle + ".txt");
         final BufferedReader br = new BufferedReader(new InputStreamReader(is));
         try {
 
+            int countTotal = 0;
+            int countImported = 0;
+
             String line = null;
             while ((line = br.readLine()) != null) {
+                countTotal++;
+
                 final String[] tokens = line.split("\", \"");
                 if (tokens.length == 6) {
+                    countImported++;
 
                     final String rawAuthor = tokens[0];
                     final String author = rawAuthor.isEmpty() ? "" : rawAuthor.substring(1); // removes first "
@@ -59,9 +65,13 @@ public class BooksServiceImpl extends RemoteServiceServlet implements BooksServi
                 }
             }
 
+            return countImported + " / " + countTotal;
+
         } catch (final IOException e) {
             e.printStackTrace();
         }
+
+        return "An error occurred!";
     }
 
     @Override
