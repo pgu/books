@@ -38,6 +38,10 @@ public class BuildFiltersServlet extends HttpServlet {
     @Override
     protected void doPost(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException,
             IOException {
+
+        resp.setContentType("text/plain");
+        resp.getWriter().println("Starting building filters");
+
         // TODO PGU voir queue task
 
         // clean filters // TODO PGU cursor
@@ -54,8 +58,6 @@ public class BuildFiltersServlet extends HttpServlet {
             putFilterCategory(book);
         }
 
-        // get authors, editors, categories
-        // if !exists then put else nothing
     }
 
     private void putFilterCategory(final Book book) {
