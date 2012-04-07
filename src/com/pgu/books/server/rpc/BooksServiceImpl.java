@@ -52,6 +52,7 @@ public class BooksServiceImpl extends RemoteServiceServlet implements BooksServi
 
                     dao.ofy().put(new Book(author, tokens[1], tokens[2], tokens[3], tokens[4], category));
                 } else {
+                    System.out.println("Not imported: " + line);
                     LOG.warning("Not imported: " + line);
                 }
             }
