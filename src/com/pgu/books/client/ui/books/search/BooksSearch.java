@@ -1,4 +1,4 @@
-package com.pgu.books.client.ui.books.menu;
+package com.pgu.books.client.ui.books.search;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -10,11 +10,11 @@ import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
 import com.google.gwt.user.client.ui.SuggestBox;
 import com.google.gwt.user.client.ui.Widget;
 
-public class BooksMenu extends Composite {
+public class BooksSearch extends Composite {
 
-    private static BooksMenuUiBinder uiBinder = GWT.create(BooksMenuUiBinder.class);
+    private static BooksSearchMenuUiBinder uiBinder = GWT.create(BooksSearchMenuUiBinder.class);
 
-    interface BooksMenuUiBinder extends UiBinder<Widget, BooksMenu> {
+    interface BooksSearchMenuUiBinder extends UiBinder<Widget, BooksSearch> {
     }
 
     @UiField
@@ -26,7 +26,7 @@ public class BooksMenu extends Composite {
     @UiField(provided = true)
     SuggestBox suggestBox;
 
-    public BooksMenu() {
+    public BooksSearch() {
 
         final MultiWordSuggestOracle oracle = new MultiWordSuggestOracle();
         final String[] words = new String[] { "toto", "titi", "tata" };

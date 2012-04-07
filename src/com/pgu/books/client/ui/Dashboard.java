@@ -20,7 +20,7 @@ import com.google.gwt.visualization.client.visualizations.corechart.PieChart.Pie
 import com.pgu.books.client.activity.dashboard.DashboardPresenter;
 import com.pgu.books.client.ui.books.board.BooksBoard;
 import com.pgu.books.client.ui.books.filters.BooksFilters;
-import com.pgu.books.client.ui.books.menu.BooksMenu;
+import com.pgu.books.client.ui.books.search.BooksSearch;
 import com.pgu.books.client.ui.booksImport.BooksImport;
 import com.pgu.books.client.ui.booksImport.BooksImportUI;
 import com.pgu.books.client.ui.menuAdmin.MenuAdmin;
@@ -57,7 +57,7 @@ public class Dashboard extends Composite {
         booksDock.setSpacing(4);
         booksDock.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 
-        booksDock.add(new BooksMenu(), DockPanel.NORTH);
+        booksDock.add(new BooksSearch(), DockPanel.NORTH);
         booksDock.add(new BooksFilters(), DockPanel.WEST);
 
         booksBoard = new BooksBoard();
