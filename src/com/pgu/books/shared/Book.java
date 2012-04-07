@@ -1,11 +1,10 @@
 package com.pgu.books.shared;
 
-import java.io.Serializable;
-
 import javax.persistence.Id;
 
-@SuppressWarnings("serial")
-public class Book implements Serializable {
+import com.google.gwt.user.client.rpc.IsSerializable;
+
+public class Book implements IsSerializable {
 
     public Book() {
     }

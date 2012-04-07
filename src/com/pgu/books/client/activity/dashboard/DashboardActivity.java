@@ -13,6 +13,7 @@ import com.pgu.books.client.activity.booksImport.BooksImportPresenter;
 import com.pgu.books.client.app.AsyncCallbackApp;
 import com.pgu.books.client.ui.Dashboard;
 import com.pgu.books.shared.Book;
+import com.pgu.books.shared.BooksFiltersDTO;
 
 public class DashboardActivity implements //
         DashboardPresenter, //
@@ -81,6 +82,8 @@ public class DashboardActivity implements //
         GWT.log("start -> " + start + ", " + "length -> " + length);
 
         dashboardUI.getBooksboardUI().initFetch();
+
+        // TODO PGU include filtersDTO
         bookService.countBooks(new AsyncCallbackApp<Integer>() {
 
             @Override
@@ -96,6 +99,7 @@ public class DashboardActivity implements //
 
         });
 
+        // TODO PGU include filtersDTO
         bookService.fetchBooks(start, length, new AsyncCallbackApp<ArrayList<Book>>() {
 
             @Override
@@ -112,9 +116,7 @@ public class DashboardActivity implements //
         });
     }
 
-    private final ArrayList<String> selectedAuthors = new ArrayList<String>();
-    private final ArrayList<String> selectedEditors = new ArrayList<String>();
-    private final ArrayList<String> selectedCategories = new ArrayList<String>();
+    private final BooksFiltersDTO filtersDTO = new BooksFiltersDTO();
 
     @Override
     public void fetchBooks( //
@@ -122,13 +124,10 @@ public class DashboardActivity implements //
             final ArrayList<String> selectedEditors, //
             final ArrayList<String> selectedCategories) {
 
-        this.selectedAuthors.clear();
-        this.selectedEditors.clear();
-        this.selectedCategories.clear();
-
-        this.selectedAuthors.addAll(selectedAuthors);
-        this.selectedEditors.addAll(selectedEditors);
-        this.selectedCategories.addAll(selectedCategories);
+        filtersDTO //
+                .authors(selectedAuthors) //
+                .editors(selectedEditors) //
+                .categories(selectedCategories);
 
         fetchBooks(0, dashboardUI.getBooksboardUI().getLength());
     }

@@ -2,7 +2,9 @@ package com.pgu.books.shared;
 
 import java.util.ArrayList;
 
-public class BookCategory {
+import com.google.gwt.user.client.rpc.IsSerializable;
+
+public class BookCategory implements IsSerializable {
 
     public static ArrayList<String> titles = new ArrayList<String>();
 
