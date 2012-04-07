@@ -112,12 +112,25 @@ public class DashboardActivity implements //
         });
     }
 
+    private final ArrayList<String> selectedAuthors = new ArrayList<String>();
+    private final ArrayList<String> selectedEditors = new ArrayList<String>();
+    private final ArrayList<String> selectedCategories = new ArrayList<String>();
+
     @Override
     public void fetchBooks( //
             final ArrayList<String> selectedAuthors, //
             final ArrayList<String> selectedEditors, //
             final ArrayList<String> selectedCategories) {
-        // TODO PGU
+
+        this.selectedAuthors.clear();
+        this.selectedEditors.clear();
+        this.selectedCategories.clear();
+
+        this.selectedAuthors.addAll(selectedAuthors);
+        this.selectedEditors.addAll(selectedEditors);
+        this.selectedCategories.addAll(selectedCategories);
+
+        fetchBooks(0, dashboardUI.getBooksboardUI().getLength());
     }
 
 }

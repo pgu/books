@@ -153,6 +153,7 @@ public class Booksboard extends Composite {
     }
 
     private AsyncDataProvider<Book> provider;
+    private int length;
 
     public void initFetchBooks() {
         provider = new AsyncDataProvider<Book>() {
@@ -162,12 +163,16 @@ public class Booksboard extends Composite {
                 GWT.log("gridStart: " + grid.getPageStart() + ", currentStart: " + display.getVisibleRange().getStart());
 
                 currentStart = display.getVisibleRange().getStart();
-                final int length = display.getVisibleRange().getLength();
+                length = display.getVisibleRange().getLength();
 
                 presenter.fetchBooks(currentStart, length);
             }
         };
         provider.addDataDisplay(grid);
+    }
+
+    public int getLength() {
+        return length;
     }
 
 }
