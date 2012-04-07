@@ -87,6 +87,7 @@ public class DashboardActivity implements //
 
             @Override
             public void onSuccess(final Integer count) {
+                GWT.log("success count " + count);
                 dashboardUI.getBooksboardUI().setNbBooks(count);
             }
 
@@ -102,6 +103,7 @@ public class DashboardActivity implements //
 
             @Override
             public void onSuccess(final ArrayList<Book> books) {
+                GWT.log("success list " + books.size());
                 dashboardUI.getBooksboardUI().showBooks(books);
             }
 

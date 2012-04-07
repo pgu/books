@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.logging.Logger;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.googlecode.objectify.Query;
@@ -16,6 +17,8 @@ import com.pgu.books.shared.BooksFiltersDTO;
 
 @SuppressWarnings("serial")
 public class BooksServiceImpl extends RemoteServiceServlet implements BooksService {
+
+    private static final Logger LOG = Logger.getLogger(BooksServiceImpl.class.getSimpleName());
 
     private final DAO dao = new DAO();
 
@@ -63,7 +66,9 @@ public class BooksServiceImpl extends RemoteServiceServlet implements BooksServi
 
         applyFilters(filtersDTO, query);
 
-        return new ArrayList<Book>(query.order("title").offset(start).limit(length).list());
+        final Query<Book> q = query.order("title").offset(start).limit(length);
+
+        return new ArrayList<Book>(q.list());
     }
 
     @Override
