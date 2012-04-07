@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.pgu.books.client.BookService;
-import com.pgu.books.client.BookServiceAsync;
+import com.pgu.books.client.BooksService;
+import com.pgu.books.client.BooksServiceAsync;
 import com.pgu.books.client.activity.books.board.BooksboardPresenter;
 import com.pgu.books.client.activity.books.filters.BooksFiltersPresenter;
 import com.pgu.books.client.activity.booksImport.BooksImportPresenter;
@@ -27,7 +27,7 @@ public class DashboardActivity implements //
     private DashboardActivity() {
     }
 
-    private final BookServiceAsync bookService = GWT.create(BookService.class);
+    private final BooksServiceAsync bookService = GWT.create(BooksService.class);
 
     private Dashboard dashboardUI;
 
@@ -84,7 +84,7 @@ public class DashboardActivity implements //
         dashboardUI.getBooksboardUI().initFetch();
 
         // TODO PGU include filtersDTO
-        bookService.countBooks(new AsyncCallbackApp<Integer>() {
+        bookService.countBooks(filtersDTO, new AsyncCallbackApp<Integer>() {
 
             @Override
             public void onSuccess(final Integer count) {
@@ -100,7 +100,7 @@ public class DashboardActivity implements //
         });
 
         // TODO PGU include filtersDTO
-        bookService.fetchBooks(start, length, new AsyncCallbackApp<ArrayList<Book>>() {
+        bookService.fetchBooks(filtersDTO, start, length, new AsyncCallbackApp<ArrayList<Book>>() {
 
             @Override
             public void onSuccess(final ArrayList<Book> books) {

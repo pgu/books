@@ -7,13 +7,13 @@
   
   <!-- Servlets -->
   <servlet>
-    <servlet-name>book</servlet-name>
-    <servlet-class>com.pgu.books.server.rpc.BookServiceImpl</servlet-class>
+    <servlet-name>books</servlet-name>
+    <servlet-class>com.pgu.books.server.rpc.BooksServiceImpl</servlet-class>
   </servlet>
   
   <servlet-mapping>
-    <servlet-name>book</servlet-name>
-    <url-pattern>/books/book</url-pattern>
+    <servlet-name>books</servlet-name>
+    <url-pattern>/books/books</url-pattern>
   </servlet-mapping>
   
   <!-- Default page to serve -->

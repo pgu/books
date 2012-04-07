@@ -7,13 +7,14 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
-import com.pgu.books.client.BookService;
+import com.pgu.books.client.BooksService;
 import com.pgu.books.server.access.DAO;
 import com.pgu.books.shared.Book;
 import com.pgu.books.shared.BookCategory;
+import com.pgu.books.shared.BooksFiltersDTO;
 
 @SuppressWarnings("serial")
-public class BookServiceImpl extends RemoteServiceServlet implements BookService {
+public class BooksServiceImpl extends RemoteServiceServlet implements BooksService {
 
     private final DAO dao = new DAO();
 
@@ -55,7 +56,7 @@ public class BookServiceImpl extends RemoteServiceServlet implements BookService
     }
 
     @Override
-    public ArrayList<Book> fetchBooks(final int start, final int length) {
+    public ArrayList<Book> fetchBooks(final BooksFiltersDTO filtersDTO, final int start, final int length) {
         return new ArrayList<Book>(dao.ofy().query(Book.class).order("title").offset(start).limit(length).list());
 
         // final Objectify ofy = ObjectifyService.begin();
@@ -65,7 +66,7 @@ public class BookServiceImpl extends RemoteServiceServlet implements BookService
     }
 
     @Override
-    public int countBooks() {
+    public int countBooks(final BooksFiltersDTO filtersDTO) {
         return dao.ofy().query(Book.class).count();
     }
 
