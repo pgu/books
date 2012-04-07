@@ -113,7 +113,9 @@ public class DashboardActivity implements //
     }
 
     @Override
-    public void fetchBooks(final ArrayList<String> selectedAuthors, final ArrayList<String> selectedEditors,
+    public void fetchBooks( //
+            final ArrayList<String> selectedAuthors, //
+            final ArrayList<String> selectedEditors, //
             final ArrayList<String> selectedCategories) {
         // TODO PGU
     }

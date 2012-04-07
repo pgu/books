@@ -132,11 +132,22 @@ public class BooksFilters extends Composite {
     @UiHandler("btnApplyFilters")
     public void applyFilters(final ClickEvent e) {
 
-        final ArrayList<String> selectedAuthors = new ArrayList<String>();
-        final ArrayList<String> selectedEditors = new ArrayList<String>();
-        final ArrayList<String> selectedCategories = new ArrayList<String>();
-        // TODO PGU
+        final ArrayList<String> selectedAuthors = getSelectedValues(authors);
+        final ArrayList<String> selectedEditors = getSelectedValues(editors);
+        final ArrayList<String> selectedCategories = getSelectedValues(categories);
+
         presenter.fetchBooks(selectedAuthors, selectedEditors, selectedCategories);
+    }
+
+    private ArrayList<String> getSelectedValues(final CellPanel container) {
+        final ArrayList<String> selecteds = new ArrayList<String>();
+        for (int i = 0; i < container.getWidgetCount(); i++) {
+            final CheckBox cb = (CheckBox) container.getWidget(i);
+            if (cb.getValue()) {
+                selecteds.add(cb.getName());
+            }
+        }
+        return selecteds;
     }
 
     public void setPresenter(final BooksFiltersPresenter presenter) {
