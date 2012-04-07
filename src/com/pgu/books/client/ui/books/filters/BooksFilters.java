@@ -6,6 +6,7 @@ import java.util.List;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -31,13 +32,13 @@ public class BooksFilters extends Composite {
     }
 
     @UiField
-    Button                      btnApplyFilters;
+    Button btnApplyFilters;
 
     @UiField(provided = true)
-    StackLayoutPanel            stackPanel;
+    StackLayoutPanel stackPanel;
 
-    private final VerticalPanel authors    = new VerticalPanel();
-    private final VerticalPanel editors    = new VerticalPanel();
+    private final VerticalPanel authors = new VerticalPanel();
+    private final VerticalPanel editors = new VerticalPanel();
     private final VerticalPanel categories = new VerticalPanel();
 
     public BooksFilters() {
@@ -52,7 +53,7 @@ public class BooksFilters extends Composite {
         initWidget(uiBinder.createAndBindUi(this));
 
         fillFilter(Arrays.asList( //
-                "AutorA", "AutorB", "AutorA", "AutorB", "AutorA", "AutorB", //
+                "Angel Crespo", "MiguelTorga", "Pierre Emmanuel", "Saint John Perse", "AutorA", "AutorB", //
                 "AutorA", "AutorB", "AutorA", "AutorB", "AutorA", "AutorB", //
                 "AutorA", "AutorB", "AutorA", "AutorB", "AutorA", "AutorB", //
                 "AutorA", "AutorB", "AutorA", "AutorB", "AutorA", "AutorB", //
@@ -67,10 +68,16 @@ public class BooksFilters extends Composite {
         container.setWidth("100%");
         container.setSpacing(4);
 
+        final Button btnAll = new Button("Todos");
+        final Button btnClear = new Button("Clear");
+
+        addBtnClick(true, container, btnAll);
+        addBtnClick(false, container, btnClear);
+
         final HorizontalPanel btns = new HorizontalPanel();
         btns.setWidth("100%");
-        btns.add(new Button("Clear"));
-        btns.add(new Button("Todos"));
+        btns.add(btnAll);
+        btns.add(btnClear);
 
         final DisclosurePanel dp = new DisclosurePanel("selección");
         dp.setWidth("100%");
@@ -82,6 +89,19 @@ public class BooksFilters extends Composite {
         vp.add(container);
 
         stackPanel.add(new ScrollPanel(vp), createHeader(title), 4);
+    }
+
+    private void addBtnClick(final boolean isSelected, final CellPanel container, final Button btn) {
+        btn.addClickHandler(new ClickHandler() {
+
+            @Override
+            public void onClick(final ClickEvent event) {
+                for (int i = 0; i < container.getWidgetCount(); i++) {
+                    final CheckBox cb = (CheckBox) container.getWidget(i);
+                    cb.setValue(isSelected);
+                }
+            }
+        });
     }
 
     private void fillFilter(final List<String> values, final CellPanel container) {
