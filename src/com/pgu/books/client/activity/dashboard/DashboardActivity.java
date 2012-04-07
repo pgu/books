@@ -83,7 +83,6 @@ public class DashboardActivity implements //
 
         dashboardUI.getBooksboardUI().initFetch();
 
-        // TODO PGU include filtersDTO
         bookService.countBooks(filtersDTO, new AsyncCallbackApp<Integer>() {
 
             @Override
@@ -99,7 +98,6 @@ public class DashboardActivity implements //
 
         });
 
-        // TODO PGU include filtersDTO
         bookService.fetchBooks(filtersDTO, start, length, new AsyncCallbackApp<ArrayList<Book>>() {
 
             @Override

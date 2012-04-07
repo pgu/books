@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
+import com.googlecode.objectify.Query;
 import com.pgu.books.client.BooksService;
 import com.pgu.books.server.access.DAO;
 import com.pgu.books.shared.Book;
@@ -57,17 +58,37 @@ public class BooksServiceImpl extends RemoteServiceServlet implements BooksServi
 
     @Override
     public ArrayList<Book> fetchBooks(final BooksFiltersDTO filtersDTO, final int start, final int length) {
-        return new ArrayList<Book>(dao.ofy().query(Book.class).order("title").offset(start).limit(length).list());
 
-        // final Objectify ofy = ObjectifyService.begin();
-        // final List<Book> books = BooksDB.DB.get(cat);
-        // ofy.put(books);
-        // ofy.query(Book.class).filter("author", "toto").list();
+        final Query<Book> query = dao.ofy().query(Book.class);
+
+        applyFilters(filtersDTO, query);
+
+        return new ArrayList<Book>(query.order("title").offset(start).limit(length).list());
     }
 
     @Override
     public int countBooks(final BooksFiltersDTO filtersDTO) {
-        return dao.ofy().query(Book.class).count();
+
+        final Query<Book> query = dao.ofy().query(Book.class);
+
+        applyFilters(filtersDTO, query);
+
+        return query.count();
+    }
+
+    private void applyFilters(final BooksFiltersDTO filtersDTO, final Query<Book> query) {
+
+        if (!filtersDTO.getSelectedAuthors().isEmpty()) {
+            query.filter("author", filtersDTO.getSelectedAuthors());
+        }
+
+        if (!filtersDTO.getSelectedEditors().isEmpty()) {
+            query.filter("editor", filtersDTO.getSelectedEditors());
+        }
+
+        if (!filtersDTO.getSelectedCategories().isEmpty()) {
+            query.filter("category", filtersDTO.getSelectedCategories());
+        }
     }
 
 }
