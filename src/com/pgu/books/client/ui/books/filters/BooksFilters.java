@@ -1,7 +1,6 @@
 package com.pgu.books.client.ui.books.filters;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import com.google.gwt.core.client.GWT;
@@ -56,16 +55,6 @@ public class BooksFilters extends Composite {
 
         initWidget(uiBinder.createAndBindUi(this));
 
-        fillFilter(Arrays.asList( //
-                "Angel Crespo", "Miguel Torga", "Pierre Emmanuel", "Saint John Perse", "AutorA", "AutorB", //
-                "AutorA", "AutorB", "AutorA", "AutorB", "AutorA", "AutorB", //
-                "AutorA", "AutorB", "AutorA", "AutorB", "AutorA", "AutorB", //
-                "AutorA", "AutorB", "AutorA", "AutorB", "AutorA", "AutorB", //
-                "AutorA", "AutorB", "AutorA", "AutorB", "AutorA", "AutorB", //
-                "AutorA", "AutorB", "AutorA", "AutorB", "AutorA", "AutorB" //
-        ), authors);
-        fillFilter(Arrays.asList("Rialp", "Losada, S. A.", "EditorA", "EditorB"), editors);
-        fillFilter(Arrays.asList("Adonais, poesia", "Losada", "CategoríaA", "CategoríaB"), categories);
     }
 
     private void addFilter(final CellPanel container, final String title) {
@@ -109,6 +98,7 @@ public class BooksFilters extends Composite {
     }
 
     private void fillFilter(final List<String> values, final CellPanel container) {
+        container.clear();
         for (final String v : values) {
             final CheckBox cb = new CheckBox(v);
             container.add(cb);
@@ -152,6 +142,18 @@ public class BooksFilters extends Composite {
 
     public void setPresenter(final BooksFiltersPresenter presenter) {
         this.presenter = presenter;
+    }
+
+    public void addAuthors(final ArrayList<String> authors) {
+        fillFilter(authors, this.authors);
+    }
+
+    public void addEditors(final ArrayList<String> editors) {
+        fillFilter(editors, this.editors);
+    }
+
+    public void addCategories(final ArrayList<String> categories) {
+        fillFilter(categories, this.categories);
     }
 
 }

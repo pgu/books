@@ -40,8 +40,36 @@ public class DashboardActivity implements //
             dashboardUI.getBooksFiltersUI().setPresenter(this);
 
             dashboardUI.getBooksboardUI().initFetchBooks();
+            fetchFilters();
         }
         return dashboardUI;
+    }
+
+    private void fetchFilters() {
+        booksService.fetchFilterAuthors(new AsyncCallbackApp<ArrayList<String>>() {
+
+            @Override
+            public void onSuccess(final ArrayList<String> authors) {
+                dashboardUI.getBooksFiltersUI().addAuthors(authors);
+            }
+
+        });
+        booksService.fetchFilterEditors(new AsyncCallbackApp<ArrayList<String>>() {
+
+            @Override
+            public void onSuccess(final ArrayList<String> editors) {
+                dashboardUI.getBooksFiltersUI().addEditors(editors);
+            }
+
+        });
+        booksService.fetchFilterCategories(new AsyncCallbackApp<ArrayList<String>>() {
+
+            @Override
+            public void onSuccess(final ArrayList<String> categories) {
+                dashboardUI.getBooksFiltersUI().addCategories(categories);
+            }
+
+        });
     }
 
     @Override

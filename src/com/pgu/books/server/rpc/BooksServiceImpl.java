@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 
 import com.google.appengine.api.datastore.QueryResultIterable;
@@ -13,6 +14,9 @@ import com.googlecode.objectify.Key;
 import com.googlecode.objectify.Query;
 import com.pgu.books.client.BooksService;
 import com.pgu.books.server.access.DAO;
+import com.pgu.books.server.domain.AuthorFilter;
+import com.pgu.books.server.domain.CategoryFilter;
+import com.pgu.books.server.domain.EditorFilter;
 import com.pgu.books.shared.Book;
 import com.pgu.books.shared.BookCategory;
 import com.pgu.books.shared.BooksFiltersDTO;
@@ -115,6 +119,42 @@ public class BooksServiceImpl extends RemoteServiceServlet implements BooksServi
     public void delete() {
         final QueryResultIterable<Key<Book>> keys = dao.ofy().query(Book.class).fetchKeys();
         dao.ofy().delete(keys);
+    }
+
+    @Override
+    public ArrayList<String> fetchFilterAuthors() {
+        final List<AuthorFilter> authors = dao.ofy().query(AuthorFilter.class).order("value").list();
+
+        final ArrayList<String> names = new ArrayList<String>(authors.size());
+        for (final AuthorFilter authorFilter : authors) {
+
+            names.add(authorFilter.getValue());
+        }
+        return names;
+    }
+
+    @Override
+    public ArrayList<String> fetchFilterEditors() {
+        final List<EditorFilter> editors = dao.ofy().query(EditorFilter.class).order("value").list();
+
+        final ArrayList<String> names = new ArrayList<String>(editors.size());
+        for (final EditorFilter editorFilter : editors) {
+
+            names.add(editorFilter.getValue());
+        }
+        return names;
+    }
+
+    @Override
+    public ArrayList<String> fetchFilterCategories() {
+        final List<CategoryFilter> categories = dao.ofy().query(CategoryFilter.class).order("value").list();
+
+        final ArrayList<String> names = new ArrayList<String>(categories.size());
+        for (final CategoryFilter categoryFilter : categories) {
+
+            names.add(categoryFilter.getValue());
+        }
+        return names;
     }
 
 }
