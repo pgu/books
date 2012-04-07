@@ -7,7 +7,9 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
+import com.google.appengine.api.datastore.QueryResultIterable;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
+import com.googlecode.objectify.Key;
 import com.googlecode.objectify.Query;
 import com.pgu.books.client.BooksService;
 import com.pgu.books.server.access.DAO;
@@ -101,6 +103,8 @@ public class BooksServiceImpl extends RemoteServiceServlet implements BooksServi
 
     @Override
     public void delete() {
+        final QueryResultIterable<Key<Book>> keys = dao.ofy().query(Book.class).fetchKeys();
+        dao.ofy().delete(keys);
     }
 
 }
