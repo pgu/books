@@ -150,7 +150,7 @@ public class Booksboard extends Composite {
         }
 
         // grid.setVisibleRangeAndClearData(grid.getVisibleRange(), false);
-        grid.setRowCount(nbBooks, false);
+        grid.setRowCount(nbBooks, nbBooks == 0 ? true : false);
         provider.updateRowData(currentStart, books);
     }
 
