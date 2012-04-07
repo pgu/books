@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<cronentries>
+    <cron>
+        <url>/buildFilters</url>
+        <description>Builds filters for books</description>
+        <schedule>every day 01:00</schedule>
+    </cron>
+    <!-- 
+        <schedule>every 1 minutes</schedule>
+    -->
+</cronentries>

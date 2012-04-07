@@ -10,10 +10,18 @@
     <servlet-name>books</servlet-name>
     <servlet-class>com.pgu.books.server.rpc.BooksServiceImpl</servlet-class>
   </servlet>
+  <servlet>
+    <servlet-name>buildFilters</servlet-name>
+    <servlet-class>com.pgu.books.server.servlet.BuildFiltersServlet</servlet-class>
+  </servlet>
   
   <servlet-mapping>
     <servlet-name>books</servlet-name>
     <url-pattern>/books/books</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>buildFilters</servlet-name>
+    <url-pattern>/buildFilters</url-pattern>
   </servlet-mapping>
   
   <!-- Default page to serve -->
