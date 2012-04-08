@@ -3,5 +3,6 @@
   <queue>
     <name>buildFilters</name>
     <bucket-size>1</bucket-size>
+    <rate>5/s</rate>
   </queue>
 </queue-entries>
