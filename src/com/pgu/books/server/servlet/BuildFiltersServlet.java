@@ -1,7 +1,9 @@
 package com.pgu.books.server.servlet;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
@@ -25,15 +27,12 @@ import com.pgu.books.shared.Book;
 @SuppressWarnings("serial")
 public class BuildFiltersServlet extends HttpServlet {
 
-    private static final String URL_BUILD_FILTERS = "/buildFilters";
-
-    private static final String QUEUE_BUILD_FILTERS = "buildFilters";
-
-    private static final String PARAM_CURSOR = "cursor";
-
     private static final Logger LOGGER = Logger.getLogger(BuildFiltersServlet.class.getName());
 
     private static final long LIMIT_MS = 1000 * 25;
+    private static final String URL_BUILD_FILTERS = "/buildFilters";
+    private static final String QUEUE_BUILD_FILTERS = "buildFilters";
+    private static final String PARAM_CURSOR = "cursor";
 
     private final DAO dao = new DAO();
 
@@ -75,23 +74,18 @@ public class BuildFiltersServlet extends HttpServlet {
             query.startCursor(Cursor.fromWebSafeString(cursorParam));
         }
 
+        final List<String> cacheAuthor = new ArrayList<String>(500); // use local cache to avoid latence with the
+                                                                     // indexer
+        final List<String> cacheEditor = new ArrayList<String>(500);
+        final List<String> cacheCategory = new ArrayList<String>(500);
+
         final QueryResultIterator<Book> itr = query.iterator();
         while (itr.hasNext()) {
             final Book book = itr.next();
 
-            final boolean hasCreatedFilterAuthor = putFilterAuthor(book);
-            final boolean hasCreatedFilterEditor = putFilterEditor(book);
-            final boolean hasCreatedFilterCategory = putFilterCategory(book);
-
-            if (hasCreatedFilterAuthor //
-                    || hasCreatedFilterEditor //
-                    || hasCreatedFilterCategory) {
-                try {
-                    Thread.sleep(200); // give time for the indexer
-                } catch (final InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
+            putFilterAuthor(book, cacheAuthor);
+            putFilterEditor(book, cacheEditor);
+            putFilterCategory(book, cacheCategory);
 
             if (hasReachedTimeOut(startTime)) {
                 final Queue queue = QueueFactory.getQueue(QUEUE_BUILD_FILTERS);
@@ -126,40 +120,43 @@ public class BuildFiltersServlet extends HttpServlet {
         return System.currentTimeMillis() - startTime > LIMIT_MS;
     }
 
-    private boolean putFilterCategory(final Book book) {
+    private void putFilterCategory(final Book book, final List<String> cache) {
         final String category = book.getCategory();
 
-        if (dao.ofy().query(CategoryFilter.class).filter("value", category).getKey() == null) {
+        final boolean doesNotExist = //
+        dao.ofy().query(CategoryFilter.class).filter("value", category).getKey() == null //
+                && !cache.contains(category);
 
+        if (doesNotExist) {
             dao.ofy().put(new CategoryFilter().value(category));
-            return true;
+            cache.add(category);
         }
-
-        return false;
     }
 
-    private boolean putFilterEditor(final Book book) {
+    private void putFilterEditor(final Book book, final List<String> cache) {
         final String editor = book.getEditor();
 
-        if (dao.ofy().query(EditorFilter.class).filter("value", editor).getKey() == null) {
+        final boolean doesNotExist = //
+        dao.ofy().query(EditorFilter.class).filter("value", editor).getKey() == null //
+                && !cache.contains(editor);
 
+        if (doesNotExist) {
             dao.ofy().put(new EditorFilter().value(editor));
-            return true;
+            cache.add(editor);
         }
-
-        return false;
     }
 
-    private boolean putFilterAuthor(final Book book) {
+    private void putFilterAuthor(final Book book, final List<String> cache) {
         final String author = book.getAuthor();
 
-        if (dao.ofy().query(AuthorFilter.class).filter("value", author).getKey() == null) {
+        final boolean doesNotExist = //
+        dao.ofy().query(AuthorFilter.class).filter("value", author).getKey() == null //
+                && !cache.contains(author);
 
+        if (doesNotExist) {
             dao.ofy().put(new AuthorFilter().value(author));
-            return true;
+            cache.add(author);
         }
-
-        return false;
     }
 
 }
