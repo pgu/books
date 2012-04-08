@@ -41,6 +41,8 @@ public class BuildFiltersServlet extends HttpServlet {
     private static final String ACTION_PUT = "put";
     private static final String ACTION_CLEAN = "clean";
 
+    private static final List<String> actions = Arrays.asList(ACTION_CLEAN, ACTION_DELETE, ACTION_PUT, ACTION_START);
+
     private static final String PARAM_FILTER = "filter";
     private static final String FILTER_AUTHOR = "author";
     private static final String FILTER_EDITOR = "editor";
@@ -63,11 +65,7 @@ public class BuildFiltersServlet extends HttpServlet {
 
         final String action = req.getParameter(PARAM_ACTION);
         if (action == null //
-                || !ACTION_START.equalsIgnoreCase(action) //
-                || !ACTION_DELETE.equalsIgnoreCase(action) //
-                || !ACTION_PUT.equalsIgnoreCase(action) //
-                || !ACTION_CLEAN.equalsIgnoreCase(action) //
-        ) {
+                || !actions.contains(action.toLowerCase())) {
             setBadRequest("Illegal action for this request: " + action, resp);
             return;
         }
