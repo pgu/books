@@ -28,11 +28,6 @@ public class BooksServiceImpl extends RemoteServiceServlet implements BooksServi
 
     private final DAO dao = new DAO();
 
-    // final Objectify ofy = ObjectifyService.begin();
-    // final List<Book> books = BooksDB.DB.get(cat);
-    // ofy.put(books);
-    // ofy.query(Book.class).filter("author", "toto").list();
-
     @Override
     public String testImport() {
         return importBooks(BookCategory.titles.get(0));
@@ -64,7 +59,6 @@ public class BooksServiceImpl extends RemoteServiceServlet implements BooksServi
 
                     dao.ofy().put(new Book(author, tokens[1], tokens[2], tokens[3], tokens[4], category));
                 } else {
-                    System.out.println("Not imported: " + line);
                     LOG.warning("Not imported: " + line);
                 }
             }
