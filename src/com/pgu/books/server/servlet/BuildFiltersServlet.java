@@ -72,20 +72,9 @@ public class BuildFiltersServlet extends HttpServlet {
         while (itr.hasNext()) {
             final Book book = itr.next();
 
-            Queue queue = putFilterAuthor(book);
-            if (queue != null) {
-                return;
-            }
-
-            queue = putFilterEditor(book);
-            if (queue != null) {
-                return;
-            }
-
-            queue = putFilterCategory(book);
-            if (queue != null) {
-                return;
-            }
+            putFilterAuthor(book);
+            putFilterEditor(book);
+            putFilterCategory(book);
         }
     }
 
@@ -117,7 +106,7 @@ public class BuildFiltersServlet extends HttpServlet {
         return dao.ofy().query(clazz).getKey() != null;
     }
 
-    private Queue putFilterCategory(final Book book) {
+    private void putFilterCategory(final Book book) {
         final String category = book.getCategory();
 
         final int count = dao.ofy().query(CategoryFilter.class).filter("value", category).count();
@@ -131,10 +120,9 @@ public class BuildFiltersServlet extends HttpServlet {
                 e.printStackTrace();
             }
         }
-        return null;
     }
 
-    private Queue putFilterEditor(final Book book) {
+    private void putFilterEditor(final Book book) {
         final String editor = book.getEditor();
 
         final int count = dao.ofy().query(EditorFilter.class).filter("value", editor).count();
@@ -148,10 +136,9 @@ public class BuildFiltersServlet extends HttpServlet {
                 e.printStackTrace();
             }
         }
-        return null;
     }
 
-    private Queue putFilterAuthor(final Book book) {
+    private void putFilterAuthor(final Book book) {
         final String author = book.getAuthor();
 
         final int count = dao.ofy().query(AuthorFilter.class).filter("value", author).count();
@@ -165,7 +152,6 @@ public class BuildFiltersServlet extends HttpServlet {
                 e.printStackTrace();
             }
         }
-        return null;
     }
 
 }
