@@ -45,7 +45,10 @@ public class BuildFiltersServlet extends HttpServlet {
         final long startTime = System.currentTimeMillis();
 
         // delete the current filters
-        for (final Class<? extends IsSerializable> clazz : Arrays.asList(AuthorFilter.class, EditorFilter.class,
+        for (final Class<? extends IsSerializable> clazz : Arrays.asList( //
+                //
+                AuthorFilter.class, //
+                EditorFilter.class, //
                 CategoryFilter.class)) {
 
             final Queue queue = deleteFilter(clazz, startTime);
