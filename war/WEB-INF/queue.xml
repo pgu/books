@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<queue-entries>
+  <queue>
+    <name>buildFilters</name>
+    <bucket-size>1</bucket-size>
+  </queue>
+</queue-entries>
