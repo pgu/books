@@ -51,6 +51,7 @@ public class BuildFiltersServlet extends HttpServlet {
         final long startTime = System.currentTimeMillis();
         LOGGER.info("...POST request ");
 
+        // TODO PGU replace cache by a "delete" task
         //
         // delete the current filters
         for (final Class<? extends IsSerializable> clazz : Arrays.asList( //
@@ -75,6 +76,7 @@ public class BuildFiltersServlet extends HttpServlet {
             query.startCursor(Cursor.fromWebSafeString(cursorParam));
         }
 
+        // TODO PGU replace cache by a "clean" task
         final List<String> cacheAuthor = new ArrayList<String>(500); // use local cache to avoid latence with the
                                                                      // indexer
         final List<String> cacheEditor = new ArrayList<String>(500);

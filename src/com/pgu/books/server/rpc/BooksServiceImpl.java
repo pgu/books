@@ -83,7 +83,7 @@ public class BooksServiceImpl extends RemoteServiceServlet implements BooksServi
                 }
             }
 
-            // TODO PGU add task to queue to clean the dupliates in bookvalues
+            // TODO PGU add task to queue to clean the duplicates in bookvalues
 
             return countImported + " / " + countTotal + " (" + (System.nanoTime() - startTime) + " ns)";
 
