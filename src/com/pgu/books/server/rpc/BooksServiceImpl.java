@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import com.google.appengine.api.datastore.QueryResultIterable;
+import com.google.appengine.api.datastore.QueryResultIterator;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.Query;
@@ -35,6 +36,8 @@ public class BooksServiceImpl extends RemoteServiceServlet implements BooksServi
 
     @Override
     public String importBooks(final String categoryTitle) {
+        final long startTime = System.nanoTime();
+
         final InputStream is = getServletContext().getResourceAsStream("/WEB-INF/books/" + categoryTitle + ".txt");
         final BufferedReader br = new BufferedReader(new InputStreamReader(is));
         try {
@@ -63,7 +66,7 @@ public class BooksServiceImpl extends RemoteServiceServlet implements BooksServi
                 }
             }
 
-            return countImported + " / " + countTotal;
+            return countImported + " / " + countTotal + " (" + (System.nanoTime() - startTime) + " ns)";
 
         } catch (final IOException e) {
             e.printStackTrace();
@@ -76,12 +79,16 @@ public class BooksServiceImpl extends RemoteServiceServlet implements BooksServi
     public ArrayList<Book> fetchBooks(final BooksFiltersDTO filtersDTO, final int start, final int length) {
 
         final Query<Book> query = dao.ofy().query(Book.class);
-
         applyFilters(filtersDTO, query);
 
-        final Query<Book> q = query.order("title").offset(start).limit(length);
+        final QueryResultIterator<Book> itr = query.order("title").offset(start).limit(length).iterator();
 
-        return new ArrayList<Book>(q.list());
+        final ArrayList<Book> books = new ArrayList<Book>(length);
+        while (itr.hasNext()) {
+            books.add(itr.next());
+        }
+
+        return books;
     }
 
     @Override
@@ -111,6 +118,7 @@ public class BooksServiceImpl extends RemoteServiceServlet implements BooksServi
 
     @Override
     public void delete() {
+        // TODO PGU use a cursor
         final QueryResultIterable<Key<Book>> keys = dao.ofy().query(Book.class).fetchKeys();
         dao.ofy().delete(keys);
     }
