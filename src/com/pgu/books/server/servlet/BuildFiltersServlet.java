@@ -2,7 +2,6 @@ package com.pgu.books.server.servlet;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.List;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
@@ -44,6 +43,7 @@ public class BuildFiltersServlet extends HttpServlet {
 
         final long startTime = System.currentTimeMillis();
 
+        //
         // delete the current filters
         for (final Class<? extends IsSerializable> clazz : Arrays.asList( //
                 //
@@ -57,15 +57,29 @@ public class BuildFiltersServlet extends HttpServlet {
             }
         }
 
+        //
         // loop through all books to create the filters
-        final List<Book> books = dao.ofy().query(Book.class).list();
-        for (final Book book : books) {
+        final QueryResultIterator<Book> itr = dao.ofy().query(Book.class).iterator();
 
-            putFilterAuthor(book);
-            putFilterEditor(book);
-            putFilterCategory(book);
+        while (itr.hasNext()) {
+            final Book book = itr.next();
+
+            Queue queue = putFilterAuthor(book);
+            if (queue != null) {
+                return;
+            }
+
+            queue = putFilterEditor(book);
+            if (queue != null) {
+                return;
+            }
+
+            queue = putFilterCategory(book);
+            if (queue != null) {
+                return;
+            }
+
         }
-
     }
 
     private <T extends IsSerializable> Queue deleteFilter(final Class<T> clazz, final long startTime) {
@@ -96,7 +110,7 @@ public class BuildFiltersServlet extends HttpServlet {
         return dao.ofy().query(clazz).getKey() != null;
     }
 
-    private void putFilterCategory(final Book book) {
+    private Queue putFilterCategory(final Book book) {
         final String category = book.getCategory();
 
         final int count = dao.ofy().query(CategoryFilter.class).filter("value", category).count();
@@ -110,9 +124,10 @@ public class BuildFiltersServlet extends HttpServlet {
                 e.printStackTrace();
             }
         }
+        return null;
     }
 
-    private void putFilterEditor(final Book book) {
+    private Queue putFilterEditor(final Book book) {
         final String editor = book.getEditor();
 
         final int count = dao.ofy().query(EditorFilter.class).filter("value", editor).count();
@@ -126,9 +141,10 @@ public class BuildFiltersServlet extends HttpServlet {
                 e.printStackTrace();
             }
         }
+        return null;
     }
 
-    private void putFilterAuthor(final Book book) {
+    private Queue putFilterAuthor(final Book book) {
         final String author = book.getAuthor();
 
         final int count = dao.ofy().query(AuthorFilter.class).filter("value", author).count();
@@ -142,6 +158,7 @@ public class BuildFiltersServlet extends HttpServlet {
                 e.printStackTrace();
             }
         }
+        return null;
     }
 
 }
