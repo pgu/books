@@ -1,18 +1,26 @@
 package com.pgu.books.server.domain;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.persistence.Id;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class EditorFilter implements IsSerializable, HasValue {
+public class BookValue implements IsSerializable {
 
-    public EditorFilter() {
+    public enum Fields {
+        AUTHOR, TITLE, EDITOR, YEAR, COMMENT, CATEGORY
+    }
+
+    public BookValue() {
     }
 
     @Id
     private Long id;
 
     private String value;
+    private final Set<Fields> fields = new HashSet<Fields>();
 
     @Override
     public int hashCode() {
@@ -33,7 +41,7 @@ public class EditorFilter implements IsSerializable, HasValue {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final EditorFilter other = (EditorFilter) obj;
+        final BookValue other = (BookValue) obj;
         if (value == null) {
             if (other.value != null) {
                 return false;
@@ -46,7 +54,7 @@ public class EditorFilter implements IsSerializable, HasValue {
 
     @Override
     public String toString() {
-        return "EditorFilter [id=" + id + ", value=" + value + "]";
+        return "BookValue [id=" + id + ", value=" + value + ", fields=" + fields + "]";
     }
 
     public Long getId() {
@@ -57,18 +65,16 @@ public class EditorFilter implements IsSerializable, HasValue {
         this.id = id;
     }
 
-    @Override
     public String getValue() {
         return value;
     }
 
     public void setValue(final String value) {
-        this.value = value;
+        this.value = value.toLowerCase();
     }
 
-    public EditorFilter value(final String value) {
-        setValue(value);
-        return this;
+    public Set<Fields> getFields() {
+        return fields;
     }
 
 }

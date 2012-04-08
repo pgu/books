@@ -58,4 +58,10 @@ public class BooksFiltersDTO implements IsSerializable {
         }
     }
 
+    @Override
+    public String toString() {
+        return "BooksFiltersDTO [selectedAuthors=" + selectedAuthors + ", selectedEditors=" + selectedEditors
+                + ", selectedCategories=" + selectedCategories + "]";
+    }
+
 }
