@@ -61,6 +61,7 @@ public class BuildFiltersServlet extends HttpServlet {
 
             final boolean hasReachedTimeOut = deleteFilter(clazz, startTime);
             if (hasReachedTimeOut) {
+                print("delete in process", resp, startTime);
                 return;
             }
         }
@@ -91,9 +92,16 @@ public class BuildFiltersServlet extends HttpServlet {
                 final Queue queue = QueueFactory.getQueue(QUEUE_BUILD_FILTERS);
                 queue.add(TaskOptions.Builder.withUrl(URL_BUILD_FILTERS) //
                         .param(PARAM_CURSOR, itr.getCursor().toWebSafeString()));
+                print("put in process", resp, startTime);
                 return;
             }
         }
+        print("Building filters is over :-)", resp, startTime);
+    }
+
+    private void print(final String msg, final HttpServletResponse resp, final long startTime) throws IOException {
+        resp.setContentType("text/plain");
+        resp.getWriter().println(msg + " (" + (System.currentTimeMillis() - startTime) + " ms)");
     }
 
     private <T extends IsSerializable> boolean deleteFilter(final Class<T> clazz, final long startTime) {
