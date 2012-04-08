@@ -25,6 +25,12 @@ import com.pgu.books.shared.Book;
 @SuppressWarnings("serial")
 public class BuildFiltersServlet extends HttpServlet {
 
+    private static final String URL_BUILD_FILTERS = "/buildFilters";
+
+    private static final String QUEUE_BUILD_FILTERS = "buildFilters";
+
+    private static final String PARAM_CURSOR = "cursor";
+
     private static final Logger LOGGER = Logger.getLogger(BuildFiltersServlet.class.getName());
 
     private static final long LIMIT_MS = 1000 * 25;
@@ -63,7 +69,7 @@ public class BuildFiltersServlet extends HttpServlet {
         // loop through all books to create the filters
         final Query<Book> query = dao.ofy().query(Book.class);
 
-        final String cursorParam = req.getParameter("cursor");
+        final String cursorParam = req.getParameter(PARAM_CURSOR);
         if (cursorParam != null) {
             query.startCursor(Cursor.fromWebSafeString(cursorParam));
         }
@@ -72,14 +78,24 @@ public class BuildFiltersServlet extends HttpServlet {
         while (itr.hasNext()) {
             final Book book = itr.next();
 
-            putFilterAuthor(book);
-            putFilterEditor(book);
-            putFilterCategory(book);
-            // TODO PGU
+            final boolean hasCreatedFilterAuthor = putFilterAuthor(book);
+            final boolean hasCreatedFilterEditor = putFilterEditor(book);
+            final boolean hasCreatedFilterCategory = putFilterCategory(book);
+
+            if (hasCreatedFilterAuthor //
+                    || hasCreatedFilterEditor //
+                    || hasCreatedFilterCategory) {
+                try {
+                    Thread.sleep(200); // give time for the indexer
+                } catch (final InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+
             if (hasReachedTimeOut(startTime)) {
-                final Queue queue = QueueFactory.getQueue("buildFilters");
-                queue.add(TaskOptions.Builder.withUrl("/buildFilters") //
-                        .param("cursor", itr.getCursor().toWebSafeString()));
+                final Queue queue = QueueFactory.getQueue(QUEUE_BUILD_FILTERS);
+                queue.add(TaskOptions.Builder.withUrl(URL_BUILD_FILTERS) //
+                        .param(PARAM_CURSOR, itr.getCursor().toWebSafeString()));
                 return;
             }
         }
@@ -96,8 +112,8 @@ public class BuildFiltersServlet extends HttpServlet {
                 dao.ofy().delete(itr.next());
 
                 if (hasReachedTimeOut(startTime)) {
-                    final Queue queue = QueueFactory.getQueue("buildFilters");
-                    queue.add(TaskOptions.Builder.withUrl("/buildFilters"));
+                    final Queue queue = QueueFactory.getQueue(QUEUE_BUILD_FILTERS);
+                    queue.add(TaskOptions.Builder.withUrl(URL_BUILD_FILTERS));
                     return true;
                 }
             }
@@ -109,50 +125,40 @@ public class BuildFiltersServlet extends HttpServlet {
         return System.currentTimeMillis() - startTime > LIMIT_MS;
     }
 
-    private void putFilterCategory(final Book book) {
+    private boolean putFilterCategory(final Book book) {
         final String category = book.getCategory();
 
-        final int count = dao.ofy().query(CategoryFilter.class).filter("value", category).count();
-
-        if (count == 0) {
+        if (dao.ofy().query(CategoryFilter.class).filter("value", category).getKey() == null) {
 
             dao.ofy().put(new CategoryFilter().value(category));
-            try {
-                Thread.sleep(200); // give time for the indexer
-            } catch (final InterruptedException e) {
-                e.printStackTrace();
-            }
+            return true;
         }
+
+        return false;
     }
 
-    private void putFilterEditor(final Book book) {
+    private boolean putFilterEditor(final Book book) {
         final String editor = book.getEditor();
 
-        final int count = dao.ofy().query(EditorFilter.class).filter("value", editor).count();
-
-        if (count == 0) {
+        if (dao.ofy().query(EditorFilter.class).filter("value", editor).getKey() == null) {
 
             dao.ofy().put(new EditorFilter().value(editor));
-            try {
-                Thread.sleep(200); // give time for the indexer
-            } catch (final InterruptedException e) {
-                e.printStackTrace();
-            }
+            return true;
         }
+
+        return false;
     }
 
-    private void putFilterAuthor(final Book book) {
+    private boolean putFilterAuthor(final Book book) {
         final String author = book.getAuthor();
 
         if (dao.ofy().query(AuthorFilter.class).filter("value", author).getKey() == null) {
 
             dao.ofy().put(new AuthorFilter().value(author));
-            try {
-                Thread.sleep(200); // give time for the indexer
-            } catch (final InterruptedException e) {
-                e.printStackTrace();
-            }
+            return true;
         }
+
+        return false;
     }
 
 }
