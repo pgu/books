@@ -14,6 +14,7 @@ import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.gwt.user.client.rpc.IsSerializable;
+import com.googlecode.objectify.Query;
 import com.pgu.books.server.access.DAO;
 import com.pgu.books.server.domain.AuthorFilter;
 import com.pgu.books.server.domain.CategoryFilter;
@@ -59,8 +60,14 @@ public class BuildFiltersServlet extends HttpServlet {
 
         //
         // loop through all books to create the filters
-        final QueryResultIterator<Book> itr = dao.ofy().query(Book.class).iterator();
+        final Query<Book> query = dao.ofy().query(Book.class);
 
+        final String cursorParam = req.getParameter("cursor");
+        if (cursorParam != null) {
+            query.startCursor(Cursor.fromWebSafeString(cursorParam));
+        }
+
+        final QueryResultIterator<Book> itr = query.iterator();
         while (itr.hasNext()) {
             final Book book = itr.next();
 
@@ -78,7 +85,6 @@ public class BuildFiltersServlet extends HttpServlet {
             if (queue != null) {
                 return;
             }
-
         }
     }
 
