@@ -22,6 +22,8 @@ import com.pgu.books.server.access.DAO;
 import com.pgu.books.server.domain.AuthorFilter;
 import com.pgu.books.server.domain.CategoryFilter;
 import com.pgu.books.server.domain.EditorFilter;
+import com.pgu.books.server.utils.AppQueues;
+import com.pgu.books.server.utils.AppUrls;
 import com.pgu.books.shared.Book;
 
 @SuppressWarnings("serial")
@@ -30,8 +32,7 @@ public class BuildFiltersServlet extends HttpServlet {
     private static final Logger LOGGER = Logger.getLogger(BuildFiltersServlet.class.getName());
 
     private static final long LIMIT_MS = 1000 * 25;
-    private static final String URL_BUILD_FILTERS = "/buildFilters";
-    private static final String QUEUE_BUILD_FILTERS = "buildFilters";
+
     private static final String PARAM_CURSOR = "cursor";
 
     private final DAO dao = new DAO();
@@ -91,8 +92,8 @@ public class BuildFiltersServlet extends HttpServlet {
             putFilterCategory(book, cacheCategory);
 
             if (hasReachedTimeOut(startTime)) {
-                final Queue queue = QueueFactory.getQueue(QUEUE_BUILD_FILTERS);
-                queue.add(TaskOptions.Builder.withUrl(URL_BUILD_FILTERS) //
+                final Queue queue = QueueFactory.getQueue(AppQueues.BUILD_FILTERS);
+                queue.add(TaskOptions.Builder.withUrl(AppUrls.BUILD_FILTERS) //
                         .param(PARAM_CURSOR, itr.getCursor().toWebSafeString()));
                 print("put in process", resp, startTime);
                 return;
@@ -117,8 +118,8 @@ public class BuildFiltersServlet extends HttpServlet {
                 dao.ofy().delete(itr.next());
 
                 if (hasReachedTimeOut(startTime)) {
-                    final Queue queue = QueueFactory.getQueue(QUEUE_BUILD_FILTERS);
-                    queue.add(TaskOptions.Builder.withUrl(URL_BUILD_FILTERS));
+                    final Queue queue = QueueFactory.getQueue(AppQueues.BUILD_FILTERS);
+                    queue.add(TaskOptions.Builder.withUrl(AppUrls.BUILD_FILTERS));
                     return true;
                 }
             }

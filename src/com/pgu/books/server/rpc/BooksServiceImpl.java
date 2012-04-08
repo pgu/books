@@ -10,6 +10,9 @@ import java.util.logging.Logger;
 
 import com.google.appengine.api.datastore.QueryResultIterable;
 import com.google.appengine.api.datastore.QueryResultIterator;
+import com.google.appengine.api.taskqueue.Queue;
+import com.google.appengine.api.taskqueue.QueueFactory;
+import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.Query;
@@ -20,6 +23,7 @@ import com.pgu.books.server.domain.BookValue;
 import com.pgu.books.server.domain.CategoryFilter;
 import com.pgu.books.server.domain.EditorFilter;
 import com.pgu.books.server.domain.HasValue;
+import com.pgu.books.server.utils.AppQueues;
 import com.pgu.books.shared.Book;
 import com.pgu.books.shared.BookCategory;
 import com.pgu.books.shared.BooksFiltersDTO;
@@ -83,7 +87,9 @@ public class BooksServiceImpl extends RemoteServiceServlet implements BooksServi
                 }
             }
 
-            // TODO PGU add task to queue to clean the duplicates in bookvalues
+            final Queue queue = QueueFactory.getQueue(AppQueues.CLEAN_BOOK_VALUES);
+            queue.add(TaskOptions.Builder.withUrl(URL_BUILD_FILTERS) //
+                    .param(PARAM_CURSOR, itr.getCursor().toWebSafeString()));
 
             return countImported + " / " + countTotal + " (" + (System.nanoTime() - startTime) + " ns)";
 
