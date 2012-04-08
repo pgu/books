@@ -50,6 +50,7 @@ public class BuildFiltersServlet extends HttpServlet {
             IOException {
 
         final long startTime = System.currentTimeMillis();
+        LOGGER.info("...POST request ");
 
         //
         // delete the current filters
