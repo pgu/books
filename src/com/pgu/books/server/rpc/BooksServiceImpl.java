@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Logger;
 
 import com.google.appengine.api.datastore.QueryResultIterable;
@@ -18,6 +17,7 @@ import com.pgu.books.server.access.DAO;
 import com.pgu.books.server.domain.AuthorFilter;
 import com.pgu.books.server.domain.CategoryFilter;
 import com.pgu.books.server.domain.EditorFilter;
+import com.pgu.books.server.domain.HasValue;
 import com.pgu.books.shared.Book;
 import com.pgu.books.shared.BookCategory;
 import com.pgu.books.shared.BooksFiltersDTO;
@@ -125,36 +125,30 @@ public class BooksServiceImpl extends RemoteServiceServlet implements BooksServi
 
     @Override
     public ArrayList<String> fetchFilterAuthors() {
-        final List<AuthorFilter> authors = dao.ofy().query(AuthorFilter.class).order("value").list();
-
-        final ArrayList<String> names = new ArrayList<String>(authors.size());
-        for (final AuthorFilter authorFilter : authors) {
-
-            names.add(authorFilter.getValue());
-        }
-        return names;
+        return fetchFilters(AuthorFilter.class);
     }
 
     @Override
     public ArrayList<String> fetchFilterEditors() {
-        final List<EditorFilter> editors = dao.ofy().query(EditorFilter.class).order("value").list();
-
-        final ArrayList<String> names = new ArrayList<String>(editors.size());
-        for (final EditorFilter editorFilter : editors) {
-
-            names.add(editorFilter.getValue());
-        }
-        return names;
+        return fetchFilters(EditorFilter.class);
     }
 
     @Override
     public ArrayList<String> fetchFilterCategories() {
-        final List<CategoryFilter> categories = dao.ofy().query(CategoryFilter.class).order("value").list();
+        return fetchFilters(CategoryFilter.class);
+    }
 
-        final ArrayList<String> names = new ArrayList<String>(categories.size());
-        for (final CategoryFilter categoryFilter : categories) {
+    private <T extends HasValue> ArrayList<String> fetchFilters(final Class<T> clazz) {
 
-            names.add(categoryFilter.getValue());
+        final Query<T> query = dao.ofy().query(clazz);
+
+        final int nbItems = query.count();
+        final ArrayList<String> names = new ArrayList<String>(nbItems);
+
+        final QueryResultIterator<T> itr = query.order("value").iterator();
+        while (itr.hasNext()) {
+
+            names.add(itr.next().getValue());
         }
         return names;
     }
