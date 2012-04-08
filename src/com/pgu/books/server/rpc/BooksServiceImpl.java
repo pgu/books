@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 
 import com.google.appengine.api.datastore.QueryResultIterable;
@@ -15,6 +16,7 @@ import com.googlecode.objectify.Query;
 import com.pgu.books.client.BooksService;
 import com.pgu.books.server.access.DAO;
 import com.pgu.books.server.domain.AuthorFilter;
+import com.pgu.books.server.domain.BookValue;
 import com.pgu.books.server.domain.CategoryFilter;
 import com.pgu.books.server.domain.EditorFilter;
 import com.pgu.books.server.domain.HasValue;
@@ -60,11 +62,28 @@ public class BooksServiceImpl extends RemoteServiceServlet implements BooksServi
                     final String category = rawCategory.isEmpty() ? "" : rawCategory.substring(0,
                             rawCategory.length() - 1); // removes last "
 
-                    dao.ofy().put(new Book(author, tokens[1], tokens[2], tokens[3], tokens[4], category));
+                    final String title = tokens[1];
+                    final String editor = tokens[2];
+                    final String year = tokens[3];
+                    final String comment = tokens[4];
+
+                    dao.ofy().put(new Book(author, title, editor, year, comment, category));
+
+                    final List<BookValue> bookValues = new ArrayList<BookValue>();
+                    bookValues.add(new BookValue().author(author));
+                    bookValues.add(new BookValue().title(title));
+                    bookValues.add(new BookValue().editor(editor));
+                    bookValues.add(new BookValue().year(year));
+                    bookValues.add(new BookValue().comment(comment));
+                    bookValues.add(new BookValue().category(category));
+                    dao.ofy().put(bookValues);
+
                 } else {
                     LOG.warning("Not imported: " + line);
                 }
             }
+
+            // TODO PGU add task to queue to clean the dupliates in bookvalues
 
             return countImported + " / " + countTotal + " (" + (System.nanoTime() - startTime) + " ns)";
 
