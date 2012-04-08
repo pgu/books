@@ -1,7 +1,6 @@
 package com.pgu.books.server.servlet;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
@@ -19,6 +18,7 @@ import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.gwt.user.client.rpc.IsSerializable;
+import com.googlecode.objectify.Key;
 import com.googlecode.objectify.Query;
 import com.pgu.books.server.access.DAO;
 import com.pgu.books.server.domain.AuthorFilter;
@@ -84,13 +84,16 @@ public class BuildFiltersServlet extends HttpServlet {
                     final Queue queue = QueueFactory.getQueue(AppQueues.BUILD_FILTERS);
                     queue.add(TaskOptions.Builder.withUrl(AppUrls.BUILD_FILTERS).param(PARAM_ACTION, ACTION_DELETE));
 
-                    print("delete in process", resp, startTime);
+                    print("Deletion in process", resp, startTime);
                     return;
                 }
             }
             // next step: put new filters
             final Queue queue = QueueFactory.getQueue(AppQueues.BUILD_FILTERS);
             queue.add(TaskOptions.Builder.withUrl(AppUrls.BUILD_FILTERS).param(PARAM_ACTION, ACTION_PUT));
+
+            print("Deletion process is over", resp, startTime);
+            return;
 
         } else if (ACTION_PUT.equalsIgnoreCase(action)) {
             //
@@ -102,31 +105,67 @@ public class BuildFiltersServlet extends HttpServlet {
                 query.startCursor(Cursor.fromWebSafeString(cursorParam));
             }
 
-            // TODO PGU replace cache by a "clean" task
-            final List<String> cacheAuthor = new ArrayList<String>(500); // use local cache to avoid latence with the
-            // indexer
-            final List<String> cacheEditor = new ArrayList<String>(500);
-            final List<String> cacheCategory = new ArrayList<String>(500);
-
             final QueryResultIterator<Book> itr = query.iterator();
             while (itr.hasNext()) {
                 final Book book = itr.next();
 
-                putFilterAuthor(book, cacheAuthor);
-                putFilterEditor(book, cacheEditor);
-                putFilterCategory(book, cacheCategory);
+                dao.ofy().put(new AuthorFilter().value(book.getAuthor()));
+                dao.ofy().put(new EditorFilter().value(book.getEditor()));
+                dao.ofy().put(new CategoryFilter().value(book.getCategory()));
 
                 if (AppUtils.hasReachedTimeOut(startTime)) {
                     final Queue queue = QueueFactory.getQueue(AppQueues.BUILD_FILTERS);
                     queue.add(TaskOptions.Builder.withUrl(AppUrls.BUILD_FILTERS) //
+                            .param(PARAM_ACTION, ACTION_PUT) //
                             .param(AppUrls.PARAM_CURSOR, itr.getCursor().toWebSafeString()));
-                    print("put in process", resp, startTime);
+
+                    print("Creation in process", resp, startTime);
                     return;
                 }
             }
-            print("Building filters is over :-)", resp, startTime);
+
+            // next step: remove duplicates
+            final Queue queue = QueueFactory.getQueue(AppQueues.BUILD_FILTERS);
+            queue.add(TaskOptions.Builder.withUrl(AppUrls.BUILD_FILTERS).param(PARAM_ACTION, ACTION_CLEAN));
+
+            print("Creation process is over", resp, startTime);
+            return;
 
         } else if (ACTION_CLEAN.equalsIgnoreCase(action)) {
+            //
+            // loop through all filters to remove duplicates
+            final Query<AuthorFilter> query = dao.ofy().query(AuthorFilter.class);
+
+            final String cursorParam = req.getParameter(AppUrls.PARAM_CURSOR);
+            if (cursorParam != null) {
+                query.startCursor(Cursor.fromWebSafeString(cursorParam));
+            }
+
+            final QueryResultIterator<AuthorFilter> itr = query.iterator();
+            while (itr.hasNext()) {
+                final AuthorFilter authorFilter = itr.next();
+
+                final List<Key<AuthorFilter>> keys = dao.ofy().query(AuthorFilter.class)
+                        .filter("value", authorFilter.getValue()).listKeys();
+
+                if (keys.size() > 1) {
+                    keys.remove(keys.size() - 1); // keeps one value
+                    dao.ofy().delete(keys); // delete the others
+                }
+
+                if (AppUtils.hasReachedTimeOut(startTime)) {
+                    final Queue queue = QueueFactory.getQueue(AppQueues.BUILD_FILTERS);
+                    queue.add(TaskOptions.Builder.withUrl(AppUrls.BUILD_FILTERS) //
+                            .param(PARAM_ACTION, ACTION_CLEAN) //
+                            .param(AppUrls.PARAM_CURSOR, itr.getCursor().toWebSafeString()));
+
+                    print("Cleaning in process", resp, startTime);
+                    return;
+                }
+            }
+
+            print("Cleaning process is over", resp, startTime);
+            return;
 
         } else {
             throw new IllegalArgumentException("Unknown action: " + action);
@@ -154,45 +193,6 @@ public class BuildFiltersServlet extends HttpServlet {
             }
         }
         return false;
-    }
-
-    private void putFilterCategory(final Book book, final List<String> cache) {
-        final String category = book.getCategory();
-
-        final boolean doesNotExist = //
-        dao.ofy().query(CategoryFilter.class).filter("value", category).limit(1).count() == 0 //
-                && !cache.contains(category);
-
-        if (doesNotExist) {
-            dao.ofy().put(new CategoryFilter().value(category));
-            cache.add(category);
-        }
-    }
-
-    private void putFilterEditor(final Book book, final List<String> cache) {
-        final String editor = book.getEditor();
-
-        final boolean doesNotExist = //
-        dao.ofy().query(EditorFilter.class).filter("value", editor).limit(1).count() == 0 //
-                && !cache.contains(editor);
-
-        if (doesNotExist) {
-            dao.ofy().put(new EditorFilter().value(editor));
-            cache.add(editor);
-        }
-    }
-
-    private void putFilterAuthor(final Book book, final List<String> cache) {
-        final String author = book.getAuthor();
-
-        final boolean doesNotExist = //
-        dao.ofy().query(AuthorFilter.class).filter("value", author).limit(1).count() == 0 //
-                && !cache.contains(author);
-
-        if (doesNotExist) {
-            dao.ofy().put(new AuthorFilter().value(author));
-            cache.add(author);
-        }
     }
 
 }
