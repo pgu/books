@@ -15,7 +15,6 @@ import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.gwt.user.client.rpc.IsSerializable;
-import com.googlecode.objectify.Query;
 import com.pgu.books.server.access.DAO;
 import com.pgu.books.server.domain.AuthorFilter;
 import com.pgu.books.server.domain.CategoryFilter;
@@ -45,7 +44,7 @@ public class BuildFiltersServlet extends HttpServlet {
 
         final long startTime = System.currentTimeMillis();
 
-        // clean filters
+        // delete the current filters
         for (final Class<? extends IsSerializable> clazz : Arrays.asList(AuthorFilter.class, EditorFilter.class,
                 CategoryFilter.class)) {
 
@@ -55,7 +54,7 @@ public class BuildFiltersServlet extends HttpServlet {
             }
         }
 
-        // loop through all books // TODO PGU cursor
+        // loop through all books to create the filters
         final List<Book> books = dao.ofy().query(Book.class).list();
         for (final Book book : books) {
 
@@ -68,25 +67,30 @@ public class BuildFiltersServlet extends HttpServlet {
 
     private <T extends IsSerializable> Queue deleteFilter(final Class<T> clazz, final long startTime) {
 
-        final int count = dao.ofy().query(clazz).count();
-        if (count > 0) {
+        if (!hasFilterOfType(clazz)) {
+            return null;
+        }
 
-            final Query<T> q = dao.ofy().query(clazz);
-            final QueryResultIterator<T> itr = q.iterator();
+        final QueryResultIterator<T> itr = dao.ofy().query(clazz).iterator();
+        while (itr.hasNext()) {
 
-            while (itr.hasNext()) {
+            dao.ofy().delete(itr.next());
 
-                dao.ofy().delete(itr.next());
-
-                if (System.currentTimeMillis() - startTime > LIMIT_MS) {
-
-                    final Queue queue = QueueFactory.getQueue("buildFilters");
-                    queue.add(TaskOptions.Builder.withUrl("/buildFilters"));
-                    return queue;
-                }
+            if (hasReachedTimeOut(startTime)) {
+                final Queue queue = QueueFactory.getQueue("buildFilters");
+                queue.add(TaskOptions.Builder.withUrl("/buildFilters"));
+                return queue;
             }
         }
         return null;
+    }
+
+    private boolean hasReachedTimeOut(final long startTime) {
+        return System.currentTimeMillis() - startTime > LIMIT_MS;
+    }
+
+    private <T> boolean hasFilterOfType(final Class<T> clazz) {
+        return dao.ofy().query(clazz).getKey() != null;
     }
 
     private void putFilterCategory(final Book book) {
