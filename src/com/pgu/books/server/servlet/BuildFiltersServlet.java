@@ -11,6 +11,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.http.HttpStatus;
+
 import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.QueryResultIterator;
 import com.google.appengine.api.taskqueue.Queue;
@@ -24,6 +26,7 @@ import com.pgu.books.server.domain.CategoryFilter;
 import com.pgu.books.server.domain.EditorFilter;
 import com.pgu.books.server.utils.AppQueues;
 import com.pgu.books.server.utils.AppUrls;
+import com.pgu.books.server.utils.AppUtils;
 import com.pgu.books.shared.Book;
 
 @SuppressWarnings("serial")
@@ -31,11 +34,13 @@ public class BuildFiltersServlet extends HttpServlet {
 
     private static final Logger LOGGER = Logger.getLogger(BuildFiltersServlet.class.getName());
 
-    private static final long LIMIT_MS = 1000 * 25;
-
-    private static final String PARAM_CURSOR = "cursor";
-
     private final DAO dao = new DAO();
+
+    private static final String PARAM_ACTION = "action";
+    private static final String ACTION_START = "start";
+    private static final String ACTION_DELETE = "delete";
+    private static final String ACTION_PUT = "put";
+    private static final String ACTION_CLEAN = "clean";
 
     @Override
     protected void doGet(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException,
@@ -52,52 +57,80 @@ public class BuildFiltersServlet extends HttpServlet {
         final long startTime = System.currentTimeMillis();
         LOGGER.info("...POST request ");
 
-        // delete the current filters
-        for (final Class<? extends IsSerializable> clazz : Arrays.asList( //
-                //
-                AuthorFilter.class, //
-                EditorFilter.class, //
-                CategoryFilter.class)) {
+        final String action = req.getParameter(PARAM_ACTION);
+        if (action == null //
+                || !ACTION_START.equalsIgnoreCase(action) //
+                || !ACTION_DELETE.equalsIgnoreCase(action) //
+                || !ACTION_PUT.equalsIgnoreCase(action) //
+                || !ACTION_CLEAN.equalsIgnoreCase(action) //
+        ) {
+            resp.setStatus(HttpStatus.SC_BAD_REQUEST);
+            resp.setContentType("text/plain");
+            resp.getWriter().print("Illegal action for this request: " + action);
+        }
 
-            final boolean hasReachedTimeOut = deleteFilter(clazz, startTime);
-            if (hasReachedTimeOut) {
-                print("delete in process", resp, startTime);
-                return;
+        if (ACTION_START.equalsIgnoreCase(action) //
+                || ACTION_DELETE.equalsIgnoreCase(action)) {
+
+            // delete the current filters
+            for (final Class<? extends IsSerializable> clazz : Arrays.asList( //
+                    AuthorFilter.class, //
+                    EditorFilter.class, //
+                    CategoryFilter.class)) {
+
+                final boolean hasReachedTimeOut = deleteFilter(clazz, startTime);
+                if (hasReachedTimeOut) {
+
+                    final Queue queue = QueueFactory.getQueue(AppQueues.BUILD_FILTERS);
+                    queue.add(TaskOptions.Builder.withUrl(AppUrls.BUILD_FILTERS).param(PARAM_ACTION, ACTION_DELETE));
+
+                    print("delete in process", resp, startTime);
+                    return;
+                }
             }
-        }
+            // next step: put new filters
+            final Queue queue = QueueFactory.getQueue(AppQueues.BUILD_FILTERS);
+            queue.add(TaskOptions.Builder.withUrl(AppUrls.BUILD_FILTERS).param(PARAM_ACTION, ACTION_PUT));
 
-        //
-        // loop through all books to create the filters
-        final Query<Book> query = dao.ofy().query(Book.class);
+        } else if (ACTION_PUT.equalsIgnoreCase(action)) {
+            //
+            // loop through all books to create the filters
+            final Query<Book> query = dao.ofy().query(Book.class);
 
-        final String cursorParam = req.getParameter(PARAM_CURSOR);
-        if (cursorParam != null) {
-            query.startCursor(Cursor.fromWebSafeString(cursorParam));
-        }
-
-        // TODO PGU replace cache by a "clean" task
-        final List<String> cacheAuthor = new ArrayList<String>(500); // use local cache to avoid latence with the
-                                                                     // indexer
-        final List<String> cacheEditor = new ArrayList<String>(500);
-        final List<String> cacheCategory = new ArrayList<String>(500);
-
-        final QueryResultIterator<Book> itr = query.iterator();
-        while (itr.hasNext()) {
-            final Book book = itr.next();
-
-            putFilterAuthor(book, cacheAuthor);
-            putFilterEditor(book, cacheEditor);
-            putFilterCategory(book, cacheCategory);
-
-            if (hasReachedTimeOut(startTime)) {
-                final Queue queue = QueueFactory.getQueue(AppQueues.BUILD_FILTERS);
-                queue.add(TaskOptions.Builder.withUrl(AppUrls.BUILD_FILTERS) //
-                        .param(PARAM_CURSOR, itr.getCursor().toWebSafeString()));
-                print("put in process", resp, startTime);
-                return;
+            final String cursorParam = req.getParameter(AppUrls.PARAM_CURSOR);
+            if (cursorParam != null) {
+                query.startCursor(Cursor.fromWebSafeString(cursorParam));
             }
+
+            // TODO PGU replace cache by a "clean" task
+            final List<String> cacheAuthor = new ArrayList<String>(500); // use local cache to avoid latence with the
+            // indexer
+            final List<String> cacheEditor = new ArrayList<String>(500);
+            final List<String> cacheCategory = new ArrayList<String>(500);
+
+            final QueryResultIterator<Book> itr = query.iterator();
+            while (itr.hasNext()) {
+                final Book book = itr.next();
+
+                putFilterAuthor(book, cacheAuthor);
+                putFilterEditor(book, cacheEditor);
+                putFilterCategory(book, cacheCategory);
+
+                if (AppUtils.hasReachedTimeOut(startTime)) {
+                    final Queue queue = QueueFactory.getQueue(AppQueues.BUILD_FILTERS);
+                    queue.add(TaskOptions.Builder.withUrl(AppUrls.BUILD_FILTERS) //
+                            .param(AppUrls.PARAM_CURSOR, itr.getCursor().toWebSafeString()));
+                    print("put in process", resp, startTime);
+                    return;
+                }
+            }
+            print("Building filters is over :-)", resp, startTime);
+
+        } else if (ACTION_CLEAN.equalsIgnoreCase(action)) {
+
+        } else {
+            throw new IllegalArgumentException("Unknown action: " + action);
         }
-        print("Building filters is over :-)", resp, startTime);
     }
 
     private void print(final String msg, final HttpServletResponse resp, final long startTime) throws IOException {
@@ -115,18 +148,12 @@ public class BuildFiltersServlet extends HttpServlet {
 
                 dao.ofy().delete(itr.next());
 
-                if (hasReachedTimeOut(startTime)) {
-                    final Queue queue = QueueFactory.getQueue(AppQueues.BUILD_FILTERS);
-                    queue.add(TaskOptions.Builder.withUrl(AppUrls.BUILD_FILTERS));
+                if (AppUtils.hasReachedTimeOut(startTime)) {
                     return true;
                 }
             }
         }
         return false;
-    }
-
-    private boolean hasReachedTimeOut(final long startTime) {
-        return System.currentTimeMillis() - startTime > LIMIT_MS;
     }
 
     private void putFilterCategory(final Book book, final List<String> cache) {

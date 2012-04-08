@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <cronentries>
     <cron>
-        <url>/buildFilters</url>
+        <url>/buildFilters?action=start</url>
         <description>Builds filters for books</description>
         <schedule>every day 01:00</schedule>
     </cron>

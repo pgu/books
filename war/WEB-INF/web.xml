@@ -14,6 +14,10 @@
     <servlet-name>buildFilters</servlet-name>
     <servlet-class>com.pgu.books.server.servlet.BuildFiltersServlet</servlet-class>
   </servlet>
+  <servlet>
+    <servlet-name>cleanBookValues</servlet-name>
+    <servlet-class>com.pgu.books.server.servlet.CleanBookValuesServlet</servlet-class>
+  </servlet>
   
   <servlet-mapping>
     <servlet-name>books</servlet-name>
@@ -22,6 +26,10 @@
   <servlet-mapping>
     <servlet-name>buildFilters</servlet-name>
     <url-pattern>/buildFilters</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>cleanBookValues</servlet-name>
+    <url-pattern>/cleanBookValues</url-pattern>
   </servlet-mapping>
   
   <!-- Default page to serve -->
