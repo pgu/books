@@ -17,13 +17,12 @@ import com.google.appengine.api.datastore.QueryResultIterator;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
-import com.google.gwt.user.client.rpc.IsSerializable;
-import com.googlecode.objectify.Key;
 import com.googlecode.objectify.Query;
 import com.pgu.books.server.access.DAO;
 import com.pgu.books.server.domain.AuthorFilter;
 import com.pgu.books.server.domain.CategoryFilter;
 import com.pgu.books.server.domain.EditorFilter;
+import com.pgu.books.server.domain.HasValue;
 import com.pgu.books.server.utils.AppQueues;
 import com.pgu.books.server.utils.AppUrls;
 import com.pgu.books.server.utils.AppUtils;
@@ -41,6 +40,11 @@ public class BuildFiltersServlet extends HttpServlet {
     private static final String ACTION_DELETE = "delete";
     private static final String ACTION_PUT = "put";
     private static final String ACTION_CLEAN = "clean";
+
+    private static final String PARAM_FILTER = "filter";
+    private static final String FILTER_AUTHOR = "author";
+    private static final String FILTER_EDITOR = "editor";
+    private static final String FILTER_CATEGORY = "category";
 
     @Override
     protected void doGet(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException,
@@ -64,16 +68,15 @@ public class BuildFiltersServlet extends HttpServlet {
                 || !ACTION_PUT.equalsIgnoreCase(action) //
                 || !ACTION_CLEAN.equalsIgnoreCase(action) //
         ) {
-            resp.setStatus(HttpStatus.SC_BAD_REQUEST);
-            resp.setContentType("text/plain");
-            resp.getWriter().print("Illegal action for this request: " + action);
+            setBadRequest("Illegal action for this request: " + action, resp);
+            return;
         }
 
         if (ACTION_START.equalsIgnoreCase(action) //
                 || ACTION_DELETE.equalsIgnoreCase(action)) {
 
             // delete the current filters
-            for (final Class<? extends IsSerializable> clazz : Arrays.asList( //
+            for (final Class<? extends HasValue> clazz : Arrays.asList( //
                     AuthorFilter.class, //
                     EditorFilter.class, //
                     CategoryFilter.class)) {
@@ -134,19 +137,36 @@ public class BuildFiltersServlet extends HttpServlet {
         } else if (ACTION_CLEAN.equalsIgnoreCase(action)) {
             //
             // loop through all filters to remove duplicates
-            final Query<AuthorFilter> query = dao.ofy().query(AuthorFilter.class);
+            Class<? extends HasValue> filterClass;
+
+            final String paramFilter = req.getParameter(PARAM_FILTER);
+            if (paramFilter == null //
+                    || FILTER_AUTHOR.equalsIgnoreCase(paramFilter)) {
+                filterClass = AuthorFilter.class;
+
+            } else if (FILTER_EDITOR.equalsIgnoreCase(paramFilter)) {
+                filterClass = EditorFilter.class;
+
+            } else if (FILTER_CATEGORY.equalsIgnoreCase(paramFilter)) {
+                filterClass = CategoryFilter.class;
+
+            } else {
+                setBadRequest("Unknown filter: " + paramFilter, resp);
+                return;
+            }
+
+            final Query<? extends HasValue> query = dao.ofy().query(filterClass);
 
             final String cursorParam = req.getParameter(AppUrls.PARAM_CURSOR);
             if (cursorParam != null) {
                 query.startCursor(Cursor.fromWebSafeString(cursorParam));
             }
 
-            final QueryResultIterator<AuthorFilter> itr = query.iterator();
+            final QueryResultIterator<? extends HasValue> itr = query.iterator();
             while (itr.hasNext()) {
-                final AuthorFilter authorFilter = itr.next();
+                final HasValue hasValue = itr.next();
 
-                final List<Key<AuthorFilter>> keys = dao.ofy().query(AuthorFilter.class)
-                        .filter("value", authorFilter.getValue()).listKeys();
+                final List<?> keys = dao.ofy().query(filterClass).filter("value", hasValue.getValue()).listKeys();
 
                 if (keys.size() > 1) {
                     keys.remove(keys.size() - 1); // keeps one value
@@ -154,9 +174,22 @@ public class BuildFiltersServlet extends HttpServlet {
                 }
 
                 if (AppUtils.hasReachedTimeOut(startTime)) {
+
+                    String filterValue = null;
+                    if (AuthorFilter.class.equals(filterClass)) {
+                        filterValue = FILTER_AUTHOR;
+
+                    } else if (EditorFilter.class.equals(filterClass)) {
+                        filterValue = FILTER_EDITOR;
+
+                    } else if (CategoryFilter.class.equals(filterClass)) {
+                        filterValue = FILTER_CATEGORY;
+                    }
+
                     final Queue queue = QueueFactory.getQueue(AppQueues.BUILD_FILTERS);
                     queue.add(TaskOptions.Builder.withUrl(AppUrls.BUILD_FILTERS) //
                             .param(PARAM_ACTION, ACTION_CLEAN) //
+                            .param(PARAM_FILTER, filterValue) //
                             .param(AppUrls.PARAM_CURSOR, itr.getCursor().toWebSafeString()));
 
                     print("Cleaning in process", resp, startTime);
@@ -164,12 +197,39 @@ public class BuildFiltersServlet extends HttpServlet {
                 }
             }
 
-            print("Cleaning process is over", resp, startTime);
-            return;
+            if (AuthorFilter.class.equals(filterClass)) {
+                final Queue queue = QueueFactory.getQueue(AppQueues.BUILD_FILTERS);
+                queue.add(TaskOptions.Builder.withUrl(AppUrls.BUILD_FILTERS) //
+                        .param(PARAM_ACTION, ACTION_CLEAN) //
+                        .param(PARAM_FILTER, FILTER_EDITOR));
+
+                print("Cleaning in process", resp, startTime);
+                return;
+
+            } else if (EditorFilter.class.equals(filterClass)) {
+                final Queue queue = QueueFactory.getQueue(AppQueues.BUILD_FILTERS);
+                queue.add(TaskOptions.Builder.withUrl(AppUrls.BUILD_FILTERS) //
+                        .param(PARAM_ACTION, ACTION_CLEAN) //
+                        .param(PARAM_FILTER, FILTER_CATEGORY));
+
+                print("Cleaning in process", resp, startTime);
+                return;
+            } else {
+
+                print("Cleaning process is over", resp, startTime);
+                return;
+            }
 
         } else {
-            throw new IllegalArgumentException("Unknown action: " + action);
+            setBadRequest("Unknown action: " + action, resp);
+            return;
         }
+    }
+
+    private void setBadRequest(final String msg, final HttpServletResponse resp) throws IOException {
+        resp.setStatus(HttpStatus.SC_BAD_REQUEST);
+        resp.setContentType("text/plain");
+        resp.getWriter().print(msg);
     }
 
     private void print(final String msg, final HttpServletResponse resp, final long startTime) throws IOException {
@@ -177,7 +237,7 @@ public class BuildFiltersServlet extends HttpServlet {
         resp.getWriter().println(msg + " (" + (System.currentTimeMillis() - startTime) + " ms)");
     }
 
-    private <T extends IsSerializable> boolean deleteFilter(final Class<T> clazz, final long startTime) {
+    private <T extends HasValue> boolean deleteFilter(final Class<T> clazz, final long startTime) {
 
         final boolean hasFilter = dao.ofy().query(clazz).limit(1).count() > 0;
 
