@@ -53,8 +53,8 @@ public class BuildFiltersServlet extends HttpServlet {
                 EditorFilter.class, //
                 CategoryFilter.class)) {
 
-            final Queue queue = deleteFilter(clazz, startTime);
-            if (queue != null) {
+            final boolean hasReachedTimeOut = deleteFilter(clazz, startTime);
+            if (hasReachedTimeOut) {
                 return;
             }
         }
@@ -75,35 +75,38 @@ public class BuildFiltersServlet extends HttpServlet {
             putFilterAuthor(book);
             putFilterEditor(book);
             putFilterCategory(book);
+            // TODO PGU
+            if (hasReachedTimeOut(startTime)) {
+                final Queue queue = QueueFactory.getQueue("buildFilters");
+                queue.add(TaskOptions.Builder.withUrl("/buildFilters") //
+                        .param("cursor", itr.getCursor().toWebSafeString()));
+                return;
+            }
         }
     }
 
-    private <T extends IsSerializable> Queue deleteFilter(final Class<T> clazz, final long startTime) {
+    private <T extends IsSerializable> boolean deleteFilter(final Class<T> clazz, final long startTime) {
 
-        if (!hasFilterOfType(clazz)) {
-            return null;
-        }
+        final boolean hasFilter = dao.ofy().query(clazz).getKey() != null;
 
-        final QueryResultIterator<T> itr = dao.ofy().query(clazz).iterator();
-        while (itr.hasNext()) {
+        if (hasFilter) {
+            final QueryResultIterator<T> itr = dao.ofy().query(clazz).iterator();
+            while (itr.hasNext()) {
 
-            dao.ofy().delete(itr.next());
+                dao.ofy().delete(itr.next());
 
-            if (hasReachedTimeOut(startTime)) {
-                final Queue queue = QueueFactory.getQueue("buildFilters");
-                queue.add(TaskOptions.Builder.withUrl("/buildFilters"));
-                return queue;
+                if (hasReachedTimeOut(startTime)) {
+                    final Queue queue = QueueFactory.getQueue("buildFilters");
+                    queue.add(TaskOptions.Builder.withUrl("/buildFilters"));
+                    return true;
+                }
             }
         }
-        return null;
+        return false;
     }
 
     private boolean hasReachedTimeOut(final long startTime) {
         return System.currentTimeMillis() - startTime > LIMIT_MS;
-    }
-
-    private <T> boolean hasFilterOfType(final Class<T> clazz) {
-        return dao.ofy().query(clazz).getKey() != null;
     }
 
     private void putFilterCategory(final Book book) {
@@ -141,9 +144,7 @@ public class BuildFiltersServlet extends HttpServlet {
     private void putFilterAuthor(final Book book) {
         final String author = book.getAuthor();
 
-        final int count = dao.ofy().query(AuthorFilter.class).filter("value", author).count();
-
-        if (count == 0) {
+        if (dao.ofy().query(AuthorFilter.class).filter("value", author).getKey() == null) {
 
             dao.ofy().put(new AuthorFilter().value(author));
             try {
