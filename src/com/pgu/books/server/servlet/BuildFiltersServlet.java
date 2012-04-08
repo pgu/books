@@ -132,7 +132,7 @@ public class BuildFiltersServlet extends HttpServlet {
         final String category = book.getCategory();
 
         final boolean doesNotExist = //
-        dao.ofy().query(CategoryFilter.class).filter("value", category).getKey() == null //
+        dao.ofy().query(CategoryFilter.class).filter("value", category).limit(1).count() == 0 //
                 && !cache.contains(category);
 
         if (doesNotExist) {
@@ -145,7 +145,7 @@ public class BuildFiltersServlet extends HttpServlet {
         final String editor = book.getEditor();
 
         final boolean doesNotExist = //
-        dao.ofy().query(EditorFilter.class).filter("value", editor).getKey() == null //
+        dao.ofy().query(EditorFilter.class).filter("value", editor).limit(1).count() == 0 //
                 && !cache.contains(editor);
 
         if (doesNotExist) {
@@ -158,7 +158,7 @@ public class BuildFiltersServlet extends HttpServlet {
         final String author = book.getAuthor();
 
         final boolean doesNotExist = //
-        dao.ofy().query(AuthorFilter.class).filter("value", author).getKey() == null //
+        dao.ofy().query(AuthorFilter.class).filter("value", author).limit(1).count() == 0 //
                 && !cache.contains(author);
 
         if (doesNotExist) {
