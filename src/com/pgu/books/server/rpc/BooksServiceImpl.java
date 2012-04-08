@@ -24,6 +24,7 @@ import com.pgu.books.server.domain.CategoryFilter;
 import com.pgu.books.server.domain.EditorFilter;
 import com.pgu.books.server.domain.HasValue;
 import com.pgu.books.server.utils.AppQueues;
+import com.pgu.books.server.utils.AppUrls;
 import com.pgu.books.shared.Book;
 import com.pgu.books.shared.BookCategory;
 import com.pgu.books.shared.BooksFiltersDTO;
@@ -88,8 +89,7 @@ public class BooksServiceImpl extends RemoteServiceServlet implements BooksServi
             }
 
             final Queue queue = QueueFactory.getQueue(AppQueues.CLEAN_BOOK_VALUES);
-            queue.add(TaskOptions.Builder.withUrl(URL_BUILD_FILTERS) //
-                    .param(PARAM_CURSOR, itr.getCursor().toWebSafeString()));
+            queue.add(TaskOptions.Builder.withUrl(AppUrls.CLEAN_BOOK_VALUES));
 
             return countImported + " / " + countTotal + " (" + (System.nanoTime() - startTime) + " ns)";
 
