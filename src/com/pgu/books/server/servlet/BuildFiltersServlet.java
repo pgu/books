@@ -106,7 +106,7 @@ public class BuildFiltersServlet extends HttpServlet {
 
     private <T extends IsSerializable> boolean deleteFilter(final Class<T> clazz, final long startTime) {
 
-        final boolean hasFilter = dao.ofy().query(clazz).getKey() != null;
+        final boolean hasFilter = dao.ofy().query(clazz).limit(1).count() > 0;
 
         if (hasFilter) {
             final QueryResultIterator<T> itr = dao.ofy().query(clazz).iterator();
