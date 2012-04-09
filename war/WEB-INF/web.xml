@@ -15,8 +15,8 @@
     <servlet-class>com.pgu.books.server.servlet.BuildFiltersServlet</servlet-class>
   </servlet>
   <servlet>
-    <servlet-name>cleanBookValues</servlet-name>
-    <servlet-class>com.pgu.books.server.servlet.CleanBookValuesServlet</servlet-class>
+    <servlet-name>buildWords</servlet-name>
+    <servlet-class>com.pgu.books.server.servlet.BuildWordsServlet</servlet-class>
   </servlet>
   
   <servlet-mapping>
@@ -28,8 +28,8 @@
     <url-pattern>/buildFilters</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
-    <servlet-name>cleanBookValues</servlet-name>
-    <url-pattern>/cleanBookValues</url-pattern>
+    <servlet-name>buildWords</servlet-name>
+    <url-pattern>/buildWords</url-pattern>
   </servlet-mapping>
   
   <!-- Default page to serve -->

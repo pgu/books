@@ -7,7 +7,7 @@ public final class AppUrls {
     }
 
     public static final String BUILD_FILTERS = "/buildFilters";
-    public static final String CLEAN_BOOK_VALUES = "/cleanBookValues";
+    public static final String BUILD_WORDS = "/buildWords";
 
     public static final String PARAM_CURSOR = "cursor";
 

@@ -4,7 +4,7 @@ import javax.persistence.Id;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class EditorFilter implements IsSerializable, HasValue {
+public class EditorFilter implements IsSerializable, IsFilter {
 
     public EditorFilter() {
     }

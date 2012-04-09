@@ -5,6 +5,11 @@
         <description>Builds filters for books</description>
         <schedule>every day 01:00</schedule>
     </cron>
+    <cron>
+        <url>/buildWords?action=start</url>
+        <description>Builds words for books</description>
+        <schedule>every day 02:00</schedule>
+    </cron>
     <!-- 
         <schedule>every 1 minutes</schedule>
     -->

@@ -1,6 +1,6 @@
 package com.pgu.books.server.domain;
 
-public interface HasValue {
+public interface IsFilter {
 
     String getValue();
 

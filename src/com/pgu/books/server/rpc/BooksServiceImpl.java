@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Logger;
 
 import com.google.appengine.api.datastore.QueryResultIterable;
@@ -19,10 +18,9 @@ import com.googlecode.objectify.Query;
 import com.pgu.books.client.BooksService;
 import com.pgu.books.server.access.DAO;
 import com.pgu.books.server.domain.AuthorFilter;
-import com.pgu.books.server.domain.BookValue;
 import com.pgu.books.server.domain.CategoryFilter;
 import com.pgu.books.server.domain.EditorFilter;
-import com.pgu.books.server.domain.HasValue;
+import com.pgu.books.server.domain.IsFilter;
 import com.pgu.books.server.utils.AppQueues;
 import com.pgu.books.server.utils.AppUrls;
 import com.pgu.books.shared.Book;
@@ -43,7 +41,7 @@ public class BooksServiceImpl extends RemoteServiceServlet implements BooksServi
 
     @Override
     public String importBooks(final String categoryTitle) {
-        final long startTime = System.nanoTime();
+        final long startTime = System.currentTimeMillis();
 
         final InputStream is = getServletContext().getResourceAsStream("/WEB-INF/books/" + categoryTitle + ".txt");
         final BufferedReader br = new BufferedReader(new InputStreamReader(is));
@@ -60,12 +58,12 @@ public class BooksServiceImpl extends RemoteServiceServlet implements BooksServi
                 if (tokens.length == 6) {
                     countImported++;
 
-                    final String rawAuthor = tokens[0];
-                    final String author = rawAuthor.isEmpty() ? "" : rawAuthor.substring(1); // removes first "
+                    final String authorRaw = tokens[0];
+                    final String author = authorRaw.isEmpty() ? "" : authorRaw.substring(1); // removes first "
 
-                    final String rawCategory = tokens[5];
-                    final String category = rawCategory.isEmpty() ? "" : rawCategory.substring(0,
-                            rawCategory.length() - 1); // removes last "
+                    final String categoryRaw = tokens[5];
+                    final String category = categoryRaw.isEmpty() ? "" : categoryRaw.substring(0,
+                            categoryRaw.length() - 1); // removes last "
 
                     final String title = tokens[1];
                     final String editor = tokens[2];
@@ -74,24 +72,15 @@ public class BooksServiceImpl extends RemoteServiceServlet implements BooksServi
 
                     dao.ofy().put(new Book(author, title, editor, year, comment, category));
 
-                    final List<BookValue> bookValues = new ArrayList<BookValue>();
-                    bookValues.add(new BookValue().author(author));
-                    bookValues.add(new BookValue().title(title));
-                    bookValues.add(new BookValue().editor(editor));
-                    bookValues.add(new BookValue().year(year));
-                    bookValues.add(new BookValue().comment(comment));
-                    bookValues.add(new BookValue().category(category));
-                    dao.ofy().put(bookValues);
-
                 } else {
                     LOG.warning("Not imported: " + line);
                 }
             }
 
-            final Queue queue = QueueFactory.getQueue(AppQueues.CLEAN_BOOK_VALUES);
-            queue.add(TaskOptions.Builder.withUrl(AppUrls.CLEAN_BOOK_VALUES));
+            final Queue queue = QueueFactory.getQueue(AppQueues.BUILD_WORDS);
+            queue.add(TaskOptions.Builder.withUrl(AppUrls.BUILD_WORDS));
 
-            return countImported + " / " + countTotal + " (" + (System.nanoTime() - startTime) + " ns)";
+            return countImported + " / " + countTotal + " (" + (System.currentTimeMillis() - startTime) + " ms)";
 
         } catch (final IOException e) {
             e.printStackTrace();
@@ -143,7 +132,7 @@ public class BooksServiceImpl extends RemoteServiceServlet implements BooksServi
 
     @Override
     public void delete() {
-        // TODO PGU use a cursor
+        // TODO PGU use a cursor + only in local mode
         final QueryResultIterable<Key<Book>> keys = dao.ofy().query(Book.class).fetchKeys();
         dao.ofy().delete(keys);
     }
@@ -163,7 +152,7 @@ public class BooksServiceImpl extends RemoteServiceServlet implements BooksServi
         return fetchFilters(CategoryFilter.class);
     }
 
-    private <T extends HasValue> ArrayList<String> fetchFilters(final Class<T> clazz) {
+    private <T extends IsFilter> ArrayList<String> fetchFilters(final Class<T> clazz) {
 
         final Query<T> query = dao.ofy().query(clazz);
 

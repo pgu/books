@@ -7,5 +7,5 @@ public final class AppQueues {
     }
 
     public static final String BUILD_FILTERS = "buildFilters";
-    public static final String CLEAN_BOOK_VALUES = "cleanBookValues";
+    public static final String BUILD_WORDS = "buildWords";
 }

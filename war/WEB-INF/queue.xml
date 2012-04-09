@@ -6,7 +6,7 @@
     <rate>5/s</rate>
   </queue>
   <queue>
-    <name>cleanBookValues</name>
+    <name>buildWords</name>
     <bucket-size>1</bucket-size>
     <rate>5/s</rate>
   </queue>

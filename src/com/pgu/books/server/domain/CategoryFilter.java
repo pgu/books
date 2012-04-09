@@ -4,7 +4,7 @@ import javax.persistence.Id;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class CategoryFilter implements IsSerializable, HasValue {
+public class CategoryFilter implements IsSerializable, IsFilter {
 
     public CategoryFilter() {
     }
