@@ -170,8 +170,8 @@ public class BooksServiceImpl extends RemoteServiceServlet implements BooksServi
 
     @Override
     public ArrayList<String> fetchWords(final String text) {
-        final Query<Word> query = dao.ofy().query(Word.class).filter("field >=", text)
-                .filter("field <", text + "\uFFFD");
+        final Query<Word> query = dao.ofy().query(Word.class).filter("value >=", text)
+                .filter("value <", text + "\uFFFD");
 
         final int nbWords = query.count();
         final ArrayList<String> words = new ArrayList<String>(nbWords);
