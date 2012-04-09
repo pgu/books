@@ -137,10 +137,37 @@ public class BuildWordsServlet extends HttpServlet {
             return;
 
         } else if (ACTION_WORDS.equalsIgnoreCase(action)) {
-            // build words
+            //
+            // loop through all bookWords to create the words
+            final Query<BookWord> query = dao.ofy().query(BookWord.class);
 
+            final String cursorParam = req.getParameter(AppUrls.PARAM_CURSOR);
+            if (cursorParam != null) {
+                query.startCursor(Cursor.fromWebSafeString(cursorParam));
+            }
+
+            final QueryResultIterator<BookWord> itr = query.iterator();
+            while (itr.hasNext()) {
+                final BookWord bookWord = itr.next();
+
+                if (AppUtils.hasReachedTimeOut(startTime)) {
+                    final Queue queue = QueueFactory.getQueue(AppQueues.BUILD_WORDS);
+                    queue.add(TaskOptions.Builder.withUrl(AppUrls.BUILD_WORDS) //
+                            .param(PARAM_ACTION, ACTION_WORDS) //
+                            .param(AppUrls.PARAM_CURSOR, itr.getCursor().toWebSafeString()));
+
+                    AppUtils.print("Words creation in process", resp, startTime);
+                    return;
+                }
+            }
+
+            AppUtils.print("Words creation process is over", resp, startTime);
+            return;
+
+        } else {
+            AppUtils.setBadRequest("Unknown action: " + action, resp);
+            return;
         }
-
     }
 
     private void extractWordsAndCreateBookWords(String text, final Long bookId) {
