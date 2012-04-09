@@ -1,6 +1,8 @@
 package com.pgu.books.client.ui.books.search;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Button;
@@ -18,25 +20,31 @@ public class BooksSearch extends Composite {
     }
 
     @UiField
-    Label      title;
+    Label title;
 
     @UiField
-    Button     btnSearch;
+    Button btnSearch;
 
     @UiField(provided = true)
     SuggestBox suggestBox;
 
+    private final MultiWordSuggestOracle oracle;
+
     public BooksSearch() {
 
-        final MultiWordSuggestOracle oracle = new MultiWordSuggestOracle();
-        final String[] words = new String[] { "toto", "titi", "tata" };
-        for (int i = 0; i < words.length; ++i) {
-            oracle.add(words[i]);
-        }
-
+        oracle = new MultiWordSuggestOracle();
         suggestBox = new SuggestBox(oracle);
 
         initWidget(uiBinder.createAndBindUi(this));
+
+        suggestBox.addKeyUpHandler(new KeyUpHandler() {
+
+            @Override
+            public void onKeyUp(final KeyUpEvent event) {
+                suggestBox.getValue();
+                suggestBox.getText();
+            }
+        });
     }
 
 }
