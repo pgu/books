@@ -39,4 +39,14 @@ public class Word implements IsSerializable, IsWord {
         this.display = display;
     }
 
+    public Word value(final String value) {
+        setValue(value);
+        return this;
+    }
+
+    public Word display(final String display) {
+        setDisplay(display);
+        return this;
+    }
+
 }

@@ -1,6 +1,7 @@
 package com.pgu.books.server.servlet;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
@@ -146,9 +147,31 @@ public class BuildWordsServlet extends HttpServlet {
                 query.startCursor(Cursor.fromWebSafeString(cursorParam));
             }
 
+            final List<String> wordsCache = new ArrayList<String>();
             final QueryResultIterator<BookWord> itr = query.iterator();
             while (itr.hasNext()) {
                 final BookWord bookWord = itr.next();
+                final String value = bookWord.getValue();
+                final String display = bookWord.getDisplay();
+
+                // if it is in the cache then go to next
+                final String wordCache = value + "|" + display;
+                if (wordsCache.contains(wordCache)) {
+                    continue;
+                }
+
+                // if it is in the DB then go to next
+                final int count = dao.ofy().query(Word.class) //
+                        .filter("value", value) //
+                        .filter("display", display) //
+                        .limit(1).count();
+                if (count > 0) {
+                    continue;
+                }
+
+                // it does not exist then let's add it
+                dao.ofy().put(new Word().value(value).display(display));
+                wordsCache.add(wordCache); // update cache
 
                 if (AppUtils.hasReachedTimeOut(startTime)) {
                     final Queue queue = QueueFactory.getQueue(AppQueues.BUILD_WORDS);
