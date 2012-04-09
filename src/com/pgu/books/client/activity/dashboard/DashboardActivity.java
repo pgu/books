@@ -181,7 +181,7 @@ public class DashboardActivity implements //
 
             @Override
             public void onSuccess(final ArrayList<String> words) {
-                dashboardUI.getBooksSearchUI().setWords(words);
+                dashboardUI.getBooksSearchUI().setWords(words, text);
             }
 
         });

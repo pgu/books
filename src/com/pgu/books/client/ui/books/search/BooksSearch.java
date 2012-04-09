@@ -1,5 +1,7 @@
 package com.pgu.books.client.ui.books.search;
 
+import java.util.ArrayList;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
@@ -43,7 +45,7 @@ public class BooksSearch extends Composite {
 
             @Override
             public void onKeyUp(final KeyUpEvent event) {
-                if (suggestBox.getText().length() > 2) {
+                if (suggestBox.getText().length() == 3) {
                     presenter.getSuggestions(suggestBox.getText());
                 }
             }
@@ -52,6 +54,13 @@ public class BooksSearch extends Composite {
 
     public void setPresenter(final BooksSearchPresenter presenter) {
         this.presenter = presenter;
+    }
+
+    public void setWords(final ArrayList<String> words, final String text) {
+        if (suggestBox.getText().startsWith(text)) {
+            oracle.clear();
+            oracle.addAll(words);
+        }
     }
 
 }
