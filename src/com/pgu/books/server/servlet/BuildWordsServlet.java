@@ -117,6 +117,16 @@ public class BuildWordsServlet extends HttpServlet {
                 sb.append(book.getYear());
 
                 extractWordsAndCreateBookWords(sb.toString(), book.getId());
+
+                if (AppUtils.hasReachedTimeOut(startTime)) {
+                    final Queue queue = QueueFactory.getQueue(AppQueues.BUILD_WORDS);
+                    queue.add(TaskOptions.Builder.withUrl(AppUrls.BUILD_WORDS) //
+                            .param(PARAM_ACTION, ACTION_BOOK_WORDS) //
+                            .param(AppUrls.PARAM_CURSOR, itr.getCursor().toWebSafeString()));
+
+                    AppUtils.print("BookWords creation in process", resp, startTime);
+                    return;
+                }
             }
 
             // next step: put new words
