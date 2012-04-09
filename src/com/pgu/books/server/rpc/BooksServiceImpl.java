@@ -21,6 +21,7 @@ import com.pgu.books.server.domain.AuthorFilter;
 import com.pgu.books.server.domain.CategoryFilter;
 import com.pgu.books.server.domain.EditorFilter;
 import com.pgu.books.server.domain.IsFilter;
+import com.pgu.books.server.domain.Word;
 import com.pgu.books.server.utils.AppQueues;
 import com.pgu.books.server.utils.AppUrls;
 import com.pgu.books.shared.Book;
@@ -165,6 +166,22 @@ public class BooksServiceImpl extends RemoteServiceServlet implements BooksServi
             names.add(itr.next().getValue());
         }
         return names;
+    }
+
+    @Override
+    public ArrayList<String> fetchWords(final String text) {
+        final Query<Word> query = dao.ofy().query(Word.class).filter("field >=", text)
+                .filter("field <", text + "\uFFFD");
+
+        final int nbWords = query.count();
+        final ArrayList<String> words = new ArrayList<String>(nbWords);
+
+        final QueryResultIterator<Word> itr = query.iterator();
+        while (itr.hasNext()) {
+
+            words.add(itr.next().getDisplay());
+        }
+        return words;
     }
 
 }

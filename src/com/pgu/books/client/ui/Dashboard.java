@@ -179,4 +179,8 @@ public class Dashboard extends Composite {
     public BooksFilters getBooksFiltersUI() {
         return booksFilters;
     }
+
+    public BooksSearch getBooksSearchUI() {
+        return booksSearch;
+    }
 }

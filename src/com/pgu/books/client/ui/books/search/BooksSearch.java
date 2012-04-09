@@ -11,6 +11,7 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
 import com.google.gwt.user.client.ui.SuggestBox;
 import com.google.gwt.user.client.ui.Widget;
+import com.pgu.books.client.activity.books.search.BooksSearchPresenter;
 
 public class BooksSearch extends Composite {
 
@@ -29,6 +30,7 @@ public class BooksSearch extends Composite {
     SuggestBox suggestBox;
 
     private final MultiWordSuggestOracle oracle;
+    private BooksSearchPresenter presenter;
 
     public BooksSearch() {
 
@@ -41,10 +43,15 @@ public class BooksSearch extends Composite {
 
             @Override
             public void onKeyUp(final KeyUpEvent event) {
-                suggestBox.getValue();
-                suggestBox.getText();
+                if (suggestBox.getText().length() > 2) {
+                    presenter.getSuggestions(suggestBox.getText());
+                }
             }
         });
+    }
+
+    public void setPresenter(final BooksSearchPresenter presenter) {
+        this.presenter = presenter;
     }
 
 }

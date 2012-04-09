@@ -24,4 +24,6 @@ public interface BooksServiceAsync {
 
     void fetchFilterCategories(AsyncCallback<ArrayList<String>> asyncCallbackApp);
 
+    void fetchWords(String text, AsyncCallback<ArrayList<String>> asyncCallbackApp);
+
 }

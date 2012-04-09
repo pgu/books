@@ -26,4 +26,6 @@ public interface BooksService extends RemoteService {
 
     ArrayList<String> fetchFilterCategories();
 
+    ArrayList<String> fetchWords(String text);
+
 }

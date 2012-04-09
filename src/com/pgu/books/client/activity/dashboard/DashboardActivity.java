@@ -9,6 +9,7 @@ import com.pgu.books.client.BooksService;
 import com.pgu.books.client.BooksServiceAsync;
 import com.pgu.books.client.activity.books.board.BooksboardPresenter;
 import com.pgu.books.client.activity.books.filters.BooksFiltersPresenter;
+import com.pgu.books.client.activity.books.search.BooksSearchPresenter;
 import com.pgu.books.client.activity.booksImport.BooksImportPresenter;
 import com.pgu.books.client.app.AsyncCallbackApp;
 import com.pgu.books.client.ui.Dashboard;
@@ -19,7 +20,8 @@ public class DashboardActivity implements //
         DashboardPresenter, //
         BooksImportPresenter, //
         BooksboardPresenter, //
-        BooksFiltersPresenter //
+        BooksFiltersPresenter, //
+        BooksSearchPresenter //
 {
 
     public static DashboardActivity INSTANCE = new DashboardActivity();
@@ -38,6 +40,7 @@ public class DashboardActivity implements //
             dashboardUI.getBooksImportUI().setPresenter(this);
             dashboardUI.getBooksboardUI().setPresenter(this);
             dashboardUI.getBooksFiltersUI().setPresenter(this);
+            dashboardUI.getBooksSearchUI().setPresenter(this);
 
             dashboardUI.getBooksboardUI().initFetchBooks();
             fetchFilters();
@@ -167,6 +170,18 @@ public class DashboardActivity implements //
             @Override
             public void onSuccess(final Void result) {
                 Window.alert("Done");
+            }
+
+        });
+    }
+
+    @Override
+    public void getSuggestions(final String text) {
+        booksService.fetchWords(text, new AsyncCallbackApp<ArrayList<String>>() {
+
+            @Override
+            public void onSuccess(final ArrayList<String> words) {
+                dashboardUI.getBooksSearchUI().setWords(words);
             }
 
         });
