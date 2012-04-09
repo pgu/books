@@ -131,8 +131,8 @@ public class BuildWordsServlet extends HttpServlet {
             }
 
             // next step: put new words
-            final Queue queue = QueueFactory.getQueue(AppQueues.BUILD_FILTERS);
-            queue.add(TaskOptions.Builder.withUrl(AppUrls.BUILD_FILTERS).param(PARAM_ACTION, ACTION_WORDS));
+            final Queue queue = QueueFactory.getQueue(AppQueues.BUILD_WORDS);
+            queue.add(TaskOptions.Builder.withUrl(AppUrls.BUILD_WORDS).param(PARAM_ACTION, ACTION_WORDS));
 
             AppUtils.print("BookWords creation process is over", resp, startTime, LOGGER);
             return;
