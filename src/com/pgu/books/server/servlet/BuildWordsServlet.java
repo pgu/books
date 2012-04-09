@@ -170,7 +170,7 @@ public class BuildWordsServlet extends HttpServlet {
                 }
 
                 // it does not exist then let's add it
-                dao.ofy().put(new Word().value(value).display(display));
+                dao.ofy().put(new Word().value(value).display(display)); // TODO PGU add weight based on count?
                 wordsCache.add(wordCache); // update cache
 
                 if (AppUtils.hasReachedTimeOut(startTime)) {
