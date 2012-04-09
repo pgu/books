@@ -64,7 +64,7 @@ public class BuildFiltersServlet extends HttpServlet {
         final String action = req.getParameter(PARAM_ACTION);
         if (action == null //
                 || !actions.contains(action.toLowerCase())) {
-            AppUtils.setBadRequest("Illegal action for this request: " + action, resp);
+            AppUtils.setBadRequest("Illegal action for this request: " + action, resp, LOGGER);
             return;
         }
 
@@ -147,7 +147,7 @@ public class BuildFiltersServlet extends HttpServlet {
                 filterClass = CategoryFilter.class;
 
             } else {
-                AppUtils.setBadRequest("Unknown filter: " + paramFilter, resp);
+                AppUtils.setBadRequest("Unknown filter: " + paramFilter, resp, LOGGER);
                 return;
             }
 
@@ -217,7 +217,7 @@ public class BuildFiltersServlet extends HttpServlet {
             }
 
         } else {
-            AppUtils.setBadRequest("Unknown action: " + action, resp);
+            AppUtils.setBadRequest("Unknown action: " + action, resp, LOGGER);
             return;
         }
     }

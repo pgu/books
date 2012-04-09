@@ -19,10 +19,14 @@ public final class AppUtils {
         return System.currentTimeMillis() - startTimeInMs > LIMIT_MS;
     }
 
-    public static void setBadRequest(final String msg, final HttpServletResponse resp) throws IOException {
+    public static void setBadRequest(final String msg, final HttpServletResponse resp, final Logger logger)
+            throws IOException {
+
         resp.setStatus(HttpStatus.SC_BAD_REQUEST);
         resp.setContentType("text/plain");
         resp.getWriter().print(msg);
+
+        logger.info(msg);
     }
 
     public static void print(final String msg, final HttpServletResponse resp, final long startTime, final Logger logger)

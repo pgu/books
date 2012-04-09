@@ -62,7 +62,7 @@ public class BuildWordsServlet extends HttpServlet {
         final String action = req.getParameter(PARAM_ACTION);
         if (action == null //
                 || !actions.contains(action.toLowerCase())) {
-            AppUtils.setBadRequest("Illegal action for this request: " + action, resp);
+            AppUtils.setBadRequest("Illegal action for this request: " + action, resp, LOGGER);
             return;
         }
 
@@ -188,7 +188,7 @@ public class BuildWordsServlet extends HttpServlet {
             return;
 
         } else {
-            AppUtils.setBadRequest("Unknown action: " + action, resp);
+            AppUtils.setBadRequest("Unknown action: " + action, resp, LOGGER);
             return;
         }
     }
