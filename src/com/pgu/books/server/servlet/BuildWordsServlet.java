@@ -38,7 +38,7 @@ public class BuildWordsServlet extends HttpServlet {
     private static final String PARAM_ACTION = "action";
     private static final String ACTION_START = "start";
     private static final String ACTION_DELETE = "delete";
-    private static final String ACTION_BOOK_WORDS = "bookWords";
+    private static final String ACTION_BOOK_WORDS = "bookwords";
     private static final String ACTION_WORDS = "words";
 
     private static final List<String> actions = Arrays.asList(ACTION_BOOK_WORDS, ACTION_DELETE, ACTION_START,
