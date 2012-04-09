@@ -83,7 +83,7 @@ public class BuildFiltersServlet extends HttpServlet {
                     final Queue queue = QueueFactory.getQueue(AppQueues.BUILD_FILTERS);
                     queue.add(TaskOptions.Builder.withUrl(AppUrls.BUILD_FILTERS).param(PARAM_ACTION, ACTION_DELETE));
 
-                    AppUtils.print("Deletion in process", resp, startTime);
+                    AppUtils.print("Deletion in process", resp, startTime, LOGGER);
                     return;
                 }
             }
@@ -91,7 +91,7 @@ public class BuildFiltersServlet extends HttpServlet {
             final Queue queue = QueueFactory.getQueue(AppQueues.BUILD_FILTERS);
             queue.add(TaskOptions.Builder.withUrl(AppUrls.BUILD_FILTERS).param(PARAM_ACTION, ACTION_PUT));
 
-            AppUtils.print("Deletion process is over", resp, startTime);
+            AppUtils.print("Deletion process is over", resp, startTime, LOGGER);
             return;
 
         } else if (ACTION_PUT.equalsIgnoreCase(action)) {
@@ -118,7 +118,7 @@ public class BuildFiltersServlet extends HttpServlet {
                             .param(PARAM_ACTION, ACTION_PUT) //
                             .param(AppUrls.PARAM_CURSOR, itr.getCursor().toWebSafeString()));
 
-                    AppUtils.print("Creation in process", resp, startTime);
+                    AppUtils.print("Creation in process", resp, startTime, LOGGER);
                     return;
                 }
             }
@@ -127,7 +127,7 @@ public class BuildFiltersServlet extends HttpServlet {
             final Queue queue = QueueFactory.getQueue(AppQueues.BUILD_FILTERS);
             queue.add(TaskOptions.Builder.withUrl(AppUrls.BUILD_FILTERS).param(PARAM_ACTION, ACTION_CLEAN));
 
-            AppUtils.print("Creation process is over", resp, startTime);
+            AppUtils.print("Creation process is over", resp, startTime, LOGGER);
             return;
 
         } else if (ACTION_CLEAN.equalsIgnoreCase(action)) {
@@ -188,7 +188,7 @@ public class BuildFiltersServlet extends HttpServlet {
                             .param(PARAM_FILTER, filterValue) //
                             .param(AppUrls.PARAM_CURSOR, itr.getCursor().toWebSafeString()));
 
-                    AppUtils.print("Cleaning in process", resp, startTime);
+                    AppUtils.print("Cleaning in process", resp, startTime, LOGGER);
                     return;
                 }
             }
@@ -199,7 +199,7 @@ public class BuildFiltersServlet extends HttpServlet {
                         .param(PARAM_ACTION, ACTION_CLEAN) //
                         .param(PARAM_FILTER, FILTER_EDITOR));
 
-                AppUtils.print("Cleaning in process", resp, startTime);
+                AppUtils.print("Cleaning in process", resp, startTime, LOGGER);
                 return;
 
             } else if (EditorFilter.class.equals(filterClass)) {
@@ -208,11 +208,11 @@ public class BuildFiltersServlet extends HttpServlet {
                         .param(PARAM_ACTION, ACTION_CLEAN) //
                         .param(PARAM_FILTER, FILTER_CATEGORY));
 
-                AppUtils.print("Cleaning in process", resp, startTime);
+                AppUtils.print("Cleaning in process", resp, startTime, LOGGER);
                 return;
             } else {
 
-                AppUtils.print("Cleaning process is over", resp, startTime);
+                AppUtils.print("Cleaning process is over", resp, startTime, LOGGER);
                 return;
             }
 

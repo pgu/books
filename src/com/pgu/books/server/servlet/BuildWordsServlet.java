@@ -78,7 +78,7 @@ public class BuildWordsServlet extends HttpServlet {
                     final Queue queue = QueueFactory.getQueue(AppQueues.BUILD_WORDS);
                     queue.add(TaskOptions.Builder.withUrl(AppUrls.BUILD_WORDS).param(PARAM_ACTION, ACTION_DELETE));
 
-                    AppUtils.print("Deletion in process", resp, startTime);
+                    AppUtils.print("Deletion in process", resp, startTime, LOGGER);
                     return;
                 }
             }
@@ -87,7 +87,7 @@ public class BuildWordsServlet extends HttpServlet {
             final Queue queue = QueueFactory.getQueue(AppQueues.BUILD_WORDS);
             queue.add(TaskOptions.Builder.withUrl(AppUrls.BUILD_WORDS).param(PARAM_ACTION, ACTION_BOOK_WORDS));
 
-            AppUtils.print("Deletion process is over", resp, startTime);
+            AppUtils.print("Deletion process is over", resp, startTime, LOGGER);
             return;
 
         } else if (ACTION_BOOK_WORDS.equalsIgnoreCase(action)) {
@@ -125,7 +125,7 @@ public class BuildWordsServlet extends HttpServlet {
                             .param(PARAM_ACTION, ACTION_BOOK_WORDS) //
                             .param(AppUrls.PARAM_CURSOR, itr.getCursor().toWebSafeString()));
 
-                    AppUtils.print("BookWords creation in process", resp, startTime);
+                    AppUtils.print("BookWords creation in process", resp, startTime, LOGGER);
                     return;
                 }
             }
@@ -134,7 +134,7 @@ public class BuildWordsServlet extends HttpServlet {
             final Queue queue = QueueFactory.getQueue(AppQueues.BUILD_FILTERS);
             queue.add(TaskOptions.Builder.withUrl(AppUrls.BUILD_FILTERS).param(PARAM_ACTION, ACTION_WORDS));
 
-            AppUtils.print("BookWords creation process is over", resp, startTime);
+            AppUtils.print("BookWords creation process is over", resp, startTime, LOGGER);
             return;
 
         } else if (ACTION_WORDS.equalsIgnoreCase(action)) {
@@ -179,12 +179,12 @@ public class BuildWordsServlet extends HttpServlet {
                             .param(PARAM_ACTION, ACTION_WORDS) //
                             .param(AppUrls.PARAM_CURSOR, itr.getCursor().toWebSafeString()));
 
-                    AppUtils.print("Words creation in process", resp, startTime);
+                    AppUtils.print("Words creation in process", resp, startTime, LOGGER);
                     return;
                 }
             }
 
-            AppUtils.print("Words creation process is over", resp, startTime);
+            AppUtils.print("Words creation process is over", resp, startTime, LOGGER);
             return;
 
         } else {

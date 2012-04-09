@@ -1,6 +1,7 @@
 package com.pgu.books.server.utils;
 
 import java.io.IOException;
+import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -24,9 +25,15 @@ public final class AppUtils {
         resp.getWriter().print(msg);
     }
 
-    public static void print(final String msg, final HttpServletResponse resp, final long startTime) throws IOException {
+    public static void print(final String msg, final HttpServletResponse resp, final long startTime, final Logger logger)
+            throws IOException {
+
+        final String responseText = msg + " (" + (System.currentTimeMillis() - startTime) + " ms)";
+
         resp.setContentType("text/plain");
-        resp.getWriter().println(msg + " (" + (System.currentTimeMillis() - startTime) + " ms)");
+        resp.getWriter().println(responseText);
+
+        logger.info(responseText);
     }
 
 }
