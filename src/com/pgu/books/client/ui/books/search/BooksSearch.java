@@ -20,57 +20,33 @@ public class BooksSearch extends Composite {
     }
 
     @UiField
-    Label title;
+    Label                                  title;
 
     @UiField
-    Button btnSearch;
+    Button                                 btnSearch;
 
     @UiField(provided = true)
-    SuggestBox suggestBox;
+    SuggestBox                             suggestBox;
 
-    // private final MultiWordSuggestOracle oracle;
-    private final MySuggestOracle myOracle;
-    private BooksSearchPresenter presenter;
+    private final BooksSearchSuggestOracle booksSearchSuggestOracle;
+    private BooksSearchPresenter           presenter;
 
     public BooksSearch() {
 
-        // oracle = new MultiWordSuggestOracle();
-        // suggestBox = new SuggestBox(oracle);
-
-        myOracle = new MySuggestOracle();
-        suggestBox = new SuggestBox(myOracle);
+        booksSearchSuggestOracle = new BooksSearchSuggestOracle();
+        suggestBox = new SuggestBox(booksSearchSuggestOracle);
 
         initWidget(uiBinder.createAndBindUi(this));
-
-        // suggestBox.getTextBox().addKeyUpHandler(new KeyUpHandler() {
-        //
-        // @Override
-        // public void onKeyUp(final KeyUpEvent event) {
-        // GWT.log("keyup " + suggestBox.getText().length());
-        // if (suggestBox.getText().length() == 3) {
-        // presenter.getSuggestions(suggestBox.getText());
-        // }
-        // }
-        // });
     }
 
     public void setPresenter(final BooksSearchPresenter presenter) {
         this.presenter = presenter;
-        myOracle.setPresenter(presenter);
+        booksSearchSuggestOracle.setPresenter(presenter);
     }
 
     public void setWords(final ArrayList<String> words, final String text) {
-        GWT.log("setwords");
-        // if (suggestBox.getText().startsWith(text)) {
-        // TODO PGU
-        // oracle.clear();
-        // oracle.setDefaultSuggestionsFromText(words);
-        // suggestBox.showSuggestionList();
-        // }
         if (suggestBox.getText().startsWith(text)) {
-            GWT.log("showsuggestion");
-            myOracle.setWords(words, text);
+            booksSearchSuggestOracle.setWords(words, text);
         }
-
     }
 }

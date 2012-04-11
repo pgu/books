@@ -2,11 +2,10 @@ package com.pgu.books.client.ui.books.search;
 
 import java.util.ArrayList;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.SuggestOracle;
 import com.pgu.books.client.activity.books.search.BooksSearchPresenter;
 
-public class MySuggestOracle extends SuggestOracle {
+public class BooksSearchSuggestOracle extends SuggestOracle {
 
     private BooksSearchPresenter presenter;
 
@@ -15,7 +14,7 @@ public class MySuggestOracle extends SuggestOracle {
     }
 
     private Callback callback;
-    private Request request;
+    private Request  request;
 
     @Override
     public void requestSuggestions(final Request request, final Callback callback) {
@@ -40,8 +39,6 @@ public class MySuggestOracle extends SuggestOracle {
         for (final String word : words) {
             suggestions.add(new MySuggestion(word));
         }
-
-        GWT.log("suggestions " + suggestions.size());
 
         final Response response = new Response(suggestions);
         callback.onSuggestionsReady(request, response);
