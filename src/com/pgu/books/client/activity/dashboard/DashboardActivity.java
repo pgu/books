@@ -3,6 +3,8 @@ package com.pgu.books.client.activity.dashboard;
 import java.util.ArrayList;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.pgu.books.client.BooksService;
@@ -45,37 +47,73 @@ public class DashboardActivity implements //
             dashboardUI.getBooksFiltersUI().setPresenter(this);
             dashboardUI.getBooksSearchUI().setPresenter(this);
 
-            dashboardUI.getBooksboardUI().initFetchBooks();
-            fetchFilters();
+            Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+
+                @Override
+                public void execute() {
+                    dashboardUI.getBooksboardUI().initFetchBooks();
+                }
+            });
+            Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+
+                @Override
+                public void execute() {
+                    fetchFilters();
+                }
+            });
         }
         return dashboardUI;
     }
 
     private void fetchFilters() {
-        booksService.fetchFilterAuthors(new AsyncCallbackApp<ArrayList<String>>() {
+        Scheduler.get().scheduleDeferred(new ScheduledCommand() {
 
             @Override
-            public void onSuccess(final ArrayList<String> authors) {
-                dashboardUI.getBooksFiltersUI().addAuthors(authors);
-            }
+            public void execute() {
 
+                booksService.fetchFilterAuthors(new AsyncCallbackApp<ArrayList<String>>() {
+
+                    @Override
+                    public void onSuccess(final ArrayList<String> authors) {
+                        dashboardUI.getBooksFiltersUI().addAuthors(authors);
+                    }
+
+                });
+            }
         });
-        booksService.fetchFilterEditors(new AsyncCallbackApp<ArrayList<String>>() {
+
+        Scheduler.get().scheduleDeferred(new ScheduledCommand() {
 
             @Override
-            public void onSuccess(final ArrayList<String> editors) {
-                dashboardUI.getBooksFiltersUI().addEditors(editors);
-            }
+            public void execute() {
 
+                booksService.fetchFilterEditors(new AsyncCallbackApp<ArrayList<String>>() {
+
+                    @Override
+                    public void onSuccess(final ArrayList<String> editors) {
+                        dashboardUI.getBooksFiltersUI().addEditors(editors);
+                    }
+
+                });
+            }
         });
-        booksService.fetchFilterCategories(new AsyncCallbackApp<ArrayList<String>>() {
+
+        Scheduler.get().scheduleDeferred(new ScheduledCommand() {
 
             @Override
-            public void onSuccess(final ArrayList<String> categories) {
-                dashboardUI.getBooksFiltersUI().addCategories(categories);
-            }
+            public void execute() {
 
+                booksService.fetchFilterCategories(new AsyncCallbackApp<ArrayList<String>>() {
+
+                    @Override
+                    public void onSuccess(final ArrayList<String> categories) {
+                        dashboardUI.getBooksFiltersUI().addCategories(categories);
+                    }
+
+                });
+            }
         });
+
     }
 
     @Override
