@@ -4,17 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.pgu.books.client.ui.books.filters.FilterValue;
+import com.pgu.books.client.ui.books.filters.Letter;
 
 public interface BooksFiltersPresenter {
 
     void fetchBooks(ArrayList<String> selectedAuthors, ArrayList<String> selectedEditors,
             ArrayList<String> selectedCategories);
 
-    void countAuthorsByLetters();
+    void countAuthorsByLetters(List<Letter> lettersToFill);
 
-    void countEditorsByLetters();
+    void countEditorsByLetters(List<Letter> lettersToFill);
 
-    void countCategoriesByLetters();
+    void countCategoriesByLetters(List<Letter> lettersToFill);
 
     void fetchCategoriesByLetter(String letter, List<FilterValue> valuesToFill);
 

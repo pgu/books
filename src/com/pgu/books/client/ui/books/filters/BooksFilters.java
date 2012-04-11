@@ -33,7 +33,7 @@ public class BooksFilters extends Composite {
     }
 
     @UiField
-    Button           btnApplyFilters;
+    Button btnApplyFilters;
 
     @UiField(provided = true)
     StackLayoutPanel stackPanel;
@@ -42,15 +42,15 @@ public class BooksFilters extends Composite {
         AUTHOR, EDITOR, CATEGORY
     }
 
-    private final CellBrowser         authors;
-    private final CellBrowser         editors;
-    private final CellBrowser         categories;
+    private final CellBrowser authors;
+    private final CellBrowser editors;
+    private final CellBrowser categories;
 
-    private final FilterTreeViewModel authorTVM   = new FilterTreeViewModel(FilterType.AUTHOR);
-    private final FilterTreeViewModel editorTVM   = new FilterTreeViewModel(FilterType.EDITOR);
+    private final FilterTreeViewModel authorTVM = new FilterTreeViewModel(FilterType.AUTHOR);
+    private final FilterTreeViewModel editorTVM = new FilterTreeViewModel(FilterType.EDITOR);
     private final FilterTreeViewModel categoryTVM = new FilterTreeViewModel(FilterType.CATEGORY);
 
-    private BooksFiltersPresenter     presenter;
+    private BooksFiltersPresenter presenter;
 
     public BooksFilters() {
 
@@ -98,21 +98,21 @@ public class BooksFilters extends Composite {
 
             @Override
             public void onClick(final ClickEvent event) {
-                // TODO PGU 
-                //                for (int i = 0; i < container.getWidgetCount(); i++) {
-                //                    final CheckBox cb = (CheckBox) container.getWidget(i);
-                //                    cb.setValue(isSelected);
-                //                }
+                // TODO PGU
+                // for (int i = 0; i < container.getWidgetCount(); i++) {
+                // final CheckBox cb = (CheckBox) container.getWidget(i);
+                // cb.setValue(isSelected);
+                // }
             }
         });
     }
 
     private void fillFilter(final List<String> values, final CellBrowser container) {
-        // TODO PGU 
-        //        container.clear();
+        // TODO PGU
+        // container.clear();
         for (final String v : values) {
             final CheckBox cb = new CheckBox(v);
-            //            container.add(cb);
+            // container.add(cb);
         }
     }
 
@@ -142,13 +142,13 @@ public class BooksFilters extends Composite {
 
     private ArrayList<String> getSelectedValues(final CellBrowser container) {
         final ArrayList<String> selecteds = new ArrayList<String>();
-        // TODO PGU 
-        //        for (int i = 0; i < container.getWidgetCount(); i++) {
-        //            final CheckBox cb = (CheckBox) container.getWidget(i);
-        //            if (cb.getValue()) {
-        //                selecteds.add(cb.getText());
-        //            }
-        //        }
+        // TODO PGU
+        // for (int i = 0; i < container.getWidgetCount(); i++) {
+        // final CheckBox cb = (CheckBox) container.getWidget(i);
+        // if (cb.getValue()) {
+        // selecteds.add(cb.getText());
+        // }
+        // }
         return selecteds;
     }
 
