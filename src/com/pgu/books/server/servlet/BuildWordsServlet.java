@@ -3,6 +3,7 @@ package com.pgu.books.server.servlet;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -195,13 +196,12 @@ public class BuildWordsServlet extends HttpServlet {
 
     private void extractWordsAndCreateBookWords(String text, final Long bookId) {
         text = text.replaceAll("[^A-Za-z0-9 ÁáÉéÍíÓóÚúñÑ]", SEP);
-        final String[] parts = text.split(SEP);
-        // TODO PGU makes a set of the string, process the strings here <value, [display1, display2]>
-        for (final String part : parts) {
+
+        for (final String part : new HashSet<String>(Arrays.asList(text.split(SEP)))) {
             final String p = part.trim();
             if (p.length() > 2) {
 
-                dao.ofy().put(new BookWord().value(p).bookId(bookId));
+                dao.ofy().put(new BookWord().display(p).bookId(bookId));
             }
         }
     }
