@@ -1,6 +1,7 @@
 package com.pgu.books.client.activity.dashboard;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
@@ -15,6 +16,7 @@ import com.pgu.books.client.activity.books.search.BooksSearchPresenter;
 import com.pgu.books.client.activity.booksImport.BooksImportPresenter;
 import com.pgu.books.client.app.AsyncCallbackApp;
 import com.pgu.books.client.ui.Dashboard;
+import com.pgu.books.client.ui.books.filters.FilterValue;
 import com.pgu.books.shared.Book;
 import com.pgu.books.shared.BooksFiltersDTO;
 
@@ -230,6 +232,42 @@ public class DashboardActivity implements //
     public void searchBooks(final String text) {
         filtersDTO.setSearchText(text);
         fetchBooks(0, dashboardUI.getBooksboardUI().getLength());
+    }
+
+    @Override
+    public void countAuthorsByLetters() {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void countEditorsByLetters() {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void countCategoriesByLetters() {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void fetchCategoriesByLetter(final String letter, final List<FilterValue> valuesToFill) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void fetchEditorsByLetter(final String letter, final List<FilterValue> valuesToFill) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void fetchAuthorsByLetter(final String letter, final List<FilterValue> valuesToFill) {
+        // TODO Auto-generated method stub
+
     }
 
 }

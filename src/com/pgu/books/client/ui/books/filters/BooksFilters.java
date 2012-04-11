@@ -10,8 +10,8 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.cellview.client.CellBrowser;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.CellPanel;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DisclosurePanel;
@@ -33,23 +33,33 @@ public class BooksFilters extends Composite {
     }
 
     @UiField
-    Button                        btnApplyFilters;
+    Button           btnApplyFilters;
 
     @UiField(provided = true)
-    StackLayoutPanel              stackPanel;
+    StackLayoutPanel stackPanel;
 
-    // TODO PGU add cellBrowsers
-    // TODO PGU remove "all" from disclosurepanel
-    private final VerticalPanel   authors    = new VerticalPanel();
-    private final VerticalPanel   editors    = new VerticalPanel();
-    private final VerticalPanel   categories = new VerticalPanel();
+    public enum FilterType {
+        AUTHOR, EDITOR, CATEGORY
+    }
 
-    private BooksFiltersPresenter presenter;
+    private final CellBrowser         authors;
+    private final CellBrowser         editors;
+    private final CellBrowser         categories;
+
+    private final FilterTreeViewModel authorTVM   = new FilterTreeViewModel(FilterType.AUTHOR);
+    private final FilterTreeViewModel editorTVM   = new FilterTreeViewModel(FilterType.EDITOR);
+    private final FilterTreeViewModel categoryTVM = new FilterTreeViewModel(FilterType.CATEGORY);
+
+    private BooksFiltersPresenter     presenter;
 
     public BooksFilters() {
 
         stackPanel = new StackLayoutPanel(Unit.EM);
         stackPanel.setPixelSize(200, 550);
+
+        authors = new CellBrowser(authorTVM, null);
+        editors = new CellBrowser(editorTVM, null);
+        categories = new CellBrowser(categoryTVM, null);
 
         addFilter(authors, "Autores");
         addFilter(editors, "Editores");
@@ -59,9 +69,9 @@ public class BooksFilters extends Composite {
 
     }
 
-    private void addFilter(final CellPanel container, final String title) {
+    private void addFilter(final CellBrowser container, final String title) {
         container.setWidth("100%");
-        container.setSpacing(4);
+        container.setAnimationEnabled(true);
 
         final Button btnClear = new Button("Clear");
 
@@ -83,24 +93,26 @@ public class BooksFilters extends Composite {
         stackPanel.add(new ScrollPanel(vp), createHeader(title), 4);
     }
 
-    private void addBtnClick(final boolean isSelected, final CellPanel container, final Button btn) {
+    private void addBtnClick(final boolean isSelected, final CellBrowser container, final Button btn) {
         btn.addClickHandler(new ClickHandler() {
 
             @Override
             public void onClick(final ClickEvent event) {
-                for (int i = 0; i < container.getWidgetCount(); i++) {
-                    final CheckBox cb = (CheckBox) container.getWidget(i);
-                    cb.setValue(isSelected);
-                }
+                // TODO PGU 
+                //                for (int i = 0; i < container.getWidgetCount(); i++) {
+                //                    final CheckBox cb = (CheckBox) container.getWidget(i);
+                //                    cb.setValue(isSelected);
+                //                }
             }
         });
     }
 
-    private void fillFilter(final List<String> values, final CellPanel container) {
-        container.clear();
+    private void fillFilter(final List<String> values, final CellBrowser container) {
+        // TODO PGU 
+        //        container.clear();
         for (final String v : values) {
             final CheckBox cb = new CheckBox(v);
-            container.add(cb);
+            //            container.add(cb);
         }
     }
 
@@ -128,19 +140,23 @@ public class BooksFilters extends Composite {
         presenter.fetchBooks(selectedAuthors, selectedEditors, selectedCategories);
     }
 
-    private ArrayList<String> getSelectedValues(final CellPanel container) {
+    private ArrayList<String> getSelectedValues(final CellBrowser container) {
         final ArrayList<String> selecteds = new ArrayList<String>();
-        for (int i = 0; i < container.getWidgetCount(); i++) {
-            final CheckBox cb = (CheckBox) container.getWidget(i);
-            if (cb.getValue()) {
-                selecteds.add(cb.getText());
-            }
-        }
+        // TODO PGU 
+        //        for (int i = 0; i < container.getWidgetCount(); i++) {
+        //            final CheckBox cb = (CheckBox) container.getWidget(i);
+        //            if (cb.getValue()) {
+        //                selecteds.add(cb.getText());
+        //            }
+        //        }
         return selecteds;
     }
 
     public void setPresenter(final BooksFiltersPresenter presenter) {
         this.presenter = presenter;
+        authorTVM.setPresenter(presenter);
+        editorTVM.setPresenter(presenter);
+        categoryTVM.setPresenter(presenter);
     }
 
     public void addAuthors(final ArrayList<String> authors) {
