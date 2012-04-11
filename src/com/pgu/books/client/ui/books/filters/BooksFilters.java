@@ -33,14 +33,16 @@ public class BooksFilters extends Composite {
     }
 
     @UiField
-    Button btnApplyFilters;
+    Button                        btnApplyFilters;
 
     @UiField(provided = true)
-    StackLayoutPanel stackPanel;
+    StackLayoutPanel              stackPanel;
 
-    private final VerticalPanel authors = new VerticalPanel();
-    private final VerticalPanel editors = new VerticalPanel();
-    private final VerticalPanel categories = new VerticalPanel();
+    // TODO PGU add cellBrowsers
+    // TODO PGU remove "all" from disclosurepanel
+    private final VerticalPanel   authors    = new VerticalPanel();
+    private final VerticalPanel   editors    = new VerticalPanel();
+    private final VerticalPanel   categories = new VerticalPanel();
 
     private BooksFiltersPresenter presenter;
 

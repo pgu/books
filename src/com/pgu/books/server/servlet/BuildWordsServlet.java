@@ -29,20 +29,20 @@ import com.pgu.books.shared.Book;
 @SuppressWarnings("serial")
 public class BuildWordsServlet extends HttpServlet {
 
-    private static final String SEP = " ";
+    private static final String       SEP               = " ";
 
-    private static final Logger LOGGER = Logger.getLogger(BuildWordsServlet.class.getName());
+    private static final Logger       LOGGER            = Logger.getLogger(BuildWordsServlet.class.getName());
 
-    private final DAO dao = new DAO();
+    private final DAO                 dao               = new DAO();
 
-    private static final String PARAM_ACTION = "action";
-    private static final String ACTION_START = "start";
-    private static final String ACTION_DELETE = "delete";
-    private static final String ACTION_BOOK_WORDS = "bookwords";
-    private static final String ACTION_WORDS = "words";
+    private static final String       PARAM_ACTION      = "action";
+    private static final String       ACTION_START      = "start";
+    private static final String       ACTION_DELETE     = "delete";
+    private static final String       ACTION_BOOK_WORDS = "bookwords";
+    private static final String       ACTION_WORDS      = "words";
 
-    private static final List<String> actions = Arrays.asList(ACTION_BOOK_WORDS, ACTION_DELETE, ACTION_START,
-            ACTION_WORDS);
+    private static final List<String> actions           = Arrays.asList(ACTION_BOOK_WORDS, ACTION_DELETE, ACTION_START,
+                                                                ACTION_WORDS);
 
     @Override
     protected void doGet(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException,
@@ -194,8 +194,10 @@ public class BuildWordsServlet extends HttpServlet {
     }
 
     private void extractWordsAndCreateBookWords(String text, final Long bookId) {
+        // TODO PGU includes spanish characters
         text = text.replaceAll("[^A-Za-z0-9 ]", SEP);
         final String[] parts = text.split(SEP);
+        // TODO PGU makes a set of the string, process the strings here <value, [display1, display2]>
         for (final String part : parts) {
             final String p = part.trim();
             if (p.length() > 2) {

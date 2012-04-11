@@ -97,6 +97,7 @@ public class BooksServiceImpl extends RemoteServiceServlet implements BooksServi
         final Query<Book> query = dao.ofy().query(Book.class);
         applyFilters(filtersDTO, query);
 
+        // TODO PGU http://stackoverflow.com/questions/6905898/illegalargumentexception-splitting-the-provided-query-requires-that-too-many-su
         final QueryResultIterator<Book> itr = query.order("title").offset(start).limit(length).iterator();
 
         final ArrayList<Book> books = new ArrayList<Book>(length);

@@ -18,14 +18,10 @@ import com.google.gwt.view.client.HasData;
 import com.pgu.books.client.activity.books.board.BooksboardPresenter;
 import com.pgu.books.shared.Book;
 
+// TODO PGU EDITION of a book: edition in the grid and a new form to create a new book
+// TODO PGU server sorting on columns
+// TODO PGU edition only for logged admin
 public class Booksboard extends Composite {
-
-    // private static List<Book> BOOKS = new ArrayList<Book>();
-    // static {
-    // for (int i = 0; i < 100; i++) {
-    // BOOKS.add(new Book("author" + i, "title" + i, "editor" + i, "year" + i, "comment" + i, "category" + i)); //
-    // }
-    // }
 
     private static BooksboardUiBinder uiBinder = GWT.create(BooksboardUiBinder.class);
 
@@ -33,10 +29,10 @@ public class Booksboard extends Composite {
     }
 
     @UiField(provided = true)
-    DataGrid<Book> grid;
+    DataGrid<Book>              grid;
 
     @UiField(provided = true)
-    SimplePager pager;
+    SimplePager                 pager;
 
     private BooksboardPresenter presenter;
 
@@ -116,11 +112,11 @@ public class Booksboard extends Composite {
         grid.addColumn(categoryColumn, "Categoría");
     }
 
-    private boolean isGettingNbBooks = false;
-    private boolean isGettingBooks = false;
-    private Integer nbBooks = 0;
+    private boolean         isGettingNbBooks = false;
+    private boolean         isGettingBooks   = false;
+    private Integer         nbBooks          = 0;
     private ArrayList<Book> books;
-    private int currentStart = 0;
+    private int             currentStart     = 0;
 
     public void initFetch() {
         isGettingNbBooks = true;
@@ -155,7 +151,7 @@ public class Booksboard extends Composite {
     }
 
     private AsyncDataProvider<Book> provider;
-    private int length;
+    private int                     length;
 
     public void initFetchBooks() {
         provider = new AsyncDataProvider<Book>() {
