@@ -31,7 +31,10 @@ public class DashboardActivity implements //
 
     private final BooksServiceAsync booksService = GWT.create(BooksService.class);
 
-    private Dashboard dashboardUI;
+    private Dashboard               dashboardUI;
+
+    // search state
+    private final BooksFiltersDTO   filtersDTO   = new BooksFiltersDTO();
 
     public Dashboard start() {
         if (null == dashboardUI) {
@@ -147,8 +150,6 @@ public class DashboardActivity implements //
         });
     }
 
-    private final BooksFiltersDTO filtersDTO = new BooksFiltersDTO();
-
     @Override
     public void fetchBooks( //
             final ArrayList<String> selectedAuthors, //
@@ -185,6 +186,12 @@ public class DashboardActivity implements //
             }
 
         });
+    }
+
+    @Override
+    public void searchBooks(final String text) {
+        filtersDTO.setSearchText(text);
+        fetchBooks(0, dashboardUI.getBooksboardUI().getLength());
     }
 
 }

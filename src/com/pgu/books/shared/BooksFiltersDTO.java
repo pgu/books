@@ -6,6 +6,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class BooksFiltersDTO implements IsSerializable {
 
+    private String            searchText = "";
     private ArrayList<String> selectedAuthors;
     private ArrayList<String> selectedEditors;
     private ArrayList<String> selectedCategories;
@@ -52,16 +53,24 @@ public class BooksFiltersDTO implements IsSerializable {
         return selectedCategories;
     }
 
-    private void checkNotNull(final ArrayList<String> selectedEditors) {
-        if (null == selectedEditors) {
+    public String getSearchText() {
+        return searchText;
+    }
+
+    public void setSearchText(final String searchText) {
+        this.searchText = searchText;
+    }
+
+    private void checkNotNull(final ArrayList<String> selecteds) {
+        if (null == selecteds) {
             throw new IllegalArgumentException();
         }
     }
 
     @Override
     public String toString() {
-        return "BooksFiltersDTO [selectedAuthors=" + selectedAuthors + ", selectedEditors=" + selectedEditors
-                + ", selectedCategories=" + selectedCategories + "]";
+        return "BooksFiltersDTO [searchText=" + searchText + ", selectedAuthors=" + selectedAuthors
+                + ", selectedEditors=" + selectedEditors + ", selectedCategories=" + selectedCategories + "]";
     }
 
 }

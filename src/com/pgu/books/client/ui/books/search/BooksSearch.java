@@ -3,8 +3,10 @@ package com.pgu.books.client.ui.books.search;
 import java.util.ArrayList;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Label;
@@ -48,5 +50,10 @@ public class BooksSearch extends Composite {
         if (suggestBox.getText().startsWith(text)) {
             booksSearchSuggestOracle.setWords(words, text);
         }
+    }
+
+    @UiHandler("btnSearch")
+    public void clickSearch(final ClickEvent e) {
+        presenter.searchBooks(suggestBox.getText());
     }
 }

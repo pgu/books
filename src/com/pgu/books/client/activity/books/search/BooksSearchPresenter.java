@@ -4,4 +4,6 @@ public interface BooksSearchPresenter {
 
     void getSuggestions(String text);
 
+    void searchBooks(String text);
+
 }
