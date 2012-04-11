@@ -139,10 +139,12 @@ public class BooksServiceImpl extends RemoteServiceServlet implements BooksServi
 
             final ArrayList<Long> bookIds = new ArrayList<Long>();
             while (itrBW.hasNext()) {
-                bookIds.add(itrBW.next().getId());
+                bookIds.add(itrBW.next().getBookId());
             }
 
-            query.filter("id in", bookIds);
+            if (!bookIds.isEmpty()) {
+                query.filter("id in", bookIds);
+            }
         }
     }
 
