@@ -33,7 +33,7 @@ public class BooksServiceImpl extends RemoteServiceServlet implements BooksServi
 
     private static final Logger LOG = Logger.getLogger(BooksServiceImpl.class.getSimpleName());
 
-    private final DAO dao = new DAO();
+    private final DAO           dao = new DAO();
 
     @Override
     public String testImport() {
@@ -128,6 +128,13 @@ public class BooksServiceImpl extends RemoteServiceServlet implements BooksServi
 
         if (!filtersDTO.getSelectedCategories().isEmpty()) {
             query.filter("category in", filtersDTO.getSelectedCategories());
+        }
+
+        if (!filtersDTO.getSearchText().trim().isEmpty()) {
+            // TODO PGU get from bookWords, the books ids
+            // sort
+            // paginate
+
         }
     }
 
