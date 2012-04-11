@@ -63,15 +63,12 @@ public class BooksFilters extends Composite {
         container.setWidth("100%");
         container.setSpacing(4);
 
-        final Button btnAll = new Button("Todos");
         final Button btnClear = new Button("Clear");
 
-        addBtnClick(true, container, btnAll);
         addBtnClick(false, container, btnClear);
 
         final HorizontalPanel btns = new HorizontalPanel();
         btns.setWidth("100%");
-        btns.add(btnAll);
         btns.add(btnClear);
 
         final DisclosurePanel dp = new DisclosurePanel("selección");
