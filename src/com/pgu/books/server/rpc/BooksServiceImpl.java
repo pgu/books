@@ -18,6 +18,7 @@ import com.googlecode.objectify.Query;
 import com.pgu.books.client.BooksService;
 import com.pgu.books.server.access.DAO;
 import com.pgu.books.server.domain.AuthorFilter;
+import com.pgu.books.server.domain.BookWord;
 import com.pgu.books.server.domain.CategoryFilter;
 import com.pgu.books.server.domain.EditorFilter;
 import com.pgu.books.server.domain.IsFilter;
@@ -96,14 +97,46 @@ public class BooksServiceImpl extends RemoteServiceServlet implements BooksServi
         final Query<Book> query = dao.ofy().query(Book.class);
         applyFilters(filtersDTO, query);
 
-        final QueryResultIterator<Book> itr = query.order("title").offset(start).limit(length).iterator();
+        final String searchText = filtersDTO.getSearchText().trim();
+        if (searchText.isEmpty()) {
 
-        final ArrayList<Book> books = new ArrayList<Book>(length);
-        while (itr.hasNext()) {
-            books.add(itr.next());
+            final QueryResultIterator<Book> itr = query.order("title").offset(start).limit(length).iterator();
+
+            final ArrayList<Book> books = new ArrayList<Book>(length);
+            while (itr.hasNext()) {
+                books.add(itr.next());
+            }
+
+            return books;
+
+        } else {
+
+            // TODO PGU add columns on bookword for sort issues (title, author, year, category) 
+            final Query<BookWord> qBW = dao.ofy().query(BookWord.class);
+            final QueryResultIterator<BookWord> itrBW = qBW.filter("value =", searchText.toLowerCase()).iterator();
+
+            int counter = 0;
+            final int upperBound = start + length;
+
+            final ArrayList<Book> books = new ArrayList<Book>(length);
+            while (itrBW.hasNext()) {
+                if (counter < start) {
+                    continue;
+
+                } else if (counter >= upperBound) {
+                    break;
+
+                } else {
+                    final BookWord bw = itrBW.next();
+
+                    final Book book = dao.ofy().get(Book.class, bw.getBookId());
+                    books.add(book);
+                }
+                counter++;
+            }
+
+            return books;
         }
-
-        return books;
     }
 
     @Override
@@ -112,6 +145,7 @@ public class BooksServiceImpl extends RemoteServiceServlet implements BooksServi
         final Query<Book> query = dao.ofy().query(Book.class);
 
         applyFilters(filtersDTO, query);
+        // TODO PGU 
 
         return query.count();
     }
@@ -128,13 +162,6 @@ public class BooksServiceImpl extends RemoteServiceServlet implements BooksServi
 
         if (!filtersDTO.getSelectedCategories().isEmpty()) {
             query.filter("category in", filtersDTO.getSelectedCategories());
-        }
-
-        if (!filtersDTO.getSearchText().trim().isEmpty()) {
-            // TODO PGU get from bookWords, the books ids
-            // sort
-            // paginate
-
         }
     }
 
