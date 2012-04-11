@@ -123,26 +123,25 @@ public class FilterTreeViewModel implements TreeViewModel {
     }
 
     private final HashMap<Letter, ListDataProvider<FilterValue>> cache = new HashMap<Letter, ListDataProvider<FilterValue>>();
+    private final ListDataProvider<Letter> letters = new ListDataProvider<Letter>();
 
     @Override
     public <T> NodeInfo<?> getNodeInfo(final T value) {
         if (value == null) {
-            final ListDataProvider<Letter> letters = new ListDataProvider<Letter>();
-            updateCountByLetters(letters.getList());
             return new DefaultNodeInfo<Letter>(letters, new LetterCell());
 
         } else if (value instanceof Letter) {
 
-            if (cache.containsKey(value)) {
-                return new DefaultNodeInfo<FilterValue>(cache.get(value), filterValueCell, selectionModel,
-                        selectionManager, null);
+            presenter.fetchAuthorsByLetterNew(((Letter) value).getValue());
+            return new DefaultNodeInfo<FilterValue>(cache.get(value), filterValueCell, selectionModel,
+                    selectionManager, null);
 
-            } else {
-                final ListDataProvider<FilterValue> filterValues = new ListDataProvider<FilterValue>();
-                updateFilters(filterValues.getList(), (Letter) value);
-                return new DefaultNodeInfo<FilterValue>(filterValues, filterValueCell, selectionModel,
-                        selectionManager, null);
-            }
+            // } else {
+            // final ListDataProvider<FilterValue> filterValues = new ListDataProvider<FilterValue>();
+            // updateFilters(filterValues.getList(), (Letter) value);
+            // return new DefaultNodeInfo<FilterValue>(filterValues, filterValueCell, selectionModel,
+            // selectionManager, null);
+            // }
 
         }
         return null;
@@ -165,15 +164,14 @@ public class FilterTreeViewModel implements TreeViewModel {
 
     }
 
-    private void updateCountByLetters(final List<Letter> letters) {
+    private void updateCountByLetters() {
         if (isAuthor()) {
-            presenter.countAuthorsByLetters(letters);
 
         } else if (isEditor()) {
-            presenter.countEditorsByLetters(letters);
+            presenter.countEditorsByLetters(letters.getList());
 
         } else if (isCategory()) {
-            presenter.countCategoriesByLetters(letters);
+            presenter.countCategoriesByLetters(letters.getList());
 
         } else {
             throw new UnsupportedOperationException("Filter not handled: " + filter);
@@ -195,6 +193,22 @@ public class FilterTreeViewModel implements TreeViewModel {
     @Override
     public boolean isLeaf(final Object value) {
         return value instanceof FilterValue;
+    }
+
+    public void setCounts(final ArrayList<String> countsByLetters) {
+        for (final String count : countsByLetters) {
+            final Letter letter = new Letter(count);
+            letters.getList().add(letter);
+            cache.put(letter, new ListDataProvider<FilterValue>());
+        }
+    }
+
+    public void setFilters(final String letter, final ArrayList<String> filters) {
+        final List<FilterValue> filterValues = cache.get(letter).getList();
+        for (final String filter : filters) {
+            filterValues.add(new FilterValue(filter));
+        }
+
     }
 
 }

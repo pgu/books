@@ -11,8 +11,6 @@ public interface BooksFiltersPresenter {
     void fetchBooks(ArrayList<String> selectedAuthors, ArrayList<String> selectedEditors,
             ArrayList<String> selectedCategories);
 
-    void countAuthorsByLetters(List<Letter> lettersToFill);
-
     void countEditorsByLetters(List<Letter> lettersToFill);
 
     void countCategoriesByLetters(List<Letter> lettersToFill);
@@ -22,5 +20,7 @@ public interface BooksFiltersPresenter {
     void fetchEditorsByLetter(String letter, List<FilterValue> valuesToFill);
 
     void fetchAuthorsByLetter(String letter, List<FilterValue> valuesToFill);
+
+    void fetchAuthorsByLetterNew(String letter);
 
 }

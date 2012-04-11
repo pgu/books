@@ -28,4 +28,16 @@ public interface BooksService extends RemoteService {
 
     ArrayList<String> fetchWords(String text);
 
+    ArrayList<String> countAuthorsByLetters();
+
+    ArrayList<String> countEditorsByLetters();
+
+    ArrayList<String> countCategoriesByLetters();
+
+    ArrayList<String> fetchFilterCategories(String letter);
+
+    ArrayList<String> fetchFilterEditors(String letter);
+
+    ArrayList<String> fetchFilterAuthors(String letter);
+
 }

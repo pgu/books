@@ -34,7 +34,7 @@ public class BooksServiceImpl extends RemoteServiceServlet implements BooksServi
 
     private static final Logger LOG = Logger.getLogger(BooksServiceImpl.class.getSimpleName());
 
-    private final DAO           dao = new DAO();
+    private final DAO dao = new DAO();
 
     @Override
     public String testImport() {
@@ -97,7 +97,8 @@ public class BooksServiceImpl extends RemoteServiceServlet implements BooksServi
         final Query<Book> query = dao.ofy().query(Book.class);
         applyFilters(filtersDTO, query);
 
-        // TODO PGU http://stackoverflow.com/questions/6905898/illegalargumentexception-splitting-the-provided-query-requires-that-too-many-su
+        // TODO PGU
+        // http://stackoverflow.com/questions/6905898/illegalargumentexception-splitting-the-provided-query-requires-that-too-many-su
         final QueryResultIterator<Book> itr = query.order("title").offset(start).limit(length).iterator();
 
         final ArrayList<Book> books = new ArrayList<Book>(length);
@@ -206,6 +207,60 @@ public class BooksServiceImpl extends RemoteServiceServlet implements BooksServi
             words.add(itr.next().getDisplay());
         }
         return words;
+    }
+
+    @Override
+    public ArrayList<String> countAuthorsByLetters() {
+        final ArrayList<String> counts = new ArrayList<String>();
+        counts.add("A (1)");
+        counts.add("B (10)");
+        counts.add("C (2)");
+        return counts;
+    }
+
+    @Override
+    public ArrayList<String> countEditorsByLetters() {
+        final ArrayList<String> counts = new ArrayList<String>();
+        counts.add("M (1)");
+        counts.add("N (10)");
+        counts.add("O (2)");
+        return counts;
+    }
+
+    @Override
+    public ArrayList<String> countCategoriesByLetters() {
+        final ArrayList<String> counts = new ArrayList<String>();
+        counts.add("X (1)");
+        counts.add("Y (10)");
+        counts.add("Z (2)");
+        return counts;
+    }
+
+    @Override
+    public ArrayList<String> fetchFilterCategories(final String letter) {
+        final ArrayList<String> counts = new ArrayList<String>();
+        counts.add(letter + "1");
+        counts.add(letter + "2");
+        counts.add(letter + "3");
+        return counts;
+    }
+
+    @Override
+    public ArrayList<String> fetchFilterEditors(final String letter) {
+        final ArrayList<String> counts = new ArrayList<String>();
+        counts.add(letter + "1");
+        counts.add(letter + "2");
+        counts.add(letter + "3");
+        return counts;
+    }
+
+    @Override
+    public ArrayList<String> fetchFilterAuthors(final String letter) {
+        final ArrayList<String> counts = new ArrayList<String>();
+        counts.add(letter + "1");
+        counts.add(letter + "2");
+        counts.add(letter + "3");
+        return counts;
     }
 
 }

@@ -17,6 +17,7 @@ import com.pgu.books.client.activity.booksImport.BooksImportPresenter;
 import com.pgu.books.client.app.AsyncCallbackApp;
 import com.pgu.books.client.ui.Dashboard;
 import com.pgu.books.client.ui.books.filters.FilterValue;
+import com.pgu.books.client.ui.books.filters.Letter;
 import com.pgu.books.shared.Book;
 import com.pgu.books.shared.BooksFiltersDTO;
 
@@ -35,10 +36,10 @@ public class DashboardActivity implements //
 
     private final BooksServiceAsync booksService = GWT.create(BooksService.class);
 
-    private Dashboard               dashboardUI;
+    private Dashboard dashboardUI;
 
     // search state
-    private final BooksFiltersDTO   filtersDTO   = new BooksFiltersDTO();
+    private final BooksFiltersDTO filtersDTO = new BooksFiltersDTO();
 
     public Dashboard start() {
         if (null == dashboardUI) {
@@ -60,7 +61,8 @@ public class DashboardActivity implements //
 
                 @Override
                 public void execute() {
-                    fetchFilters();
+                    fetchFiltersNew();
+                    // fetchFilters();
                 }
             });
         }
@@ -234,40 +236,103 @@ public class DashboardActivity implements //
         fetchBooks(0, dashboardUI.getBooksboardUI().getLength());
     }
 
-    @Override
-    public void countAuthorsByLetters() {
-        // TODO Auto-generated method stub
-
+    private void fillLetters(final List<Letter> lettersToFill, final ArrayList<String> countsByLetters) {
+        for (final String count : countsByLetters) {
+            lettersToFill.add(new Letter(count));
+        }
     }
 
     @Override
-    public void countEditorsByLetters() {
-        // TODO Auto-generated method stub
+    public void countEditorsByLetters(final List<Letter> lettersToFill) {
+        booksService.countEditorsByLetters(new AsyncCallbackApp<ArrayList<String>>() {
 
+            @Override
+            public void onSuccess(final ArrayList<String> countsByLetters) {
+                fillLetters(lettersToFill, countsByLetters);
+            }
+        });
     }
 
     @Override
-    public void countCategoriesByLetters() {
-        // TODO Auto-generated method stub
+    public void countCategoriesByLetters(final List<Letter> lettersToFill) {
+        booksService.countCategoriesByLetters(new AsyncCallbackApp<ArrayList<String>>() {
 
+            @Override
+            public void onSuccess(final ArrayList<String> countsByLetters) {
+                fillLetters(lettersToFill, countsByLetters);
+            }
+        });
     }
 
     @Override
     public void fetchCategoriesByLetter(final String letter, final List<FilterValue> valuesToFill) {
-        // TODO Auto-generated method stub
+        booksService.fetchFilterCategories(letter, new AsyncCallbackApp<ArrayList<String>>() {
 
+            @Override
+            public void onSuccess(final ArrayList<String> filters) {
+                fillFilterValues(valuesToFill, filters);
+            }
+
+        });
+    }
+
+    private void fillFilterValues(final List<FilterValue> valuesToFill, final ArrayList<String> filters) {
+        for (final String filter : filters) {
+            valuesToFill.add(new FilterValue(filter));
+        }
     }
 
     @Override
     public void fetchEditorsByLetter(final String letter, final List<FilterValue> valuesToFill) {
-        // TODO Auto-generated method stub
+        booksService.fetchFilterEditors(letter, new AsyncCallbackApp<ArrayList<String>>() {
 
+            @Override
+            public void onSuccess(final ArrayList<String> filters) {
+                fillFilterValues(valuesToFill, filters);
+            }
+
+        });
     }
 
     @Override
     public void fetchAuthorsByLetter(final String letter, final List<FilterValue> valuesToFill) {
-        // TODO Auto-generated method stub
+        booksService.fetchFilterAuthors(letter, new AsyncCallbackApp<ArrayList<String>>() {
 
+            @Override
+            public void onSuccess(final ArrayList<String> filters) {
+                fillFilterValues(valuesToFill, filters);
+            }
+
+        });
+    }
+
+    private void fetchFiltersNew() {
+        Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+
+            @Override
+            public void execute() {
+                booksService.countAuthorsByLetters(new AsyncCallbackApp<ArrayList<String>>() {
+
+                    @Override
+                    public void onSuccess(final ArrayList<String> countsByLetters) {
+                        dashboardUI.getBooksFiltersUI().setAuthorCounts(countsByLetters);
+                    }
+
+                });
+            }
+        });
+    }
+
+    @Override
+    public void fetchAuthorsByLetterNew(final String letter) {
+        booksService.fetchFilterAuthors(letter, new AsyncCallbackApp<ArrayList<String>>() {
+
+            @Override
+            public void onSuccess(final ArrayList<String> filters) {
+                dashboardUI.getBooksFiltersUI().setAuthorFilters(letter, filters);
+            }
+
+        });
     }
 
 }

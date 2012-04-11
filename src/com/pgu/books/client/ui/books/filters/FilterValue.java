@@ -4,7 +4,7 @@ public class FilterValue {
 
     private final String value;
 
-    private FilterValue(final String value) {
+    public FilterValue(final String value) {
         this.value = value;
     }
 

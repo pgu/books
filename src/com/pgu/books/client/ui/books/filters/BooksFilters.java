@@ -71,6 +71,7 @@ public class BooksFilters extends Composite {
 
     private void addFilter(final CellBrowser container, final String title) {
         container.setWidth("100%");
+        container.setHeight("200px");
         container.setAnimationEnabled(true);
 
         final Button btnClear = new Button("Clear");
@@ -169,6 +170,14 @@ public class BooksFilters extends Composite {
 
     public void addCategories(final ArrayList<String> categories) {
         fillFilter(categories, this.categories);
+    }
+
+    public void setAuthorCounts(final ArrayList<String> countsByLetters) {
+        authorTVM.setCounts(countsByLetters);
+    }
+
+    public void setAuthorFilters(final String letter, final ArrayList<String> filters) {
+        authorTVM.setFilters(letter, filters);
     }
 
 }
