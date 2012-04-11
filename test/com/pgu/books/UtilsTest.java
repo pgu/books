@@ -9,10 +9,13 @@ public class UtilsTest {
     @Test
     public void testReplaceAllWithSpanishCharacters() {
 
-        String text = "az AZ 09";
-        text = text.replaceAll("[^A-Za-z0-9 ]", " ");
+        assertTrue("az AZ 09".equals(replaceAll("az AZ 09")));
+        assertTrue("".equals(replaceAll("¿?¡!./§,;:%*^$£&~#'{([|`><-_@)]=}+°²µ").trim()));
+        assertTrue("ÁáÉéÍíÓóÚúÑñ".equals(replaceAll("ÁáÉéÍíÓóÚúÑñ")));
+    }
 
-        assertTrue("az AZ 09".equals(text));
+    public String replaceAll(final String text) {
+        return text.replaceAll("[^A-Za-z0-9 ÁáÉéÍíÓóÚúñÑ]", " ");
     }
 
 }

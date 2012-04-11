@@ -194,8 +194,7 @@ public class BuildWordsServlet extends HttpServlet {
     }
 
     private void extractWordsAndCreateBookWords(String text, final Long bookId) {
-        // TODO PGU includes spanish characters
-        text = text.replaceAll("[^A-Za-z0-9 ]", SEP);
+        text = text.replaceAll("[^A-Za-z0-9 ÁáÉéÍíÓóÚúñÑ]", SEP);
         final String[] parts = text.split(SEP);
         // TODO PGU makes a set of the string, process the strings here <value, [display1, display2]>
         for (final String part : parts) {
