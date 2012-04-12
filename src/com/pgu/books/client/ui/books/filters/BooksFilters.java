@@ -77,18 +77,33 @@ public class BooksFilters extends Composite {
         final MultiSelectionModel<FilterValue> editorSelectionModel = new MultiSelectionModel<FilterValue>();
         final MultiSelectionModel<FilterValue> categorySelectionModel = new MultiSelectionModel<FilterValue>();
 
-        authorSelectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
+        addSelectionHandler(authorSelectionModel, authorHeader, authorTitle);
+        addSelectionHandler(editorSelectionModel, editorHeader, editorTitle);
+        addSelectionHandler(categorySelectionModel, categoryHeader, categoryTitle);
+
+        authorTVM.setSelectionModel(authorSelectionModel);
+        editorTVM.setSelectionModel(editorSelectionModel);
+        categoryTVM.setSelectionModel(categorySelectionModel);
+
+        initWidget(uiBinder.createAndBindUi(this));
+
+    }
+
+    private void addSelectionHandler(final MultiSelectionModel<FilterValue> selectionModel, final HTML header,
+            final String title) {
+
+        selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
 
             @Override
             public void onSelectionChange(final SelectionChangeEvent event) {
 
-                final Set<FilterValue> selectedFVs = authorSelectionModel.getSelectedSet();
+                final Set<FilterValue> selectedFVs = selectionModel.getSelectedSet();
 
                 final int nbFilters = selectedFVs.size();
                 if (nbFilters == 0) {
-                    authorHeader.setText(authorTitle);
+                    header.setText(title);
                 } else {
-                    authorHeader.setText(authorTitle + " (" + nbFilters + ")");
+                    header.setText(title + " (" + nbFilters + ")");
                 }
 
                 final List<FilterValue> selecteds = new ArrayList<FilterValue>(selectedFVs);
@@ -99,16 +114,9 @@ public class BooksFilters extends Composite {
                     sb.append(filterValue.getValue());
                     sb.append("\n");
                 }
-                authorHeader.setTitle(sb.toString());
+                header.setTitle(sb.toString());
             }
         });
-
-        authorTVM.setSelectionModel(authorSelectionModel);
-        editorTVM.setSelectionModel(editorSelectionModel);
-        categoryTVM.setSelectionModel(categorySelectionModel);
-
-        initWidget(uiBinder.createAndBindUi(this));
-
     }
 
     private void addFilter(final FilterCellBrowser<String> container, final HTML header) {
