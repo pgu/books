@@ -14,7 +14,7 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.ListDataProvider;
-import com.google.gwt.view.client.SelectionModel;
+import com.google.gwt.view.client.MultiSelectionModel;
 import com.google.gwt.view.client.TreeViewModel;
 import com.pgu.books.client.activity.books.filters.BooksFiltersPresenter;
 import com.pgu.books.client.activity.utils.FilterType;
@@ -28,7 +28,7 @@ public class FilterTreeViewModel implements TreeViewModel {
 
     private final DefaultSelectionEventManager<FilterValue> selectionManager = DefaultSelectionEventManager
             .createCheckboxManager();
-    private SelectionModel<FilterValue> selectionModel;
+    private MultiSelectionModel<FilterValue> selectionModel;
 
     public FilterTreeViewModel(final FilterType filterType) {
         this.filterType = filterType;
@@ -49,8 +49,8 @@ public class FilterTreeViewModel implements TreeViewModel {
             }
 
             @Override
-            public Boolean getValue(final FilterValue object) {
-                return selectionModel.isSelected(object);
+            public Boolean getValue(final FilterValue filterValue) {
+                return selectionModel.isSelected(filterValue);
             }
         });
         hasCells.add(new HasCell<FilterValue, FilterValue>() {
@@ -165,7 +165,7 @@ public class FilterTreeViewModel implements TreeViewModel {
         letter.setHasBeenFetched(true);
     }
 
-    public void setSelectionModel(final SelectionModel<FilterValue> selectionModel) {
+    public void setSelectionModel(final MultiSelectionModel<FilterValue> selectionModel) {
         this.selectionModel = selectionModel;
     }
 

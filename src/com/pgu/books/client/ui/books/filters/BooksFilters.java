@@ -58,6 +58,10 @@ public class BooksFilters extends Composite {
     private final HTML editorHeader = new HTML(editorTitle);
     private final HTML categoryHeader = new HTML(categoryTitle);
 
+    private final MultiSelectionModel<FilterValue> authorSelectionModel = new MultiSelectionModel<FilterValue>();
+    private final MultiSelectionModel<FilterValue> editorSelectionModel = new MultiSelectionModel<FilterValue>();
+    private final MultiSelectionModel<FilterValue> categorySelectionModel = new MultiSelectionModel<FilterValue>();
+
     private BooksFiltersPresenter presenter;
 
     public BooksFilters() {
@@ -69,13 +73,9 @@ public class BooksFilters extends Composite {
         editors = new FilterCellBrowser<String>(editorTVM, null);
         categories = new FilterCellBrowser<String>(categoryTVM, null);
 
-        addFilter(authors, authorHeader);
-        addFilter(editors, editorHeader);
-        addFilter(categories, categoryHeader);
-
-        final MultiSelectionModel<FilterValue> authorSelectionModel = new MultiSelectionModel<FilterValue>();
-        final MultiSelectionModel<FilterValue> editorSelectionModel = new MultiSelectionModel<FilterValue>();
-        final MultiSelectionModel<FilterValue> categorySelectionModel = new MultiSelectionModel<FilterValue>();
+        addFilter(authors, authorSelectionModel, authorHeader, authorTitle);
+        addFilter(editors, editorSelectionModel, editorHeader, editorTitle);
+        addFilter(categories, categorySelectionModel, categoryHeader, categoryTitle);
 
         addSelectionHandler(authorSelectionModel, authorHeader, authorTitle);
         addSelectionHandler(editorSelectionModel, editorHeader, editorTitle);
@@ -119,7 +119,9 @@ public class BooksFilters extends Composite {
         });
     }
 
-    private void addFilter(final FilterCellBrowser<String> container, final HTML header) {
+    private void addFilter(final FilterCellBrowser<String> container,
+            final MultiSelectionModel<FilterValue> selectionModel, final HTML header, final String title) {
+
         container.setWidth("100%");
         container.setHeight("356px");
         container.setAnimationEnabled(true);
@@ -128,8 +130,16 @@ public class BooksFilters extends Composite {
         container.setDefaultColumnWidth(250);
 
         final Button btnClear = new Button("Clear");
+        btnClear.addClickHandler(new ClickHandler() {
 
-        addBtnClick(false, container, btnClear);
+            @Override
+            public void onClick(final ClickEvent event) {
+                header.setText(title);
+                for (final FilterValue filterValue : selectionModel.getSelectedSet()) {
+                    selectionModel.setSelected(filterValue, false);
+                }
+            }
+        });
 
         final HorizontalPanel btns = new HorizontalPanel();
         btns.setWidth("100%");
@@ -145,20 +155,6 @@ public class BooksFilters extends Composite {
         vp.add(container);
 
         stackPanel.add(new ScrollPanel(vp), createHeader(header), 4);
-    }
-
-    private void addBtnClick(final boolean isSelected, final CellBrowser container, final Button btn) {
-        btn.addClickHandler(new ClickHandler() {
-
-            @Override
-            public void onClick(final ClickEvent event) {
-                // TODO PGU
-                // for (int i = 0; i < container.getWidgetCount(); i++) {
-                // final CheckBox cb = (CheckBox) container.getWidget(i);
-                // cb.setValue(isSelected);
-                // }
-            }
-        });
     }
 
     private Widget createHeader(final HTML headerText) {
