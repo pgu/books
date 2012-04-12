@@ -131,7 +131,7 @@ public class FilterTreeViewModel implements TreeViewModel {
 
             final Letter letter = (Letter) value;
             if (!letter.hasBeenFetched()) {
-                presenter.fetchAuthorsByLetterNew(letter.getValue());
+                presenter.fetchAuthorsByLetterNew(letter);
             }
             return new DefaultNodeInfo<FilterValue>(cache.get(letter), filterValueCell, selectionModel,
                     selectionManager, null);
@@ -153,21 +153,14 @@ public class FilterTreeViewModel implements TreeViewModel {
         }
     }
 
-    public void setFilters(final String letter, final ArrayList<String> filters) {
-        Letter currentLetter = null;
-        for (final Letter let : cache.keySet()) {
-            if (letter.equals(let.getValue())) {
-                currentLetter = let;
-                break;
-            }
-        }
+    public void setFilters(final Letter letter, final ArrayList<String> filters) {
 
-        final List<FilterValue> filterValues = cache.get(currentLetter).getList();
+        final List<FilterValue> filterValues = cache.get(letter).getList();
         for (final String filter : filters) {
             filterValues.add(new FilterValue(filter));
         }
 
-        currentLetter.setHasBeenFetched(true);
+        letter.setHasBeenFetched(true);
     }
 
 }

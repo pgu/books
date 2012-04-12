@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.pgu.books.client.ui.books.filters.FilterValue;
+import com.pgu.books.client.ui.books.filters.Letter;
 
 public interface BooksFiltersPresenter {
 
@@ -16,6 +17,6 @@ public interface BooksFiltersPresenter {
 
     void fetchAuthorsByLetter(String letter, List<FilterValue> valuesToFill);
 
-    void fetchAuthorsByLetterNew(String letter);
+    void fetchAuthorsByLetterNew(Letter letter);
 
 }

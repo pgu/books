@@ -17,6 +17,7 @@ import com.pgu.books.client.activity.booksImport.BooksImportPresenter;
 import com.pgu.books.client.app.AsyncCallbackApp;
 import com.pgu.books.client.ui.Dashboard;
 import com.pgu.books.client.ui.books.filters.FilterValue;
+import com.pgu.books.client.ui.books.filters.Letter;
 import com.pgu.books.shared.Book;
 import com.pgu.books.shared.BooksFiltersDTO;
 
@@ -271,8 +272,8 @@ public class DashboardActivity implements //
     }
 
     @Override
-    public void fetchAuthorsByLetterNew(final String letter) {
-        booksService.fetchFilterAuthors(letter, new AsyncCallbackApp<ArrayList<String>>() {
+    public void fetchAuthorsByLetterNew(final Letter letter) {
+        booksService.fetchFilterAuthors(letter.getValue(), new AsyncCallbackApp<ArrayList<String>>() {
 
             @Override
             public void onSuccess(final ArrayList<String> filters) {

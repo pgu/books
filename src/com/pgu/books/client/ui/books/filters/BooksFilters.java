@@ -157,7 +157,7 @@ public class BooksFilters extends Composite {
         categoryTVM.setCounts(countsByLetters);
     }
 
-    public void setAuthorFilters(final String letter, final ArrayList<String> filters) {
+    public void setAuthorFilters(final Letter letter, final ArrayList<String> filters) {
         authorTVM.setFilters(letter, filters);
     }
 
