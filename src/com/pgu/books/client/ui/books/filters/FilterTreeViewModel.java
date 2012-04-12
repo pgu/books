@@ -12,7 +12,6 @@ import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.cell.client.HasCell;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
-import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.ListDataProvider;
 import com.google.gwt.view.client.MultiSelectionModel;
@@ -23,13 +22,13 @@ import com.pgu.books.client.ui.books.filters.BooksFilters.FilterType;
 
 public class FilterTreeViewModel implements TreeViewModel {
 
-    private final FilterType filter;
-    private BooksFiltersPresenter presenter;
+    private final FilterType                                filter;
+    private BooksFiltersPresenter                           presenter;
 
-    private final Cell<FilterValue> filterValueCell;
+    private final Cell<FilterValue>                         filterValueCell;
     private final DefaultSelectionEventManager<FilterValue> selectionManager = DefaultSelectionEventManager
-            .createCheckboxManager();
-    private final SelectionModel<FilterValue> selectionModel = new MultiSelectionModel<FilterValue>();
+                                                                                     .createCheckboxManager();
+    private final SelectionModel<FilterValue>               selectionModel   = new MultiSelectionModel<FilterValue>();
 
     public FilterTreeViewModel(final FilterType filter) {
         this.filter = filter;
@@ -107,7 +106,7 @@ public class FilterTreeViewModel implements TreeViewModel {
         @Override
         public void render(final com.google.gwt.cell.client.Cell.Context context, final Letter value,
                 final SafeHtmlBuilder sb) {
-            sb.appendEscaped(new CheckBox(value.getValue()).getHTML());
+            sb.appendEscaped(value.getValue());
         }
 
     }
@@ -122,8 +121,8 @@ public class FilterTreeViewModel implements TreeViewModel {
 
     }
 
-    private final HashMap<Letter, ListDataProvider<FilterValue>> cache = new HashMap<Letter, ListDataProvider<FilterValue>>();
-    private final ListDataProvider<Letter> letters = new ListDataProvider<Letter>();
+    private final HashMap<Letter, ListDataProvider<FilterValue>> cache   = new HashMap<Letter, ListDataProvider<FilterValue>>();
+    private final ListDataProvider<Letter>                       letters = new ListDataProvider<Letter>();
 
     @Override
     public <T> NodeInfo<?> getNodeInfo(final T value) {
@@ -132,8 +131,11 @@ public class FilterTreeViewModel implements TreeViewModel {
 
         } else if (value instanceof Letter) {
 
-            presenter.fetchAuthorsByLetterNew(((Letter) value).getValue());
-            return new DefaultNodeInfo<FilterValue>(cache.get(value), filterValueCell, selectionModel,
+            final Letter letter = (Letter) value;
+            if (!letter.hasBeenFetched()) {
+                presenter.fetchAuthorsByLetterNew(letter.getValue());
+            }
+            return new DefaultNodeInfo<FilterValue>(cache.get(letter), filterValueCell, selectionModel,
                     selectionManager, null);
 
             // } else {
@@ -204,11 +206,20 @@ public class FilterTreeViewModel implements TreeViewModel {
     }
 
     public void setFilters(final String letter, final ArrayList<String> filters) {
-        final List<FilterValue> filterValues = cache.get(letter).getList();
+        Letter currentLetter = null;
+        for (final Letter let : cache.keySet()) {
+            if (letter.equals(let.getValue())) {
+                currentLetter = let;
+                break;
+            }
+        }
+
+        final List<FilterValue> filterValues = cache.get(currentLetter).getList();
         for (final String filter : filters) {
             filterValues.add(new FilterValue(filter));
         }
 
+        currentLetter.setHasBeenFetched(true);
     }
 
 }
