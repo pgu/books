@@ -12,7 +12,6 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.cellview.client.CellBrowser;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DisclosurePanel;
@@ -173,22 +172,18 @@ public class BooksFilters extends Composite {
     @UiHandler("btnApplyFilters")
     public void applyFilters(final ClickEvent e) {
 
-        final ArrayList<String> selectedAuthors = getSelectedValues(authors);
-        final ArrayList<String> selectedEditors = getSelectedValues(editors);
-        final ArrayList<String> selectedCategories = getSelectedValues(categories);
+        final ArrayList<String> selectedAuthors = getSelectedValues(authorSelectionModel);
+        final ArrayList<String> selectedEditors = getSelectedValues(editorSelectionModel);
+        final ArrayList<String> selectedCategories = getSelectedValues(categorySelectionModel);
 
         presenter.fetchBooks(selectedAuthors, selectedEditors, selectedCategories);
     }
 
-    private ArrayList<String> getSelectedValues(final CellBrowser container) {
+    private ArrayList<String> getSelectedValues(final MultiSelectionModel<FilterValue> selectionModel) {
         final ArrayList<String> selecteds = new ArrayList<String>();
-        // TODO PGU
-        // for (int i = 0; i < container.getWidgetCount(); i++) {
-        // final CheckBox cb = (CheckBox) container.getWidget(i);
-        // if (cb.getValue()) {
-        // selecteds.add(cb.getText());
-        // }
-        // }
+        for (final FilterValue filterValue : selectionModel.getSelectedSet()) {
+            selecteds.add(filterValue.getValue());
+        }
         return selecteds;
     }
 
