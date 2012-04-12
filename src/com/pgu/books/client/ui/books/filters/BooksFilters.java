@@ -32,29 +32,29 @@ public class BooksFilters extends Composite {
     }
 
     @UiField
-    Button                            btnApplyFilters;
+    Button btnApplyFilters;
 
     @UiField(provided = true)
-    StackLayoutPanel                  stackPanel;
+    StackLayoutPanel stackPanel;
 
-    private final CellBrowser         authors;
-    private final CellBrowser         editors;
-    private final CellBrowser         categories;
+    private final FilterCellBrowser<String> authors;
+    private final FilterCellBrowser<String> editors;
+    private final FilterCellBrowser<String> categories;
 
-    private final FilterTreeViewModel authorTVM   = new FilterTreeViewModel(FilterType.AUTHOR);
-    private final FilterTreeViewModel editorTVM   = new FilterTreeViewModel(FilterType.EDITOR);
+    private final FilterTreeViewModel authorTVM = new FilterTreeViewModel(FilterType.AUTHOR);
+    private final FilterTreeViewModel editorTVM = new FilterTreeViewModel(FilterType.EDITOR);
     private final FilterTreeViewModel categoryTVM = new FilterTreeViewModel(FilterType.CATEGORY);
 
-    private BooksFiltersPresenter     presenter;
+    private BooksFiltersPresenter presenter;
 
     public BooksFilters() {
 
         stackPanel = new StackLayoutPanel(Unit.EM);
         stackPanel.setPixelSize(200, 550);
 
-        authors = new CellBrowser(authorTVM, null);
-        editors = new CellBrowser(editorTVM, null);
-        categories = new CellBrowser(categoryTVM, null);
+        authors = new FilterCellBrowser<String>(authorTVM, null);
+        editors = new FilterCellBrowser<String>(editorTVM, null);
+        categories = new FilterCellBrowser<String>(categoryTVM, null);
 
         addFilter(authors, "Autores");
         addFilter(editors, "Editores");
@@ -64,14 +64,15 @@ public class BooksFilters extends Composite {
 
     }
 
-    private void addFilter(final CellBrowser container, final String title) {
+    private void addFilter(final FilterCellBrowser<String> container, final String title) {
         container.setWidth("100%");
         container.setHeight("356px");
         container.setAnimationEnabled(true);
         // TODO PGU column size
-        //        http://stackoverflow.com/questions/5160495/how-do-i-set-first-column-width-on-gwt-cellbrowser
-        //        http://groups.google.com/group/google-web-toolkit/browse_thread/thread/4fc39b5805833ea2
-        container.setDefaultColumnWidth(50);
+        // http://stackoverflow.com/questions/5160495/how-do-i-set-first-column-width-on-gwt-cellbrowser
+        // http://groups.google.com/group/google-web-toolkit/browse_thread/thread/4fc39b5805833ea2
+        container.setFirstColumnWidth(60);
+        container.setDefaultColumnWidth(100);
 
         final Button btnClear = new Button("Clear");
 
