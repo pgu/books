@@ -66,8 +66,12 @@ public class BooksFilters extends Composite {
 
     private void addFilter(final CellBrowser container, final String title) {
         container.setWidth("100%");
-        container.setHeight("200px");
+        container.setHeight("356px");
         container.setAnimationEnabled(true);
+        // TODO PGU column size
+        //        http://stackoverflow.com/questions/5160495/how-do-i-set-first-column-width-on-gwt-cellbrowser
+        //        http://groups.google.com/group/google-web-toolkit/browse_thread/thread/4fc39b5805833ea2
+        container.setDefaultColumnWidth(50);
 
         final Button btnClear = new Button("Clear");
 
