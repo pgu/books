@@ -1,6 +1,6 @@
 package com.pgu.books.client.ui.books.filters;
 
-public class FilterValue {
+public class FilterValue implements Comparable<FilterValue> {
 
     private final String value;
 
@@ -10,6 +10,11 @@ public class FilterValue {
 
     public String getValue() {
         return value;
+    }
+
+    @Override
+    public int compareTo(final FilterValue o) {
+        return value.compareTo(o.getValue());
     }
 
 }

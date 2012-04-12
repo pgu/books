@@ -1,6 +1,9 @@
 package com.pgu.books.client.ui.books.filters;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Unit;
@@ -21,6 +24,8 @@ import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.StackLayoutPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.view.client.MultiSelectionModel;
+import com.google.gwt.view.client.SelectionChangeEvent;
 import com.pgu.books.client.activity.books.filters.BooksFiltersPresenter;
 import com.pgu.books.client.activity.utils.FilterType;
 
@@ -45,6 +50,14 @@ public class BooksFilters extends Composite {
     private final FilterTreeViewModel editorTVM = new FilterTreeViewModel(FilterType.EDITOR);
     private final FilterTreeViewModel categoryTVM = new FilterTreeViewModel(FilterType.CATEGORY);
 
+    private final String authorTitle = "Autores";
+    private final String editorTitle = "Editores";
+    private final String categoryTitle = "Categorías";
+
+    private final HTML authorHeader = new HTML(authorTitle);
+    private final HTML editorHeader = new HTML(editorTitle);
+    private final HTML categoryHeader = new HTML(categoryTitle);
+
     private BooksFiltersPresenter presenter;
 
     public BooksFilters() {
@@ -56,15 +69,49 @@ public class BooksFilters extends Composite {
         editors = new FilterCellBrowser<String>(editorTVM, null);
         categories = new FilterCellBrowser<String>(categoryTVM, null);
 
-        addFilter(authors, "Autores");
-        addFilter(editors, "Editores");
-        addFilter(categories, "Categorías");
+        addFilter(authors, authorHeader);
+        addFilter(editors, editorHeader);
+        addFilter(categories, categoryHeader);
+
+        final MultiSelectionModel<FilterValue> authorSelectionModel = new MultiSelectionModel<FilterValue>();
+        final MultiSelectionModel<FilterValue> editorSelectionModel = new MultiSelectionModel<FilterValue>();
+        final MultiSelectionModel<FilterValue> categorySelectionModel = new MultiSelectionModel<FilterValue>();
+
+        authorSelectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
+
+            @Override
+            public void onSelectionChange(final SelectionChangeEvent event) {
+
+                final Set<FilterValue> selectedFVs = authorSelectionModel.getSelectedSet();
+
+                final int nbFilters = selectedFVs.size();
+                if (nbFilters == 0) {
+                    authorHeader.setText(authorTitle);
+                } else {
+                    authorHeader.setText(authorTitle + " (" + nbFilters + ")");
+                }
+
+                final List<FilterValue> selecteds = new ArrayList<FilterValue>(selectedFVs);
+                Collections.sort(selecteds);
+
+                final StringBuilder sb = new StringBuilder();
+                for (final FilterValue filterValue : selecteds) {
+                    sb.append(filterValue.getValue());
+                    sb.append("\n");
+                }
+                authorHeader.setTitle(sb.toString());
+            }
+        });
+
+        authorTVM.setSelectionModel(authorSelectionModel);
+        editorTVM.setSelectionModel(editorSelectionModel);
+        categoryTVM.setSelectionModel(categorySelectionModel);
 
         initWidget(uiBinder.createAndBindUi(this));
 
     }
 
-    private void addFilter(final FilterCellBrowser<String> container, final String title) {
+    private void addFilter(final FilterCellBrowser<String> container, final HTML header) {
         container.setWidth("100%");
         container.setHeight("356px");
         container.setAnimationEnabled(true);
@@ -89,7 +136,7 @@ public class BooksFilters extends Composite {
         vp.add(dp);
         vp.add(container);
 
-        stackPanel.add(new ScrollPanel(vp), createHeader(title), 4);
+        stackPanel.add(new ScrollPanel(vp), createHeader(header), 4);
     }
 
     private void addBtnClick(final boolean isSelected, final CellBrowser container, final Button btn) {
@@ -106,9 +153,8 @@ public class BooksFilters extends Composite {
         });
     }
 
-    private Widget createHeader(final String text) {
+    private Widget createHeader(final HTML headerText) {
 
-        final HTML headerText = new HTML(text);
         headerText.getElement().getStyle().setFontSize(1.5, Unit.EM);
 
         final HorizontalPanel hPanel = new HorizontalPanel();

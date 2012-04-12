@@ -14,7 +14,6 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.ListDataProvider;
-import com.google.gwt.view.client.MultiSelectionModel;
 import com.google.gwt.view.client.SelectionModel;
 import com.google.gwt.view.client.TreeViewModel;
 import com.pgu.books.client.activity.books.filters.BooksFiltersPresenter;
@@ -22,14 +21,14 @@ import com.pgu.books.client.activity.utils.FilterType;
 
 public class FilterTreeViewModel implements TreeViewModel {
 
-    private FilterType                                      filterType;
-    private BooksFiltersPresenter                           presenter;
+    private FilterType filterType;
+    private BooksFiltersPresenter presenter;
 
-    private final Cell<FilterValue>                         filterValueCell;
+    private final Cell<FilterValue> filterValueCell;
 
     private final DefaultSelectionEventManager<FilterValue> selectionManager = DefaultSelectionEventManager
-                                                                                     .createCheckboxManager();
-    private final SelectionModel<FilterValue>               selectionModel   = new MultiSelectionModel<FilterValue>();
+            .createCheckboxManager();
+    private SelectionModel<FilterValue> selectionModel;
 
     public FilterTreeViewModel(final FilterType filterType) {
         this.filterType = filterType;
@@ -122,8 +121,8 @@ public class FilterTreeViewModel implements TreeViewModel {
 
     }
 
-    private final HashMap<Letter, ListDataProvider<FilterValue>> cache   = new HashMap<Letter, ListDataProvider<FilterValue>>();
-    private final ListDataProvider<Letter>                       letters = new ListDataProvider<Letter>();
+    private final HashMap<Letter, ListDataProvider<FilterValue>> cache = new HashMap<Letter, ListDataProvider<FilterValue>>();
+    private final ListDataProvider<Letter> letters = new ListDataProvider<Letter>();
 
     @Override
     public <T> NodeInfo<?> getNodeInfo(final T value) {
@@ -164,6 +163,10 @@ public class FilterTreeViewModel implements TreeViewModel {
         }
 
         letter.setHasBeenFetched(true);
+    }
+
+    public void setSelectionModel(final SelectionModel<FilterValue> selectionModel) {
+        this.selectionModel = selectionModel;
     }
 
 }
