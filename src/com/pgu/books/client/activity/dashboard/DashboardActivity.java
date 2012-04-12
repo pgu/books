@@ -17,7 +17,6 @@ import com.pgu.books.client.activity.booksImport.BooksImportPresenter;
 import com.pgu.books.client.app.AsyncCallbackApp;
 import com.pgu.books.client.ui.Dashboard;
 import com.pgu.books.client.ui.books.filters.FilterValue;
-import com.pgu.books.client.ui.books.filters.Letter;
 import com.pgu.books.shared.Book;
 import com.pgu.books.shared.BooksFiltersDTO;
 
@@ -36,10 +35,10 @@ public class DashboardActivity implements //
 
     private final BooksServiceAsync booksService = GWT.create(BooksService.class);
 
-    private Dashboard dashboardUI;
+    private Dashboard               dashboardUI;
 
     // search state
-    private final BooksFiltersDTO filtersDTO = new BooksFiltersDTO();
+    private final BooksFiltersDTO   filtersDTO   = new BooksFiltersDTO();
 
     public Dashboard start() {
         if (null == dashboardUI) {
@@ -61,63 +60,11 @@ public class DashboardActivity implements //
 
                 @Override
                 public void execute() {
-                    fetchFiltersNew();
-                    // fetchFilters();
+                    initFetchFilters();
                 }
             });
         }
         return dashboardUI;
-    }
-
-    private void fetchFilters() {
-        Scheduler.get().scheduleDeferred(new ScheduledCommand() {
-
-            @Override
-            public void execute() {
-
-                booksService.fetchFilterAuthors(new AsyncCallbackApp<ArrayList<String>>() {
-
-                    @Override
-                    public void onSuccess(final ArrayList<String> authors) {
-                        dashboardUI.getBooksFiltersUI().addAuthors(authors);
-                    }
-
-                });
-            }
-        });
-
-        Scheduler.get().scheduleDeferred(new ScheduledCommand() {
-
-            @Override
-            public void execute() {
-
-                booksService.fetchFilterEditors(new AsyncCallbackApp<ArrayList<String>>() {
-
-                    @Override
-                    public void onSuccess(final ArrayList<String> editors) {
-                        dashboardUI.getBooksFiltersUI().addEditors(editors);
-                    }
-
-                });
-            }
-        });
-
-        Scheduler.get().scheduleDeferred(new ScheduledCommand() {
-
-            @Override
-            public void execute() {
-
-                booksService.fetchFilterCategories(new AsyncCallbackApp<ArrayList<String>>() {
-
-                    @Override
-                    public void onSuccess(final ArrayList<String> categories) {
-                        dashboardUI.getBooksFiltersUI().addCategories(categories);
-                    }
-
-                });
-            }
-        });
-
     }
 
     @Override
@@ -236,34 +183,6 @@ public class DashboardActivity implements //
         fetchBooks(0, dashboardUI.getBooksboardUI().getLength());
     }
 
-    private void fillLetters(final List<Letter> lettersToFill, final ArrayList<String> countsByLetters) {
-        for (final String count : countsByLetters) {
-            lettersToFill.add(new Letter(count));
-        }
-    }
-
-    @Override
-    public void countEditorsByLetters(final List<Letter> lettersToFill) {
-        booksService.countEditorsByLetters(new AsyncCallbackApp<ArrayList<String>>() {
-
-            @Override
-            public void onSuccess(final ArrayList<String> countsByLetters) {
-                fillLetters(lettersToFill, countsByLetters);
-            }
-        });
-    }
-
-    @Override
-    public void countCategoriesByLetters(final List<Letter> lettersToFill) {
-        booksService.countCategoriesByLetters(new AsyncCallbackApp<ArrayList<String>>() {
-
-            @Override
-            public void onSuccess(final ArrayList<String> countsByLetters) {
-                fillLetters(lettersToFill, countsByLetters);
-            }
-        });
-    }
-
     @Override
     public void fetchCategoriesByLetter(final String letter, final List<FilterValue> valuesToFill) {
         booksService.fetchFilterCategories(letter, new AsyncCallbackApp<ArrayList<String>>() {
@@ -306,7 +225,7 @@ public class DashboardActivity implements //
         });
     }
 
-    private void fetchFiltersNew() {
+    private void initFetchFilters() {
         Scheduler.get().scheduleDeferred(new ScheduledCommand() {
 
             @Override
@@ -316,6 +235,34 @@ public class DashboardActivity implements //
                     @Override
                     public void onSuccess(final ArrayList<String> countsByLetters) {
                         dashboardUI.getBooksFiltersUI().setAuthorCounts(countsByLetters);
+                    }
+
+                });
+            }
+        });
+        Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+
+            @Override
+            public void execute() {
+                booksService.countEditorsByLetters(new AsyncCallbackApp<ArrayList<String>>() {
+
+                    @Override
+                    public void onSuccess(final ArrayList<String> countsByLetters) {
+                        dashboardUI.getBooksFiltersUI().setEditorCounts(countsByLetters);
+                    }
+
+                });
+            }
+        });
+        Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+
+            @Override
+            public void execute() {
+                booksService.countCategoriesByLetters(new AsyncCallbackApp<ArrayList<String>>() {
+
+                    @Override
+                    public void onSuccess(final ArrayList<String> countsByLetters) {
+                        dashboardUI.getBooksFiltersUI().setCategoryCounts(countsByLetters);
                     }
 
                 });

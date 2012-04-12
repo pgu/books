@@ -20,12 +20,6 @@ public interface BooksService extends RemoteService {
 
     void delete();
 
-    ArrayList<String> fetchFilterAuthors();
-
-    ArrayList<String> fetchFilterEditors();
-
-    ArrayList<String> fetchFilterCategories();
-
     ArrayList<String> fetchWords(String text);
 
     ArrayList<String> countAuthorsByLetters();

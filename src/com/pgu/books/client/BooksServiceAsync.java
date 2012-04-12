@@ -18,12 +18,6 @@ public interface BooksServiceAsync {
 
     void delete(AsyncCallback<Void> asyncCallbackApp);
 
-    void fetchFilterAuthors(AsyncCallback<ArrayList<String>> asyncCallbackApp);
-
-    void fetchFilterEditors(AsyncCallback<ArrayList<String>> asyncCallbackApp);
-
-    void fetchFilterCategories(AsyncCallback<ArrayList<String>> asyncCallbackApp);
-
     void fetchWords(String text, AsyncCallback<ArrayList<String>> asyncCallbackApp);
 
     void countAuthorsByLetters(AsyncCallback<ArrayList<String>> asyncCallbackApp);

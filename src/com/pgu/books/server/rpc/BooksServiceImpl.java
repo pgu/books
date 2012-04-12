@@ -17,10 +17,7 @@ import com.googlecode.objectify.Key;
 import com.googlecode.objectify.Query;
 import com.pgu.books.client.BooksService;
 import com.pgu.books.server.access.DAO;
-import com.pgu.books.server.domain.AuthorFilter;
 import com.pgu.books.server.domain.BookWord;
-import com.pgu.books.server.domain.CategoryFilter;
-import com.pgu.books.server.domain.EditorFilter;
 import com.pgu.books.server.domain.IsFilter;
 import com.pgu.books.server.domain.Word;
 import com.pgu.books.server.utils.AppQueues;
@@ -34,7 +31,7 @@ public class BooksServiceImpl extends RemoteServiceServlet implements BooksServi
 
     private static final Logger LOG = Logger.getLogger(BooksServiceImpl.class.getSimpleName());
 
-    private final DAO dao = new DAO();
+    private final DAO           dao = new DAO();
 
     @Override
     public String testImport() {
@@ -155,21 +152,6 @@ public class BooksServiceImpl extends RemoteServiceServlet implements BooksServi
         // TODO PGU use a cursor + only in local mode
         final QueryResultIterable<Key<Book>> keys = dao.ofy().query(Book.class).fetchKeys();
         dao.ofy().delete(keys);
-    }
-
-    @Override
-    public ArrayList<String> fetchFilterAuthors() {
-        return fetchFilters(AuthorFilter.class);
-    }
-
-    @Override
-    public ArrayList<String> fetchFilterEditors() {
-        return fetchFilters(EditorFilter.class);
-    }
-
-    @Override
-    public ArrayList<String> fetchFilterCategories() {
-        return fetchFilters(CategoryFilter.class);
     }
 
     private <T extends IsFilter> ArrayList<String> fetchFilters(final Class<T> clazz) {

@@ -1,7 +1,6 @@
 package com.pgu.books.client.ui.books.filters;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Unit;
@@ -12,7 +11,6 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.cellview.client.CellBrowser;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.user.client.ui.HTML;
@@ -33,24 +31,20 @@ public class BooksFilters extends Composite {
     }
 
     @UiField
-    Button btnApplyFilters;
+    Button                            btnApplyFilters;
 
     @UiField(provided = true)
-    StackLayoutPanel stackPanel;
+    StackLayoutPanel                  stackPanel;
 
-    public enum FilterType {
-        AUTHOR, EDITOR, CATEGORY
-    }
+    private final CellBrowser         authors;
+    private final CellBrowser         editors;
+    private final CellBrowser         categories;
 
-    private final CellBrowser authors;
-    private final CellBrowser editors;
-    private final CellBrowser categories;
+    private final FilterTreeViewModel authorTVM   = new FilterTreeViewModel();
+    private final FilterTreeViewModel editorTVM   = new FilterTreeViewModel();
+    private final FilterTreeViewModel categoryTVM = new FilterTreeViewModel();
 
-    private final FilterTreeViewModel authorTVM = new FilterTreeViewModel(FilterType.AUTHOR);
-    private final FilterTreeViewModel editorTVM = new FilterTreeViewModel(FilterType.EDITOR);
-    private final FilterTreeViewModel categoryTVM = new FilterTreeViewModel(FilterType.CATEGORY);
-
-    private BooksFiltersPresenter presenter;
+    private BooksFiltersPresenter     presenter;
 
     public BooksFilters() {
 
@@ -108,15 +102,6 @@ public class BooksFilters extends Composite {
         });
     }
 
-    private void fillFilter(final List<String> values, final CellBrowser container) {
-        // TODO PGU
-        // container.clear();
-        for (final String v : values) {
-            final CheckBox cb = new CheckBox(v);
-            // container.add(cb);
-        }
-    }
-
     private Widget createHeader(final String text) {
 
         final HTML headerText = new HTML(text);
@@ -160,20 +145,16 @@ public class BooksFilters extends Composite {
         categoryTVM.setPresenter(presenter);
     }
 
-    public void addAuthors(final ArrayList<String> authors) {
-        fillFilter(authors, this.authors);
-    }
-
-    public void addEditors(final ArrayList<String> editors) {
-        fillFilter(editors, this.editors);
-    }
-
-    public void addCategories(final ArrayList<String> categories) {
-        fillFilter(categories, this.categories);
-    }
-
     public void setAuthorCounts(final ArrayList<String> countsByLetters) {
         authorTVM.setCounts(countsByLetters);
+    }
+
+    public void setEditorCounts(final ArrayList<String> countsByLetters) {
+        editorTVM.setCounts(countsByLetters);
+    }
+
+    public void setCategoryCounts(final ArrayList<String> countsByLetters) {
+        categoryTVM.setCounts(countsByLetters);
     }
 
     public void setAuthorFilters(final String letter, final ArrayList<String> filters) {

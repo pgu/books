@@ -18,20 +18,18 @@ import com.google.gwt.view.client.MultiSelectionModel;
 import com.google.gwt.view.client.SelectionModel;
 import com.google.gwt.view.client.TreeViewModel;
 import com.pgu.books.client.activity.books.filters.BooksFiltersPresenter;
-import com.pgu.books.client.ui.books.filters.BooksFilters.FilterType;
 
 public class FilterTreeViewModel implements TreeViewModel {
 
-    private final FilterType                                filter;
     private BooksFiltersPresenter                           presenter;
 
     private final Cell<FilterValue>                         filterValueCell;
+
     private final DefaultSelectionEventManager<FilterValue> selectionManager = DefaultSelectionEventManager
                                                                                      .createCheckboxManager();
     private final SelectionModel<FilterValue>               selectionModel   = new MultiSelectionModel<FilterValue>();
 
-    public FilterTreeViewModel(final FilterType filter) {
-        this.filter = filter;
+    public FilterTreeViewModel() {
 
         final List<HasCell<FilterValue, ?>> hasCells = new ArrayList<HasCell<FilterValue, ?>>();
         hasCells.add(new HasCell<FilterValue, Boolean>() {
@@ -138,58 +136,8 @@ public class FilterTreeViewModel implements TreeViewModel {
             return new DefaultNodeInfo<FilterValue>(cache.get(letter), filterValueCell, selectionModel,
                     selectionManager, null);
 
-            // } else {
-            // final ListDataProvider<FilterValue> filterValues = new ListDataProvider<FilterValue>();
-            // updateFilters(filterValues.getList(), (Letter) value);
-            // return new DefaultNodeInfo<FilterValue>(filterValues, filterValueCell, selectionModel,
-            // selectionManager, null);
-            // }
-
         }
         return null;
-    }
-
-    private void updateFilters(final List<FilterValue> values, final Letter letter) {
-
-        if (isAuthor()) {
-            presenter.fetchAuthorsByLetter(letter.getValue(), values);
-
-        } else if (isEditor()) {
-            presenter.fetchEditorsByLetter(letter.getValue(), values);
-
-        } else if (isCategory()) {
-            presenter.fetchCategoriesByLetter(letter.getValue(), values);
-
-        } else {
-            throw new UnsupportedOperationException("Filter not handled: " + filter);
-        }
-
-    }
-
-    private void updateCountByLetters() {
-        if (isAuthor()) {
-
-        } else if (isEditor()) {
-            presenter.countEditorsByLetters(letters.getList());
-
-        } else if (isCategory()) {
-            presenter.countCategoriesByLetters(letters.getList());
-
-        } else {
-            throw new UnsupportedOperationException("Filter not handled: " + filter);
-        }
-    }
-
-    private boolean isCategory() {
-        return FilterType.CATEGORY == filter;
-    }
-
-    private boolean isEditor() {
-        return FilterType.EDITOR == filter;
-    }
-
-    private boolean isAuthor() {
-        return FilterType.AUTHOR == filter;
     }
 
     @Override
@@ -199,7 +147,7 @@ public class FilterTreeViewModel implements TreeViewModel {
 
     public void setCounts(final ArrayList<String> countsByLetters) {
         for (final String count : countsByLetters) {
-            final Letter letter = new Letter(count);
+            final Letter letter = new Letter().value(count);
             letters.getList().add(letter);
             cache.put(letter, new ListDataProvider<FilterValue>());
         }

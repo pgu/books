@@ -2,10 +2,18 @@ package com.pgu.books.client.ui.books.filters;
 
 public class Letter {
 
-    private final String value;
-    private boolean      hasBeenFetched = false;
+    private String  value;
+    private boolean hasBeenFetched = false;
 
-    public Letter(final String value) {
+    public Letter() {
+    }
+
+    public Letter value(final String value) {
+        setValue(value);
+        return this;
+    }
+
+    public void setValue(final String value) {
         this.value = value;
     }
 
