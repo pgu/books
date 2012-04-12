@@ -67,7 +67,7 @@ public class Dashboard extends Composite {
 
         booksboard = new Booksboard();
         booksboard.setHeight("600px");
-        booksboard.setWidth("800px");
+        booksboard.setWidth("1000px");
         booksDock.add(booksboard, DockPanel.CENTER);
     }
 

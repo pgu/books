@@ -50,7 +50,7 @@ public class BooksFilters extends Composite {
     public BooksFilters() {
 
         stackPanel = new StackLayoutPanel(Unit.EM);
-        stackPanel.setPixelSize(200, 550);
+        stackPanel.setPixelSize(350, 550);
 
         authors = new FilterCellBrowser<String>(authorTVM, null);
         editors = new FilterCellBrowser<String>(editorTVM, null);
@@ -72,7 +72,7 @@ public class BooksFilters extends Composite {
         // http://stackoverflow.com/questions/5160495/how-do-i-set-first-column-width-on-gwt-cellbrowser
         // http://groups.google.com/group/google-web-toolkit/browse_thread/thread/4fc39b5805833ea2
         container.setFirstColumnWidth(60);
-        container.setDefaultColumnWidth(115);
+        container.setDefaultColumnWidth(250);
 
         final Button btnClear = new Button("Clear");
 
