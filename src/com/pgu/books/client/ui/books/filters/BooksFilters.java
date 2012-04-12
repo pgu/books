@@ -72,7 +72,7 @@ public class BooksFilters extends Composite {
         // http://stackoverflow.com/questions/5160495/how-do-i-set-first-column-width-on-gwt-cellbrowser
         // http://groups.google.com/group/google-web-toolkit/browse_thread/thread/4fc39b5805833ea2
         container.setFirstColumnWidth(60);
-        container.setDefaultColumnWidth(100);
+        container.setDefaultColumnWidth(115);
 
         final Button btnClear = new Button("Clear");
 

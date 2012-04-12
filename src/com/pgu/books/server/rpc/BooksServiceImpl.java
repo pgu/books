@@ -31,7 +31,7 @@ public class BooksServiceImpl extends RemoteServiceServlet implements BooksServi
 
     private static final Logger LOG = Logger.getLogger(BooksServiceImpl.class.getSimpleName());
 
-    private final DAO           dao = new DAO();
+    private final DAO dao = new DAO();
 
     @Override
     public String testImport() {
@@ -239,6 +239,27 @@ public class BooksServiceImpl extends RemoteServiceServlet implements BooksServi
     @Override
     public ArrayList<String> fetchFilterAuthors(final String letter) {
         final ArrayList<String> counts = new ArrayList<String>();
+        counts.add(letter + "7777777777777777777");
+        counts.add(letter + "8");
+        counts.add(letter + "9");
+        counts.add(letter + "7");
+        counts.add(letter + "8");
+        counts.add(letter + "9");
+        counts.add(letter + "7");
+        counts.add(letter + "8");
+        counts.add(letter + "9");
+        counts.add(letter + "7");
+        counts.add(letter + "8");
+        counts.add(letter + "9");
+        counts.add(letter + "7");
+        counts.add(letter + "8");
+        counts.add(letter + "9");
+        counts.add(letter + "7");
+        counts.add(letter + "8");
+        counts.add(letter + "9");
+        counts.add(letter + "7");
+        counts.add(letter + "8");
+        counts.add(letter + "9");
         counts.add(letter + "7");
         counts.add(letter + "8");
         counts.add(letter + "9");
