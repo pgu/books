@@ -18,9 +18,11 @@ import com.google.gwt.view.client.MultiSelectionModel;
 import com.google.gwt.view.client.SelectionModel;
 import com.google.gwt.view.client.TreeViewModel;
 import com.pgu.books.client.activity.books.filters.BooksFiltersPresenter;
+import com.pgu.books.client.activity.utils.FilterType;
 
 public class FilterTreeViewModel implements TreeViewModel {
 
+    private FilterType                                      filterType;
     private BooksFiltersPresenter                           presenter;
 
     private final Cell<FilterValue>                         filterValueCell;
@@ -29,7 +31,8 @@ public class FilterTreeViewModel implements TreeViewModel {
                                                                                      .createCheckboxManager();
     private final SelectionModel<FilterValue>               selectionModel   = new MultiSelectionModel<FilterValue>();
 
-    public FilterTreeViewModel() {
+    public FilterTreeViewModel(final FilterType filterType) {
+        this.filterType = filterType;
 
         final List<HasCell<FilterValue, ?>> hasCells = new ArrayList<HasCell<FilterValue, ?>>();
         hasCells.add(new HasCell<FilterValue, Boolean>() {
@@ -131,7 +134,7 @@ public class FilterTreeViewModel implements TreeViewModel {
 
             final Letter letter = (Letter) value;
             if (!letter.hasBeenFetched()) {
-                presenter.fetchAuthorsByLetterNew(letter);
+                presenter.fetchFiltersByLetter(letter, filterType);
             }
             return new DefaultNodeInfo<FilterValue>(cache.get(letter), filterValueCell, selectionModel,
                     selectionManager, null);

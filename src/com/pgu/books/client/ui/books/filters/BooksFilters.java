@@ -22,6 +22,7 @@ import com.google.gwt.user.client.ui.StackLayoutPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.pgu.books.client.activity.books.filters.BooksFiltersPresenter;
+import com.pgu.books.client.activity.utils.FilterType;
 
 public class BooksFilters extends Composite {
 
@@ -40,9 +41,9 @@ public class BooksFilters extends Composite {
     private final CellBrowser         editors;
     private final CellBrowser         categories;
 
-    private final FilterTreeViewModel authorTVM   = new FilterTreeViewModel();
-    private final FilterTreeViewModel editorTVM   = new FilterTreeViewModel();
-    private final FilterTreeViewModel categoryTVM = new FilterTreeViewModel();
+    private final FilterTreeViewModel authorTVM   = new FilterTreeViewModel(FilterType.AUTHOR);
+    private final FilterTreeViewModel editorTVM   = new FilterTreeViewModel(FilterType.EDITOR);
+    private final FilterTreeViewModel categoryTVM = new FilterTreeViewModel(FilterType.CATEGORY);
 
     private BooksFiltersPresenter     presenter;
 
@@ -145,20 +146,32 @@ public class BooksFilters extends Composite {
         categoryTVM.setPresenter(presenter);
     }
 
-    public void setAuthorCounts(final ArrayList<String> countsByLetters) {
-        authorTVM.setCounts(countsByLetters);
+    public void setCounts(final ArrayList<String> countsByLetters, final FilterType filterType) {
+
+        if (FilterType.AUTHOR == filterType) {
+            authorTVM.setCounts(countsByLetters);
+
+        } else if (FilterType.EDITOR == filterType) {
+            editorTVM.setCounts(countsByLetters);
+
+        } else if (FilterType.CATEGORY == filterType) {
+            categoryTVM.setCounts(countsByLetters);
+
+        }
     }
 
-    public void setEditorCounts(final ArrayList<String> countsByLetters) {
-        editorTVM.setCounts(countsByLetters);
-    }
+    public void setFilters(final ArrayList<String> filters, final Letter letter, final FilterType filterType) {
 
-    public void setCategoryCounts(final ArrayList<String> countsByLetters) {
-        categoryTVM.setCounts(countsByLetters);
-    }
+        if (FilterType.AUTHOR == filterType) {
+            authorTVM.setFilters(letter, filters);
 
-    public void setAuthorFilters(final Letter letter, final ArrayList<String> filters) {
-        authorTVM.setFilters(letter, filters);
+        } else if (FilterType.EDITOR == filterType) {
+            editorTVM.setFilters(letter, filters);
+
+        } else if (FilterType.CATEGORY == filterType) {
+            categoryTVM.setFilters(letter, filters);
+
+        }
     }
 
 }

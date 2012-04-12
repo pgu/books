@@ -1,9 +1,8 @@
 package com.pgu.books.client.activity.books.filters;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import com.pgu.books.client.ui.books.filters.FilterValue;
+import com.pgu.books.client.activity.utils.FilterType;
 import com.pgu.books.client.ui.books.filters.Letter;
 
 public interface BooksFiltersPresenter {
@@ -11,12 +10,6 @@ public interface BooksFiltersPresenter {
     void fetchBooks(ArrayList<String> selectedAuthors, ArrayList<String> selectedEditors,
             ArrayList<String> selectedCategories);
 
-    void fetchCategoriesByLetter(String letter, List<FilterValue> valuesToFill);
-
-    void fetchEditorsByLetter(String letter, List<FilterValue> valuesToFill);
-
-    void fetchAuthorsByLetter(String letter, List<FilterValue> valuesToFill);
-
-    void fetchAuthorsByLetterNew(Letter letter);
+    void fetchFiltersByLetter(Letter letter, FilterType filterType);
 
 }

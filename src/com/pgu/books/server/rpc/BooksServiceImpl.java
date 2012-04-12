@@ -230,18 +230,18 @@ public class BooksServiceImpl extends RemoteServiceServlet implements BooksServi
     @Override
     public ArrayList<String> fetchFilterEditors(final String letter) {
         final ArrayList<String> counts = new ArrayList<String>();
-        counts.add(letter + "1");
-        counts.add(letter + "2");
-        counts.add(letter + "3");
+        counts.add(letter + "4");
+        counts.add(letter + "5");
+        counts.add(letter + "6");
         return counts;
     }
 
     @Override
     public ArrayList<String> fetchFilterAuthors(final String letter) {
         final ArrayList<String> counts = new ArrayList<String>();
-        counts.add(letter + "1");
-        counts.add(letter + "2");
-        counts.add(letter + "3");
+        counts.add(letter + "7");
+        counts.add(letter + "8");
+        counts.add(letter + "9");
         return counts;
     }
 

@@ -1,7 +1,6 @@
 package com.pgu.books.client.activity.dashboard;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
@@ -14,9 +13,9 @@ import com.pgu.books.client.activity.books.board.BooksboardPresenter;
 import com.pgu.books.client.activity.books.filters.BooksFiltersPresenter;
 import com.pgu.books.client.activity.books.search.BooksSearchPresenter;
 import com.pgu.books.client.activity.booksImport.BooksImportPresenter;
+import com.pgu.books.client.activity.utils.FilterType;
 import com.pgu.books.client.app.AsyncCallbackApp;
 import com.pgu.books.client.ui.Dashboard;
-import com.pgu.books.client.ui.books.filters.FilterValue;
 import com.pgu.books.client.ui.books.filters.Letter;
 import com.pgu.books.shared.Book;
 import com.pgu.books.shared.BooksFiltersDTO;
@@ -184,48 +183,6 @@ public class DashboardActivity implements //
         fetchBooks(0, dashboardUI.getBooksboardUI().getLength());
     }
 
-    @Override
-    public void fetchCategoriesByLetter(final String letter, final List<FilterValue> valuesToFill) {
-        booksService.fetchFilterCategories(letter, new AsyncCallbackApp<ArrayList<String>>() {
-
-            @Override
-            public void onSuccess(final ArrayList<String> filters) {
-                fillFilterValues(valuesToFill, filters);
-            }
-
-        });
-    }
-
-    private void fillFilterValues(final List<FilterValue> valuesToFill, final ArrayList<String> filters) {
-        for (final String filter : filters) {
-            valuesToFill.add(new FilterValue(filter));
-        }
-    }
-
-    @Override
-    public void fetchEditorsByLetter(final String letter, final List<FilterValue> valuesToFill) {
-        booksService.fetchFilterEditors(letter, new AsyncCallbackApp<ArrayList<String>>() {
-
-            @Override
-            public void onSuccess(final ArrayList<String> filters) {
-                fillFilterValues(valuesToFill, filters);
-            }
-
-        });
-    }
-
-    @Override
-    public void fetchAuthorsByLetter(final String letter, final List<FilterValue> valuesToFill) {
-        booksService.fetchFilterAuthors(letter, new AsyncCallbackApp<ArrayList<String>>() {
-
-            @Override
-            public void onSuccess(final ArrayList<String> filters) {
-                fillFilterValues(valuesToFill, filters);
-            }
-
-        });
-    }
-
     private void initFetchFilters() {
         Scheduler.get().scheduleDeferred(new ScheduledCommand() {
 
@@ -235,7 +192,7 @@ public class DashboardActivity implements //
 
                     @Override
                     public void onSuccess(final ArrayList<String> countsByLetters) {
-                        dashboardUI.getBooksFiltersUI().setAuthorCounts(countsByLetters);
+                        dashboardUI.getBooksFiltersUI().setCounts(countsByLetters, FilterType.AUTHOR);
                     }
 
                 });
@@ -249,7 +206,7 @@ public class DashboardActivity implements //
 
                     @Override
                     public void onSuccess(final ArrayList<String> countsByLetters) {
-                        dashboardUI.getBooksFiltersUI().setEditorCounts(countsByLetters);
+                        dashboardUI.getBooksFiltersUI().setCounts(countsByLetters, FilterType.EDITOR);
                     }
 
                 });
@@ -263,7 +220,7 @@ public class DashboardActivity implements //
 
                     @Override
                     public void onSuccess(final ArrayList<String> countsByLetters) {
-                        dashboardUI.getBooksFiltersUI().setCategoryCounts(countsByLetters);
+                        dashboardUI.getBooksFiltersUI().setCounts(countsByLetters, FilterType.CATEGORY);
                     }
 
                 });
@@ -272,15 +229,38 @@ public class DashboardActivity implements //
     }
 
     @Override
-    public void fetchAuthorsByLetterNew(final Letter letter) {
-        booksService.fetchFilterAuthors(letter.getValue(), new AsyncCallbackApp<ArrayList<String>>() {
+    public void fetchFiltersByLetter(final Letter letter, final FilterType filterType) {
 
-            @Override
-            public void onSuccess(final ArrayList<String> filters) {
-                dashboardUI.getBooksFiltersUI().setAuthorFilters(letter, filters);
-            }
+        if (FilterType.AUTHOR == filterType) {
+            booksService.fetchFilterAuthors(letter.getValue(), new AsyncCallbackApp<ArrayList<String>>() {
 
-        });
+                @Override
+                public void onSuccess(final ArrayList<String> filters) {
+                    dashboardUI.getBooksFiltersUI().setFilters(filters, letter, filterType);
+                }
+
+            });
+
+        } else if (FilterType.EDITOR == filterType) {
+            booksService.fetchFilterEditors(letter.getValue(), new AsyncCallbackApp<ArrayList<String>>() {
+
+                @Override
+                public void onSuccess(final ArrayList<String> filters) {
+                    dashboardUI.getBooksFiltersUI().setFilters(filters, letter, filterType);
+                }
+
+            });
+
+        } else if (FilterType.CATEGORY == filterType) {
+            booksService.fetchFilterCategories(letter.getValue(), new AsyncCallbackApp<ArrayList<String>>() {
+
+                @Override
+                public void onSuccess(final ArrayList<String> filters) {
+                    dashboardUI.getBooksFiltersUI().setFilters(filters, letter, filterType);
+                }
+
+            });
+        }
     }
 
 }
