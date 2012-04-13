@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.http.HttpStatus;
 
+import com.pgu.books.server.exception.InterruptProcessException;
 import com.pgu.books.server.exception.ProcessException;
 
 public final class AppUtils {
@@ -33,15 +34,17 @@ public final class AppUtils {
         throw new ProcessException(msg);
     }
 
-    public static void print(final String msg, final HttpServletResponse resp, final long startTime, final Logger logger)
-            throws IOException {
+    public static void printInterrupt(final InterruptProcessException ex, final HttpServletResponse resp, final Logger logger)
+            throws IOException, InterruptProcessException {
 
-        final String responseText = msg + " (" + (System.currentTimeMillis() - startTime) + " ms)";
+        final String msg = ex.getMessage();
 
         resp.setContentType("text/plain");
-        resp.getWriter().println(responseText);
+        resp.getWriter().println(msg);
 
-        logger.info(responseText);
+        logger.info(msg);
+
+        throw ex;
     }
 
 }

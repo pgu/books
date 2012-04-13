@@ -18,7 +18,7 @@ import com.googlecode.objectify.Query;
 import com.pgu.books.client.BooksService;
 import com.pgu.books.server.access.DAO;
 import com.pgu.books.server.domain.BookWord;
-import com.pgu.books.server.domain.IsFilter;
+import com.pgu.books.server.domain.Filter;
 import com.pgu.books.server.domain.Word;
 import com.pgu.books.server.utils.AppQueues;
 import com.pgu.books.server.utils.AppUrls;
@@ -31,7 +31,7 @@ public class BooksServiceImpl extends RemoteServiceServlet implements BooksServi
 
     private static final Logger LOG = Logger.getLogger(BooksServiceImpl.class.getSimpleName());
 
-    private final DAO dao = new DAO();
+    private final DAO           dao = new DAO();
 
     @Override
     public String testImport() {
@@ -154,7 +154,7 @@ public class BooksServiceImpl extends RemoteServiceServlet implements BooksServi
         dao.ofy().delete(keys);
     }
 
-    private <T extends IsFilter> ArrayList<String> fetchFilters(final Class<T> clazz) {
+    private <T extends Filter> ArrayList<String> fetchFilters(final Class<T> clazz) {
 
         final Query<T> query = dao.ofy().query(clazz);
 
