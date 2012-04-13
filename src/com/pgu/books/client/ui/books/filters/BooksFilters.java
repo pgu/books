@@ -125,7 +125,7 @@ public class BooksFilters extends Composite {
         container.setHeight("356px");
         container.setAnimationEnabled(true);
 
-        container.setFirstColumnWidth(60);
+        container.setFirstColumnWidth(100);
         container.setDefaultColumnWidth(250);
 
         final Button btnClear = new Button("Clear");

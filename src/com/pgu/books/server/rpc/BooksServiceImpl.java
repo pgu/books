@@ -7,13 +7,12 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
-import com.google.appengine.api.datastore.QueryResultIterable;
 import com.google.appengine.api.datastore.QueryResultIterator;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
+import com.google.appengine.api.utils.SystemProperty;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
-import com.googlecode.objectify.Key;
 import com.googlecode.objectify.Query;
 import com.pgu.books.client.BooksService;
 import com.pgu.books.server.access.DAO;
@@ -101,7 +100,8 @@ public class BooksServiceImpl extends RemoteServiceServlet implements BooksServi
         final Query<Book> query = dao.ofy().query(Book.class);
         applyFilters(filtersDTO, query);
 
-        // TODO PGU
+        // TODO PGU handle the cursor on filter ids
+        // TODO PGU limit the filters numbers
         // http://stackoverflow.com/questions/6905898/illegalargumentexception-splitting-the-provided-query-requires-that-too-many-su
         final QueryResultIterator<Book> itr = query.order("title").offset(start).limit(length).iterator();
 
@@ -156,9 +156,14 @@ public class BooksServiceImpl extends RemoteServiceServlet implements BooksServi
 
     @Override
     public void delete() {
-        // TODO PGU use a cursor + only in local mode
-        final QueryResultIterable<Key<Book>> keys = dao.ofy().query(Book.class).fetchKeys();
-        dao.ofy().delete(keys);
+        if (SystemProperty.environment.value() == SystemProperty.Environment.Value.Production) {
+            return; // The app is running on App Engine...
+        }
+
+        final QueryResultIterator<Book> itr = dao.ofy().query(Book.class).iterator();
+        while (itr.hasNext()) {
+            dao.ofy().delete(itr.next());
+        }
     }
 
     @Override
