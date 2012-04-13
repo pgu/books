@@ -29,10 +29,10 @@ public class Booksboard extends Composite {
     }
 
     @UiField(provided = true)
-    DataGrid<Book>              grid;
+    DataGrid<Book> grid;
 
     @UiField(provided = true)
-    SimplePager                 pager;
+    SimplePager pager;
 
     private BooksboardPresenter presenter;
 
@@ -112,11 +112,11 @@ public class Booksboard extends Composite {
         grid.addColumn(categoryColumn, "Categoría");
     }
 
-    private boolean         isGettingNbBooks = false;
-    private boolean         isGettingBooks   = false;
-    private Integer         nbBooks          = 0;
+    private boolean isGettingNbBooks = false;
+    private boolean isGettingBooks = false;
+    private Integer nbBooks = 0;
     private ArrayList<Book> books;
-    private int             currentStart     = 0;
+    private int currentStart = 0;
 
     public void initFetch() {
         isGettingNbBooks = true;
@@ -145,13 +145,14 @@ public class Booksboard extends Composite {
             return;
         }
 
-        // grid.setVisibleRangeAndClearData(grid.getVisibleRange(), false);
-        grid.setRowCount(nbBooks, nbBooks == 0 ? true : false);
+        final boolean isExact = currentStart + books.size() == nbBooks;
+
+        grid.setRowCount(nbBooks, isExact);
         provider.updateRowData(currentStart, books);
     }
 
     private AsyncDataProvider<Book> provider;
-    private int                     length;
+    private int length;
 
     public void initFetchBooks() {
         provider = new AsyncDataProvider<Book>() {
