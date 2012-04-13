@@ -39,8 +39,6 @@ public class BuildFiltersServlet extends HttpServlet {
 
     private final DAO dao = new DAO();
 
-    // TODO PGU update the cron file and queue file
-
     private static final String PARAM_STAGE = "stage";
     private static final String STAGE_FILTER = "filter";
     private static final String STAGE_LETTER = "letter";
@@ -127,13 +125,7 @@ public class BuildFiltersServlet extends HttpServlet {
 
                 } else {
                     appUtils.throwProcessException("Unknown action " + action);
-                    // TODO PGU
-                    // add clean param (remove all)
-                    // add put param (create letters)
-                    // add clean param (remove duplicates)
-                    // add count param (for each letter, count items and save the counts)
                 }
-
             } else {
                 appUtils.throwProcessException("Unknown stage " + stage);
             }

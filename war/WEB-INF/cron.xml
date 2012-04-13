@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <cronentries>
     <cron>
-        <url>/buildFilters?action=start</url>
+        <url>/buildFilters</url>
         <description>Builds filters for books</description>
         <schedule>every day 01:00</schedule>
     </cron>
     <cron>
-        <url>/buildWords?action=start</url>
+        <url>/buildWords</url>
         <description>Builds words for books</description>
         <schedule>every day 02:00</schedule>
     </cron>
