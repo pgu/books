@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.QueryResultIterator;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
@@ -22,6 +21,7 @@ import com.pgu.books.server.access.DAO;
 import com.pgu.books.server.domain.BookWord;
 import com.pgu.books.server.domain.IsWord;
 import com.pgu.books.server.domain.Word;
+import com.pgu.books.server.exception.InterruptProcessException;
 import com.pgu.books.server.exception.ProcessException;
 import com.pgu.books.server.utils.AppQueues;
 import com.pgu.books.server.utils.AppUrls;
@@ -68,141 +68,149 @@ public class BuildWordsServlet extends HttpServlet {
                 .startInMs(startTime) //
                 .response(resp);
 
-        final String action = getParameterAction(req, appUtils);
+        try {
+            final String action = getParameterAction(req, appUtils);
 
-        if (isDeleteAction(action)) {
+            if (isDeleteAction(action)) {
 
-            // delete the current bookWords and words
-            for (final Class<? extends IsWord> clazz : Arrays.asList(BookWord.class, Word.class)) {
+                // delete the current bookWords and words
+                for (final Class<? extends IsWord> clazz : Arrays.asList(BookWord.class, Word.class)) {
 
-                final boolean hasWord = dao.ofy().query(clazz).limit(1).count() > 0;
+                    final boolean hasWord = dao.ofy().query(clazz).limit(1).count() > 0;
 
-                if (hasWord) {
-                    final QueryResultIterator<? extends IsWord> itr = dao.ofy().query(clazz).iterator();
-                    while (itr.hasNext()) {
+                    if (hasWord) {
+                        final QueryResultIterator<? extends IsWord> itr = dao.ofy().query(clazz).iterator();
+                        while (itr.hasNext()) {
 
-                        dao.ofy().delete(itr.next());
+                            dao.ofy().delete(itr.next());
 
-                        if (appUtils.hasReachedTimeOut()) {
+                            if (appUtils.hasReachedTimeOut()) {
 
-                            new WordTask() //
-                                    .action(ACTION_DELETE) //
-                                    .addToQueue();
+                                new WordTask() //
+                                        .action(ACTION_DELETE) //
+                                        .addToQueue();
 
-                            appUtils.throwInterruptProcessException("Deleting words has reached its time's limit");
+                                appUtils.throwInterruptProcessException("Deleting words has reached its time's limit");
+                            }
                         }
                     }
                 }
-            }
+                appUtils.info("Deleting words is over");
 
-            // next step: put new bookWords
-            new WordTask() //
-                    .action(ACTION_BOOK_WORDS) //
-                    .addToQueue();
+                // next step: put new bookWords
+                new WordTask() //
+                        .action(ACTION_BOOK_WORDS) //
+                        .addToQueue();
 
-            appUtils.info("Deleting words is over");
+                appUtils.info("Let's start the bookwords creation");
 
-        } else if (ACTION_BOOK_WORDS.equalsIgnoreCase(action)) {
-            //
-            // loop through all books to create the bookWords
-            final Query<Book> query = dao.ofy().query(Book.class);
+            } else if (isBookWordsAction(action)) {
+                //
+                // loop through all books to create the bookWords
+                final Query<Book> query = dao.ofy().query(Book.class);
 
-            final String cursorParam = req.getParameter(AppUrls.PARAM_CURSOR);
-            if (cursorParam != null) {
-                query.startCursor(Cursor.fromWebSafeString(cursorParam));
-            }
+                appUtils.setStartCursor(req, query);
 
-            final QueryResultIterator<Book> itr = query.iterator();
-            while (itr.hasNext()) {
-                final Book book = itr.next();
+                final QueryResultIterator<Book> itr = query.iterator();
+                while (itr.hasNext()) {
+                    final Book book = itr.next();
 
-                final StringBuilder sb = new StringBuilder();
-                sb.append(book.getAuthor());
-                sb.append(SEP);
-                sb.append(book.getCategory());
-                sb.append(SEP);
-                sb.append(book.getComment());
-                sb.append(SEP);
-                sb.append(book.getEditor());
-                sb.append(SEP);
-                sb.append(book.getTitle());
-                sb.append(SEP);
-                sb.append(book.getYear());
+                    final StringBuilder sb = new StringBuilder();
+                    sb.append(book.getAuthor());
+                    sb.append(SEP);
+                    sb.append(book.getCategory());
+                    sb.append(SEP);
+                    sb.append(book.getComment());
+                    sb.append(SEP);
+                    sb.append(book.getEditor());
+                    sb.append(SEP);
+                    sb.append(book.getTitle());
+                    sb.append(SEP);
+                    sb.append(book.getYear());
 
-                extractWordsAndCreateBookWords(sb.toString(), book.getId());
+                    extractWordsAndCreateBookWords(sb.toString(), book.getId());
 
-                if (AppUtils.hasReachedTimeOut(startTime)) {
-                    final Queue queue = QueueFactory.getQueue(AppQueues.BUILD_WORDS);
-                    queue.add(TaskOptions.Builder.withUrl(AppUrls.BUILD_WORDS) //
-                            .param(PARAM_ACTION, ACTION_BOOK_WORDS) //
-                            .param(AppUrls.PARAM_CURSOR, itr.getCursor().toWebSafeString()));
+                    if (appUtils.hasReachedTimeOut()) {
 
-                    AppUtils.print("BookWords creation in process", resp, startTime, LOGGER);
-                    return;
+                        new WordTask() //
+                                .action(ACTION_BOOK_WORDS) //
+                                .cursor(itr.getCursor().toWebSafeString()) //
+                                .addToQueue();
+
+                        appUtils.throwInterruptProcessException("Creating bookWords has reached its time's limit");
+                    }
                 }
-            }
+                appUtils.info("Creating bookWords is over");
 
-            // next step: put new words
-            final Queue queue = QueueFactory.getQueue(AppQueues.BUILD_WORDS);
-            queue.add(TaskOptions.Builder.withUrl(AppUrls.BUILD_WORDS).param(PARAM_ACTION, ACTION_WORDS));
+                // next step: put new words
+                new WordTask() //
+                        .action(ACTION_WORDS) //
+                        .addToQueue();
 
-            AppUtils.print("BookWords creation process is over", resp, startTime, LOGGER);
-            return;
+                appUtils.info("Let's start the words creation");
 
-        } else if (ACTION_WORDS.equalsIgnoreCase(action)) {
-            //
-            // loop through all bookWords to create the words
-            final Query<BookWord> query = dao.ofy().query(BookWord.class);
+            } else if (isWordsAction(action)) {
+                //
+                // loop through all bookWords to create the words
+                final Query<BookWord> query = dao.ofy().query(BookWord.class);
 
-            final String cursorParam = req.getParameter(AppUrls.PARAM_CURSOR);
-            if (cursorParam != null) {
-                query.startCursor(Cursor.fromWebSafeString(cursorParam));
-            }
+                appUtils.setStartCursor(req, query);
 
-            final List<String> wordsCache = new ArrayList<String>();
-            final QueryResultIterator<BookWord> itr = query.iterator();
-            while (itr.hasNext()) {
-                final BookWord bookWord = itr.next();
-                final String value = bookWord.getValue();
-                final String display = bookWord.getDisplay();
+                final List<String> wordsCache = new ArrayList<String>();
+                final QueryResultIterator<BookWord> itr = query.iterator();
+                while (itr.hasNext()) {
+                    final BookWord bookWord = itr.next();
+                    final String value = bookWord.getValue();
+                    final String display = bookWord.getDisplay();
 
-                // if it is in the cache then go to next
-                final String wordCache = value + "|" + display;
-                if (wordsCache.contains(wordCache)) {
-                    continue;
+                    // if it is in the cache then go to next
+                    final String wordCache = value + "|" + display;
+                    if (wordsCache.contains(wordCache)) {
+                        continue;
+                    }
+
+                    // if it is in the DB then go to next
+                    final int count = dao.ofy().query(Word.class) //
+                            .filter("value", value) //
+                            .filter("display", display) //
+                            .limit(1).count();
+                    if (count > 0) {
+                        continue;
+                    }
+
+                    // it does not exist then let's add it
+                    dao.ofy().put(new Word().value(value).display(display));
+                    wordsCache.add(wordCache); // update cache
+
+                    if (appUtils.hasReachedTimeOut()) {
+
+                        new WordTask() //
+                                .action(ACTION_WORDS) //
+                                .cursor(itr.getCursor().toWebSafeString()) //
+                                .addToQueue();
+
+                        appUtils.throwInterruptProcessException("Creating bookWords has reached its time's limit");
+                    }
                 }
+                appUtils.info("Creating words is over");
 
-                // if it is in the DB then go to next
-                final int count = dao.ofy().query(Word.class) //
-                        .filter("value", value) //
-                        .filter("display", display) //
-                        .limit(1).count();
-                if (count > 0) {
-                    continue;
-                }
+            } else {
 
-                // it does not exist then let's add it
-                dao.ofy().put(new Word().value(value).display(display)); // TODO PGU add weight based on count?
-                wordsCache.add(wordCache); // update cache
-
-                if (AppUtils.hasReachedTimeOut(startTime)) {
-                    final Queue queue = QueueFactory.getQueue(AppQueues.BUILD_WORDS);
-                    queue.add(TaskOptions.Builder.withUrl(AppUrls.BUILD_WORDS) //
-                            .param(PARAM_ACTION, ACTION_WORDS) //
-                            .param(AppUrls.PARAM_CURSOR, itr.getCursor().toWebSafeString()));
-
-                    AppUtils.print("Words creation in process", resp, startTime, LOGGER);
-                    return;
-                }
+                appUtils.throwProcessException("Unknown action " + action);
             }
-
-            AppUtils.print("Words creation process is over", resp, startTime, LOGGER);
-            return;
-
-        } else {
-            AppUtils.setBadRequest("Unknown action: " + action, resp, LOGGER);
-            return;
+        } catch (final ProcessException e) {
+            // fail silently, it is already logged
+        } catch (final InterruptProcessException e) {
+            // fail silently, it is already logged
         }
+    }
+
+    private boolean isWordsAction(final String action) {
+        return ACTION_WORDS.equalsIgnoreCase(action);
+    }
+
+    private boolean isBookWordsAction(final String action) {
+        return ACTION_BOOK_WORDS.equalsIgnoreCase(action);
     }
 
     private void extractWordsAndCreateBookWords(String text, final Long bookId) {

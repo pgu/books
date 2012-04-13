@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.QueryResultIterator;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
@@ -145,7 +144,7 @@ public class BuildFiltersServlet extends HttpServlet {
         final Class<? extends Filter> filterClass = getFilterClass(filter);
 
         final Query<? extends LetterFilter> query = dao.ofy().query(letterClass);
-        setStartCursor(req, query);
+        appUtils.setStartCursor(req, query);
 
         final QueryResultIterator<? extends LetterFilter> itr = query.iterator();
         while (itr.hasNext()) {
@@ -199,7 +198,7 @@ public class BuildFiltersServlet extends HttpServlet {
         final Class<? extends LetterFilter> letterClass = getLetterClass(filter);
 
         final Query<? extends LetterFilter> query = dao.ofy().query(letterClass);
-        setStartCursor(req, query);
+        appUtils.setStartCursor(req, query);
 
         final QueryResultIterator<? extends LetterFilter> itr = query.iterator();
         while (itr.hasNext()) {
@@ -255,7 +254,7 @@ public class BuildFiltersServlet extends HttpServlet {
         final Class<? extends Filter> filterClass = getFilterClass(filter);
 
         final Query<? extends Filter> query = dao.ofy().query(filterClass);
-        setStartCursor(req, query);
+        appUtils.setStartCursor(req, query);
 
         final QueryResultIterator<? extends Filter> itr = query.iterator();
         while (itr.hasNext()) {
@@ -404,7 +403,7 @@ public class BuildFiltersServlet extends HttpServlet {
         final Class<? extends Filter> filterClass = getFilterClass(filter);
 
         final Query<? extends Filter> query = dao.ofy().query(filterClass);
-        setStartCursor(req, query);
+        appUtils.setStartCursor(req, query);
 
         final QueryResultIterator<? extends Filter> itr = query.iterator();
         while (itr.hasNext()) {
@@ -455,7 +454,7 @@ public class BuildFiltersServlet extends HttpServlet {
             InterruptProcessException {
 
         final Query<Book> query = dao.ofy().query(Book.class);
-        setStartCursor(req, query);
+        appUtils.setStartCursor(req, query);
 
         final QueryResultIterator<Book> itr = query.iterator();
         while (itr.hasNext()) {
@@ -652,13 +651,6 @@ public class BuildFiltersServlet extends HttpServlet {
         parser.defaultValue = FILTER_AUTHOR;
 
         return appUtils.getParameter(parser, req);
-    }
-
-    private void setStartCursor(final HttpServletRequest req, final Query<?> query) {
-        final String cursorParam = req.getParameter(AppUrls.PARAM_CURSOR);
-        if (cursorParam != null) {
-            query.startCursor(Cursor.fromWebSafeString(cursorParam));
-        }
     }
 
 }

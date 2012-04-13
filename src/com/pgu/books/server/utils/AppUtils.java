@@ -8,6 +8,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.http.HttpStatus;
 
+import com.google.appengine.api.datastore.Cursor;
+import com.googlecode.objectify.Query;
 import com.pgu.books.server.exception.InterruptProcessException;
 import com.pgu.books.server.exception.ProcessException;
 
@@ -83,6 +85,13 @@ public final class AppUtils {
         }
 
         return value == null ? parser.defaultValue : value.toLowerCase();
+    }
+
+    public void setStartCursor(final HttpServletRequest req, final Query<?> query) {
+        final String cursorParam = req.getParameter(AppUrls.PARAM_CURSOR);
+        if (cursorParam != null) {
+            query.startCursor(Cursor.fromWebSafeString(cursorParam));
+        }
     }
 
 }
