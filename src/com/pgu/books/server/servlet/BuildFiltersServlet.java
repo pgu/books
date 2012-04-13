@@ -145,7 +145,59 @@ public class BuildFiltersServlet extends HttpServlet {
         }
     }
 
-    private void countLetters(final String filter, final HttpServletRequest req, final AppUtils appUtils) {
+    private void countLetters(final String filter, final HttpServletRequest req, final AppUtils appUtils)
+            throws IOException, InterruptProcessException {
+
+        final Class<? extends LetterFilter> letterClass = getLetterClass(filter);
+        final Class<? extends Filter> filterClass = getFilterClass(filter);
+
+        final Query<? extends LetterFilter> query = dao.ofy().query(letterClass);
+        setStartCursor(req, query);
+
+        final QueryResultIterator<? extends LetterFilter> itr = query.iterator();
+        while (itr.hasNext()) {
+
+            final LetterFilter isLetter = itr.next();
+            final String uppercaseLetter = isLetter.getLetter();
+            final String lowercaseLetter = uppercaseLetter.toLowerCase();
+
+            final int uppercaseCount = dao.ofy().query(filterClass) //
+                    .filter("value >=", uppercaseLetter) //
+                    .filter("value <", uppercaseLetter + "\uFFFD") //
+                    .count();
+
+            final int lowercaseCount = dao.ofy().query(filterClass) //
+                    .filter("value >=", lowercaseLetter) //
+                    .filter("value <", lowercaseLetter + "\uFFFD") //
+                    .count();
+
+            isLetter.setLetter(uppercaseLetter + " (" + (uppercaseCount + lowercaseCount) + ")");
+            dao.ofy().put(isLetter);
+
+            if (appUtils.hasReachedTimeOut()) {
+
+                new FilterTask() //
+                        .stage(STAGE_LETTER) //
+                        .action(ACTION_COUNT) //
+                        .filter(filter) //
+                        .cursor(itr.getCursor().toWebSafeString()) //
+                        .addToQueue();
+
+                appUtils.throwInterruptProcessException("Counting letterFilters has reached its time's limit");
+            }
+        }
+        appUtils.info("Counting letterFilters is over for the filter " + filter);
+
+        final String nextFilter = getNextFilter(filter);
+        if (nextFilter != null) {
+            new FilterTask() //
+                    .stage(STAGE_LETTER) //
+                    .action(ACTION_COUNT) //
+                    .filter(nextFilter) //
+                    .addToQueue();
+
+            appUtils.info("Starts counting letterFilters for " + nextFilter);
+        }
     }
 
     private void cleanupLetters(final String filter, final HttpServletRequest req, final AppUtils appUtils)
@@ -216,7 +268,7 @@ public class BuildFiltersServlet extends HttpServlet {
         while (itr.hasNext()) {
 
             final Filter isFilter = itr.next();
-            final String letter = isFilter.getValue().substring(0, 1);
+            final String letter = isFilter.getValue().substring(0, 1).toUpperCase();
 
             if (isAuthor) {
                 dao.ofy().put(new AuthorLetterFilter().letter(letter));
@@ -253,7 +305,7 @@ public class BuildFiltersServlet extends HttpServlet {
                     .filter(nextFilter) //
                     .addToQueue();
 
-            appUtils.info("Starts creationg letterFilters for " + nextFilter);
+            appUtils.info("Starts creating letterFilters for " + nextFilter);
 
         } else {
             new FilterTask() //
@@ -263,7 +315,6 @@ public class BuildFiltersServlet extends HttpServlet {
 
             appUtils.info("Let's start the letterFilters clean up");
         }
-
     }
 
     private boolean isAuthor(final String filter) {

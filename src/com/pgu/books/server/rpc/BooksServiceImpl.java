@@ -31,7 +31,7 @@ public class BooksServiceImpl extends RemoteServiceServlet implements BooksServi
 
     private static final Logger LOG = Logger.getLogger(BooksServiceImpl.class.getSimpleName());
 
-    private final DAO           dao = new DAO();
+    private final DAO dao = new DAO();
 
     @Override
     public String testImport() {
@@ -177,7 +177,8 @@ public class BooksServiceImpl extends RemoteServiceServlet implements BooksServi
 
         final String value = text.trim();
 
-        final Query<Word> query = dao.ofy().query(Word.class).filter("value >=", value)
+        final Query<Word> query = dao.ofy().query(Word.class) //
+                .filter("value >=", value) //
                 .filter("value <", value + "\uFFFD");
 
         final int nbWords = query.count();
