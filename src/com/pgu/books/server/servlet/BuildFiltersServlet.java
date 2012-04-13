@@ -99,9 +99,10 @@ public class BuildFiltersServlet extends HttpServlet {
                 deleteFilters(filter, appUtils);
 
             } else if (isPutAction(action)) {
-                putFilters(filter, appUtils);
+                putFilters(req, appUtils);
 
             } else if (isCleanupAction(action)) {
+                cleanupFilters(filter, req, appUtils);
 
             } else {
                 appUtils.throwProcessException("Unknown action " + action);
@@ -126,105 +127,8 @@ public class BuildFiltersServlet extends HttpServlet {
         if (ACTION_DELETE.equalsIgnoreCase(action)) {
 
         } else if (ACTION_PUT.equalsIgnoreCase(action)) {
-            //
-            // loop through all books to create the filters
-            final Query<Book> query = dao.ofy().query(Book.class);
-
-            final String cursorParam = req.getParameter(AppUrls.PARAM_CURSOR);
-            if (cursorParam != null) {
-                query.startCursor(Cursor.fromWebSafeString(cursorParam));
-            }
-
-            final QueryResultIterator<Book> itr = query.iterator();
-            while (itr.hasNext()) {
-                final Book book = itr.next();
-
-                dao.ofy().put(new AuthorFilter().value(book.getAuthor()));
-                dao.ofy().put(new EditorFilter().value(book.getEditor()));
-                dao.ofy().put(new CategoryFilter().value(book.getCategory()));
-
-                if (AppUtils.hasReachedTimeOut(startTime)) {
-                    final Queue queue = QueueFactory.getQueue(AppQueues.BUILD_FILTERS);
-                    queue.add(newTask().param(PARAM_ACTION, ACTION_PUT) //
-                            .param(AppUrls.PARAM_CURSOR, itr.getCursor().toWebSafeString()));
-
-                    AppUtils.print("Creation in process", resp, startTime, LOGGER);
-                    return;
-                }
-            }
-
-            // next step: remove duplicates
-            final Queue queue = QueueFactory.getQueue(AppQueues.BUILD_FILTERS);
-            queue.add(newTask().param(PARAM_ACTION, ACTION_CLEAN));
-
-            AppUtils.print("Creation process is over", resp, startTime, LOGGER);
-            return;
 
         } else if (ACTION_CLEAN.equalsIgnoreCase(action)) {
-            //
-            // loop through all filters to remove duplicates
-            final Class<? extends IsFilter> filterClass = parseFilterClass(req);
-
-            if (filterClass == null) {
-                AppUtils.setBadRequest("Unknown filter: " + req.getParameter(PARAM_FILTER), resp, LOGGER);
-                return;
-            }
-
-            final Query<? extends IsFilter> query = dao.ofy().query(filterClass);
-
-            final String cursorParam = req.getParameter(AppUrls.PARAM_CURSOR);
-            if (cursorParam != null) {
-                query.startCursor(Cursor.fromWebSafeString(cursorParam));
-            }
-
-            final QueryResultIterator<? extends IsFilter> itr = query.iterator();
-            while (itr.hasNext()) {
-                final IsFilter hasValue = itr.next();
-
-                final List<?> keys = dao.ofy().query(filterClass).filter("value", hasValue.getValue()).listKeys();
-
-                if (keys.size() > 1) {
-                    keys.remove(keys.size() - 1); // keeps one value
-                    dao.ofy().delete(keys); // delete the others
-                }
-
-                if (AppUtils.hasReachedTimeOut(startTime)) {
-
-                    final String filterValue = getFilterValue(filterClass);
-
-                    final Queue queue = QueueFactory.getQueue(AppQueues.BUILD_FILTERS);
-                    queue.add(newTask().param(PARAM_ACTION, ACTION_CLEAN) //
-                            .param(PARAM_FILTER, filterValue) //
-                            .param(AppUrls.PARAM_CURSOR, itr.getCursor().toWebSafeString()));
-
-                    AppUtils.print("Cleaning in process", resp, startTime, LOGGER);
-                    return;
-                }
-            }
-
-            if (AuthorFilter.class.equals(filterClass)) {
-                final Queue queue = QueueFactory.getQueue(AppQueues.BUILD_FILTERS);
-                queue.add(newTask().param(PARAM_ACTION, ACTION_CLEAN) //
-                        .param(PARAM_FILTER, FILTER_EDITOR));
-
-                AppUtils.print("Cleaning in process", resp, startTime, LOGGER);
-                return;
-
-            } else if (EditorFilter.class.equals(filterClass)) {
-                final Queue queue = QueueFactory.getQueue(AppQueues.BUILD_FILTERS);
-                queue.add(newTask().param(PARAM_ACTION, ACTION_CLEAN) //
-                        .param(PARAM_FILTER, FILTER_CATEGORY));
-
-                AppUtils.print("Cleaning in process", resp, startTime, LOGGER);
-                return;
-            } else {
-
-                final Queue queue = QueueFactory.getQueue(AppQueues.BUILD_FILTERS);
-                queue.add(newTask().param(PARAM_ACTION, ACTION_COUNTS));
-
-                AppUtils.print("Cleaning process is over", resp, startTime, LOGGER);
-                return;
-            }
 
         } else if (ACTION_COUNTS.equalsIgnoreCase(action)) {
             // TODO PGU
@@ -284,8 +188,98 @@ public class BuildFiltersServlet extends HttpServlet {
         }
     }
 
-    private void putFilters(final String filter, final AppUtils appUtils) {
+    private void cleanupFilters(final String filter, final HttpServletRequest req, final AppUtils appUtils) {
+
+        final Class<? extends Filter> filterClass = getFilterClass(filter);
+
+        final Query<? extends Filter> query = dao.ofy().query(filterClass);
+        setStartCursor(req, query);
+
+        final QueryResultIterator<? extends Filter> itr = query.iterator();
+        while (itr.hasNext()) {
+
+            final Filter isFilter = itr.next();
+            final List<?> keys = dao.ofy().query(filterClass).filter("value", isFilter.getValue()).listKeys();
+
+            if (keys.size() > 1) {
+                keys.remove(keys.size() - 1); // keeps one value
+                dao.ofy().delete(keys); // delete the others
+            }
+
+            if (appUtils.hasReachedTimeOut()) {
+
+                new FilterTask() //
+                        .stage(STAGE_FILTER) //
+                        .action(ACTION_CLEANUP) //
+                        .filter(getFilterValue(filterClass)) //
+                        .cursor(itr.getCursor().toWebSafeString()) //
+                        .addToQueue();
+
+                appUtils.throwInterruptProcessException("Cleaning up filters has reached its time's limit");
+            }
+        }
         // TODO PGU
+        // go to next filter or next step: delete of count
+
+        if (AuthorFilter.class.equals(filterClass)) {
+            final Queue queue = QueueFactory.getQueue(AppQueues.BUILD_FILTERS);
+            queue.add(newTask().param(PARAM_ACTION, ACTION_CLEAN) //
+                    .param(PARAM_FILTER, FILTER_EDITOR));
+
+            AppUtils.print("Cleaning in process", resp, startTime, LOGGER);
+            return;
+
+        } else if (EditorFilter.class.equals(filterClass)) {
+            final Queue queue = QueueFactory.getQueue(AppQueues.BUILD_FILTERS);
+            queue.add(newTask().param(PARAM_ACTION, ACTION_CLEAN) //
+                    .param(PARAM_FILTER, FILTER_CATEGORY));
+
+            AppUtils.print("Cleaning in process", resp, startTime, LOGGER);
+            return;
+        } else {
+
+            final Queue queue = QueueFactory.getQueue(AppQueues.BUILD_FILTERS);
+            queue.add(newTask().param(PARAM_ACTION, ACTION_COUNTS));
+
+            AppUtils.print("Cleaning process is over", resp, startTime, LOGGER);
+            return;
+        }
+
+    }
+
+    private void putFilters(final HttpServletRequest req, final AppUtils appUtils) throws IOException,
+            InterruptProcessException {
+
+        final Query<Book> query = dao.ofy().query(Book.class);
+        setStartCursor(req, query);
+
+        final QueryResultIterator<Book> itr = query.iterator();
+        while (itr.hasNext()) {
+            final Book book = itr.next();
+
+            dao.ofy().put(new AuthorFilter().value(book.getAuthor()));
+            dao.ofy().put(new EditorFilter().value(book.getEditor()));
+            dao.ofy().put(new CategoryFilter().value(book.getCategory()));
+
+            if (appUtils.hasReachedTimeOut()) {
+
+                new FilterTask() //
+                        .stage(STAGE_FILTER) //
+                        .action(ACTION_PUT) //
+                        .cursor(itr.getCursor().toWebSafeString()) //
+                        .addToQueue();
+
+                appUtils.throwInterruptProcessException("Creating filters has reached its time's limit");
+            }
+        }
+
+        new FilterTask() //
+                .stage(STAGE_FILTER) //
+                .action(ACTION_CLEANUP) //
+                .addToQueue();
+
+        appUtils.info("Filters creation process is over");
+
     }
 
     private static class FilterTask {
@@ -311,6 +305,11 @@ public class BuildFiltersServlet extends HttpServlet {
             return this;
         }
 
+        public FilterTask cursor(final String cursor) {
+            task.param(AppUrls.PARAM_CURSOR, cursor);
+            return this;
+        }
+
         public FilterTask addToQueue() {
             final Queue queue = QueueFactory.getQueue(AppQueues.BUILD_FILTERS);
             queue.add(task);
@@ -323,19 +322,7 @@ public class BuildFiltersServlet extends HttpServlet {
 
         final Class<? extends Filter> filterClass = getFilterClass(filter);
 
-        try {
-            deleteFilter(filterClass, appUtils);
-
-        } catch (final InterruptProcessException e) {
-
-            new FilterTask() //
-                    .stage(STAGE_FILTER) //
-                    .action(ACTION_DELETE) //
-                    .filter(getFilterValue(filterClass)) //
-                    .addToQueue();
-
-            throw e;
-        }
+        deleteFilter(filterClass, appUtils);
 
         final String nextFilter = getNextFilter(filter);
         if (nextFilter != null) {
@@ -351,7 +338,6 @@ public class BuildFiltersServlet extends HttpServlet {
             new FilterTask() //
                     .stage(STAGE_FILTER) //
                     .action(ACTION_PUT) //
-                    .filter(nextFilter) //
                     .addToQueue();
 
             appUtils.info("Deletion process is over");
@@ -460,7 +446,7 @@ public class BuildFiltersServlet extends HttpServlet {
         return value == null ? parser.defaultValue : value.toLowerCase();
     }
 
-    private void setStartCursor(final HttpServletRequest req, final Query<? extends Filter> query) {
+    private void setStartCursor(final HttpServletRequest req, final Query<?> query) {
         final String cursorParam = req.getParameter(AppUrls.PARAM_CURSOR);
         if (cursorParam != null) {
             query.startCursor(Cursor.fromWebSafeString(cursorParam));
@@ -512,7 +498,14 @@ public class BuildFiltersServlet extends HttpServlet {
                 dao.ofy().delete(itr.next());
 
                 if (appUtils.hasReachedTimeOut()) {
-                    appUtils.throwInterruptProcessException("deleteFilter has reached time's limit");
+
+                    new FilterTask() //
+                            .stage(STAGE_FILTER) //
+                            .action(ACTION_DELETE) //
+                            .filter(getFilterValue(filterClass)) //
+                            .addToQueue();
+
+                    appUtils.throwInterruptProcessException("Deleting filters has reached its time's limit");
                 }
             }
         }
