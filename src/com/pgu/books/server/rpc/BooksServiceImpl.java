@@ -17,9 +17,12 @@ import com.googlecode.objectify.Key;
 import com.googlecode.objectify.Query;
 import com.pgu.books.client.BooksService;
 import com.pgu.books.server.access.DAO;
+import com.pgu.books.server.domain.AuthorFilter;
 import com.pgu.books.server.domain.AuthorLetterFilter;
 import com.pgu.books.server.domain.BookWord;
+import com.pgu.books.server.domain.CategoryFilter;
 import com.pgu.books.server.domain.CategoryLetterFilter;
+import com.pgu.books.server.domain.EditorFilter;
 import com.pgu.books.server.domain.EditorLetterFilter;
 import com.pgu.books.server.domain.Filter;
 import com.pgu.books.server.domain.LetterFilter;
@@ -211,67 +214,36 @@ public class BooksServiceImpl extends RemoteServiceServlet implements BooksServi
         return letters;
     }
 
-    private <T extends Filter> ArrayList<String> fetchFilters(final Class<T> clazz) {
-
-        final Query<T> query = dao.ofy().query(clazz);
-
-        final int nbItems = query.count();
-        final ArrayList<String> names = new ArrayList<String>(nbItems);
-
-        final QueryResultIterator<T> itr = query.order("value").iterator();
-        while (itr.hasNext()) {
-
-            names.add(itr.next().getValue());
-        }
-        return names;
-    }
-
     @Override
     public ArrayList<String> fetchFilterCategories(final String letter) {
-        final ArrayList<String> counts = new ArrayList<String>();
-        counts.add(letter + "1");
-        counts.add(letter + "2");
-        counts.add(letter + "3");
-        return counts;
+        return fetchFilters(letter, CategoryFilter.class);
     }
 
     @Override
     public ArrayList<String> fetchFilterEditors(final String letter) {
-        final ArrayList<String> counts = new ArrayList<String>();
-        counts.add(letter + "4");
-        counts.add(letter + "5");
-        counts.add(letter + "6");
-        return counts;
+        return fetchFilters(letter, EditorFilter.class);
     }
 
     @Override
     public ArrayList<String> fetchFilterAuthors(final String letter) {
-        final ArrayList<String> counts = new ArrayList<String>();
-        counts.add(letter + "7777777777777777777");
-        counts.add(letter + "8");
-        counts.add(letter + "9");
-        counts.add(letter + "7");
-        counts.add(letter + "8");
-        counts.add(letter + "9");
-        counts.add(letter + "7");
-        counts.add(letter + "8");
-        counts.add(letter + "9");
-        counts.add(letter + "7");
-        counts.add(letter + "8");
-        counts.add(letter + "9");
-        counts.add(letter + "7");
-        counts.add(letter + "8");
-        counts.add(letter + "9");
-        counts.add(letter + "7");
-        counts.add(letter + "8");
-        counts.add(letter + "9");
-        counts.add(letter + "7");
-        counts.add(letter + "8");
-        counts.add(letter + "9");
-        counts.add(letter + "7");
-        counts.add(letter + "8");
-        counts.add(letter + "9");
-        return counts;
+        return fetchFilters(letter, AuthorFilter.class);
+    }
+
+    private ArrayList<String> fetchFilters(final String letter, final Class<? extends Filter> clazz) {
+
+        final Query<? extends Filter> query = dao.ofy().query(clazz) //
+                .filter("value >=", letter) //
+                .filter("value <", letter + "\uFFFD");
+
+        final int nbItems = query.count();
+        final ArrayList<String> filters = new ArrayList<String>(nbItems);
+
+        final QueryResultIterator<? extends Filter> itr = query.order("value").iterator();
+        while (itr.hasNext()) {
+
+            filters.add(itr.next().getValue());
+        }
+        return filters;
     }
 
 }
