@@ -18,11 +18,8 @@ import com.google.appengine.api.taskqueue.TaskOptions;
 import com.googlecode.objectify.Query;
 import com.pgu.books.server.access.DAO;
 import com.pgu.books.server.domain.AuthorFilter;
-import com.pgu.books.server.domain.AuthorLetterFilter;
 import com.pgu.books.server.domain.CategoryFilter;
-import com.pgu.books.server.domain.CategoryLetterFilter;
 import com.pgu.books.server.domain.EditorFilter;
-import com.pgu.books.server.domain.EditorLetterFilter;
 import com.pgu.books.server.domain.Filter;
 import com.pgu.books.server.exception.InterruptProcessException;
 import com.pgu.books.server.exception.ProcessException;
@@ -111,6 +108,7 @@ public class BuildFiltersServlet extends HttpServlet {
         } else if (isLetterStage(stage)) {
 
             if (isDeleteAction(action)) {
+                deleteLetters(filter, appUtils);
 
             } else if (isPutAction(action)) {
 
@@ -118,77 +116,20 @@ public class BuildFiltersServlet extends HttpServlet {
 
             } else {
                 appUtils.throwProcessException("Unknown action " + action);
+                // TODO PGU
+                // add clean param (remove all)
+                // add put param (create letters)
+                // add clean param (remove duplicates)
+                // add count param (for each letter, count items and save the counts)
             }
 
         } else {
             appUtils.throwProcessException("Unknown stage " + stage);
         }
-
-        if (ACTION_DELETE.equalsIgnoreCase(action)) {
-
-        } else if (ACTION_PUT.equalsIgnoreCase(action)) {
-
-        } else if (ACTION_CLEAN.equalsIgnoreCase(action)) {
-
-        } else if (ACTION_COUNTS.equalsIgnoreCase(action)) {
-            // TODO PGU
-            // add clean param (remove all)
-            // add put param (create letters)
-            // add clean param (remove duplicates)
-            // add count param (for each letter, count items and save the counts)
-
-            // create letters indices
-            final Class<? extends IsFilter> filterClass = parseFilterClass(req);
-
-            if (filterClass == null) {
-                AppUtils.setBadRequest("Unknown filter: " + req.getParameter(PARAM_FILTER), resp, LOGGER);
-                return;
-            }
-
-            final Query<? extends IsFilter> query = dao.ofy().query(filterClass);
-
-            setStartCursor(req, query);
-
-            final QueryResultIterator<? extends IsFilter> itr = query.iterator();
-            // TODO PGU a while for each type class
-            while (itr.hasNext()) {
-                final IsFilter hasValue = itr.next();
-
-                final String firstLetter = hasValue.getValue().substring(0, 1).toUpperCase();
-                if (AuthorFilter.class.equals(filterClass)) {
-                    dao.ofy().put(new AuthorLetterFilter().letter(firstLetter));
-
-                } else if (EditorFilter.class.equals(filterClass)) {
-                    dao.ofy().put(new EditorLetterFilter().letter(firstLetter));
-
-                } else if (CategoryFilter.class.equals(filterClass)) {
-                    dao.ofy().put(new CategoryLetterFilter().letter(firstLetter));
-
-                } else {
-                    LOGGER.severe("Unknown filterClass " + filterClass);
-                }
-            }
-            if (AppUtils.hasReachedTimeOut(startTime)) {
-
-                final String filterValue = getFilterValue(filterClass);
-
-                final Queue queue = QueueFactory.getQueue(AppQueues.BUILD_FILTERS);
-                queue.add(newTask().param(PARAM_ACTION, ACTION_COUNTS) //
-                        .param(PARAM_FILTER, filterValue) //
-                        .param(AppUrls.PARAM_CURSOR, itr.getCursor().toWebSafeString()));
-
-                AppUtils.print("Counts in process", resp, startTime, LOGGER);
-                return;
-                // TODO PGU do it also for next filters classes
-            }
-
-        } else {
-            AppUtils.setBadRequest("Unknown action: " + action, resp, LOGGER);
-            return;
-        }
     }
 
-    private void cleanupFilters(final String filter, final HttpServletRequest req, final AppUtils appUtils) {
+    private void cleanupFilters(final String filter, final HttpServletRequest req, final AppUtils appUtils)
+            throws IOException, InterruptProcessException {
 
         final Class<? extends Filter> filterClass = getFilterClass(filter);
 
@@ -218,33 +159,25 @@ public class BuildFiltersServlet extends HttpServlet {
                 appUtils.throwInterruptProcessException("Cleaning up filters has reached its time's limit");
             }
         }
-        // TODO PGU
-        // go to next filter or next step: delete of count
 
-        if (AuthorFilter.class.equals(filterClass)) {
-            final Queue queue = QueueFactory.getQueue(AppQueues.BUILD_FILTERS);
-            queue.add(newTask().param(PARAM_ACTION, ACTION_CLEAN) //
-                    .param(PARAM_FILTER, FILTER_EDITOR));
+        final String nextFilter = getNextFilter(filter);
+        if (nextFilter != null) {
+            new FilterTask() //
+                    .stage(STAGE_FILTER) //
+                    .action(ACTION_CLEANUP) //
+                    .filter(nextFilter) //
+                    .addToQueue();
 
-            AppUtils.print("Cleaning in process", resp, startTime, LOGGER);
-            return;
+            appUtils.info("Starts the next step in clean up process for " + nextFilter);
 
-        } else if (EditorFilter.class.equals(filterClass)) {
-            final Queue queue = QueueFactory.getQueue(AppQueues.BUILD_FILTERS);
-            queue.add(newTask().param(PARAM_ACTION, ACTION_CLEAN) //
-                    .param(PARAM_FILTER, FILTER_CATEGORY));
-
-            AppUtils.print("Cleaning in process", resp, startTime, LOGGER);
-            return;
         } else {
+            new FilterTask() //
+                    .stage(STAGE_LETTER) //
+                    .action(ACTION_DELETE) //
+                    .addToQueue();
 
-            final Queue queue = QueueFactory.getQueue(AppQueues.BUILD_FILTERS);
-            queue.add(newTask().param(PARAM_ACTION, ACTION_COUNTS));
-
-            AppUtils.print("Cleaning process is over", resp, startTime, LOGGER);
-            return;
+            appUtils.info("Cleaning up filters process is over");
         }
-
     }
 
     private void putFilters(final HttpServletRequest req, final AppUtils appUtils) throws IOException,
@@ -340,7 +273,7 @@ public class BuildFiltersServlet extends HttpServlet {
                     .action(ACTION_PUT) //
                     .addToQueue();
 
-            appUtils.info("Deletion process is over");
+            appUtils.info("Deleting filters is over");
         }
     }
 
