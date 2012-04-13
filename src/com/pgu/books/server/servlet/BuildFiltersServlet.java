@@ -139,7 +139,8 @@ public class BuildFiltersServlet extends HttpServlet {
         }
     }
 
-    private void putLetters(final String filter, final HttpServletRequest req, final AppUtils appUtils) {
+    private void putLetters(final String filter, final HttpServletRequest req, final AppUtils appUtils)
+            throws IOException, InterruptProcessException {
 
         final boolean isAuthor = isAuthor(filter);
         final boolean isEditor = isEditor(filter);
@@ -178,9 +179,30 @@ public class BuildFiltersServlet extends HttpServlet {
                         .cursor(itr.getCursor().toWebSafeString()) //
                         .addToQueue();
 
-                appUtils.throwInterruptProcessException("Creating filters has reached its time's limit");
+                appUtils.throwInterruptProcessException("Creating letterFilters has reached its time's limit");
             }
         }
+        appUtils.info("Creating letterFilters is over for the filter " + filter);
+
+        final String nextFilter = getNextFilter(filter);
+        if (nextFilter != null) {
+            new FilterTask() //
+                    .stage(STAGE_LETTER) //
+                    .action(ACTION_PUT) //
+                    .filter(nextFilter) //
+                    .addToQueue();
+
+            appUtils.info("Starts creationg letterFilters for " + nextFilter);
+
+        } else {
+            new FilterTask() //
+                    .stage(STAGE_LETTER) //
+                    .action(ACTION_CLEANUP) //
+                    .addToQueue();
+
+            appUtils.info("Let's start the letterFilters clean up");
+        }
+
     }
 
     private boolean isAuthor(final String filter) {
