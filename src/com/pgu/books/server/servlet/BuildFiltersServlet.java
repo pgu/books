@@ -30,6 +30,7 @@ import com.pgu.books.server.exception.ProcessException;
 import com.pgu.books.server.utils.AppQueues;
 import com.pgu.books.server.utils.AppUrls;
 import com.pgu.books.server.utils.AppUtils;
+import com.pgu.books.server.utils.ParserRequest;
 import com.pgu.books.shared.Book;
 
 @SuppressWarnings("serial")
@@ -617,12 +618,6 @@ public class BuildFiltersServlet extends HttpServlet {
         return STAGE_FILTER.equals(stage);
     }
 
-    private static class ParserRequest {
-        private String paramName;
-        private List<String> references;
-        private String defaultValue;
-    }
-
     private String getParameterStage(final HttpServletRequest req, final AppUtils appUtils) throws IOException,
             ProcessException {
 
@@ -632,7 +627,7 @@ public class BuildFiltersServlet extends HttpServlet {
         parser.references = stages;
         parser.defaultValue = STAGE_FILTER;
 
-        return getParameter(parser, req, appUtils);
+        return appUtils.getParameter(parser, req);
     }
 
     private String getParameterAction(final HttpServletRequest req, final AppUtils appUtils) throws IOException,
@@ -644,7 +639,7 @@ public class BuildFiltersServlet extends HttpServlet {
         parser.references = actions;
         parser.defaultValue = ACTION_DELETE;
 
-        return getParameter(parser, req, appUtils);
+        return appUtils.getParameter(parser, req);
     }
 
     private String getParameterFilter(final HttpServletRequest req, final AppUtils appUtils) throws IOException,
@@ -656,21 +651,7 @@ public class BuildFiltersServlet extends HttpServlet {
         parser.references = filters;
         parser.defaultValue = FILTER_AUTHOR;
 
-        return getParameter(parser, req, appUtils);
-    }
-
-    private String getParameter(final ParserRequest parser, final HttpServletRequest req, final AppUtils appUtils)
-            throws IOException, ProcessException {
-
-        final String value = req.getParameter(parser.paramName);
-
-        if (value != null //
-                && !parser.references.contains(value.toLowerCase())) {
-
-            appUtils.throwProcessException(String.format("Illegal %s for this request: %s", parser.paramName, value));
-        }
-
-        return value == null ? parser.defaultValue : value.toLowerCase();
+        return appUtils.getParameter(parser, req);
     }
 
     private void setStartCursor(final HttpServletRequest req, final Query<?> query) {

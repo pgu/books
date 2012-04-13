@@ -3,6 +3,7 @@ package com.pgu.books.server.utils;
 import java.io.IOException;
 import java.util.logging.Logger;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.http.HttpStatus;
@@ -69,4 +70,19 @@ public final class AppUtils {
 
         logger.info(msg);
     }
+
+    public String getParameter(final ParserRequest parser, final HttpServletRequest req) throws IOException,
+            ProcessException {
+
+        final String value = req.getParameter(parser.paramName);
+
+        if (value != null //
+                && !parser.references.contains(value.toLowerCase())) {
+
+            throwProcessException(String.format("Illegal %s for this request: %s", parser.paramName, value));
+        }
+
+        return value == null ? parser.defaultValue : value.toLowerCase();
+    }
+
 }
