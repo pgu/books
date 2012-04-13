@@ -1,5 +1,7 @@
 package com.pgu.books.server.servlet;
 
+import static com.pgu.books.server.utils.AppUtils.setBadRequest;
+
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -33,40 +35,40 @@ import com.pgu.books.shared.Book;
 @SuppressWarnings("serial")
 public class BuildFiltersServlet extends HttpServlet {
 
-    private static final Logger       LOGGER                   = Logger.getLogger(BuildFiltersServlet.class.getName());
+    private static final Logger       LOGGER          = Logger.getLogger(BuildFiltersServlet.class.getName());
 
-    private final DAO                 dao                      = new DAO();
+    private final DAO                 dao             = new DAO();
 
     // TODO PGU update the cron file and queue file
 
-    private static final String       PARAM_STAGE              = "stage";
-    private static final String       STAGE_FILTER             = "filter";
-    private static final String       STAGE_LETTER             = "letter";
+    private static final String       PARAM_STAGE     = "stage";
+    private static final String       STAGE_FILTER    = "filter";
+    private static final String       STAGE_LETTER    = "letter";
 
-    private static final String       PARAM_ACTION             = "action";
-    private static final String       ACTION_DELETE_ALL        = "delete";
-    private static final String       ACTION_PUT               = "put";
-    private static final String       ACTION_REMOVE_DUPLICATES = "remove_duplicates";
+    private static final String       PARAM_ACTION    = "action";
+    private static final String       ACTION_DELETE   = "delete";
+    private static final String       ACTION_PUT      = "put";
+    private static final String       ACTION_CLEANUP  = "cleanup";
 
-    private static final String       PARAM_FILTER             = "filter";
-    private static final String       FILTER_AUTHOR            = "author";
-    private static final String       FILTER_EDITOR            = "editor";
-    private static final String       FILTER_CATEGORY          = "category";
+    private static final String       PARAM_FILTER    = "filter";
+    private static final String       FILTER_AUTHOR   = "author";
+    private static final String       FILTER_EDITOR   = "editor";
+    private static final String       FILTER_CATEGORY = "category";
 
-    private static final List<String> stages                   = Arrays.asList( //
-                                                                       STAGE_FILTER, //
-                                                                       STAGE_LETTER //
-                                                               );
-    private static final List<String> actions                  = Arrays.asList( //
-                                                                       ACTION_DELETE_ALL, //
-                                                                       ACTION_PUT, //
-                                                                       ACTION_REMOVE_DUPLICATES //
-                                                               );
-    private static final List<String> filters                  = Arrays.asList( //
-                                                                       FILTER_AUTHOR, //
-                                                                       FILTER_EDITOR, //
-                                                                       FILTER_CATEGORY //
-                                                               );
+    private static final List<String> stages          = Arrays.asList( //
+                                                              STAGE_FILTER, //
+                                                              STAGE_LETTER //
+                                                      );
+    private static final List<String> actions         = Arrays.asList( //
+                                                              ACTION_DELETE, //
+                                                              ACTION_PUT, //
+                                                              ACTION_CLEANUP //
+                                                      );
+    private static final List<String> filters         = Arrays.asList( //
+                                                              FILTER_AUTHOR, //
+                                                              FILTER_EDITOR, //
+                                                              FILTER_CATEGORY //
+                                                      );
 
     @Override
     protected void doGet(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException,
@@ -87,31 +89,57 @@ public class BuildFiltersServlet extends HttpServlet {
         final String action = getParameterAction(req, resp);
         final String filter = getParameterFilter(req, resp);
 
-        if (ACTION_START.equalsIgnoreCase(action) //
-                || ACTION_DELETE.equalsIgnoreCase(action)) {
+        if (isFilterStage(stage)) {
 
-            // delete the current filters
-            for (final Class<? extends IsFilter> clazz : Arrays.asList( //
-                    AuthorFilter.class, //
-                    EditorFilter.class, //
-                    CategoryFilter.class)) {
+            if (isDeleteAction(action)) {
 
-                final boolean hasReachedTimeOut = deleteFilter(clazz, startTime);
-                if (hasReachedTimeOut) {
+                for (final Class<? extends IsFilter> clazz : Arrays.asList( //
+                        AuthorFilter.class, //
+                        EditorFilter.class, //
+                        CategoryFilter.class)) {
 
-                    final Queue queue = QueueFactory.getQueue(AppQueues.BUILD_FILTERS);
-                    queue.add(TaskOptions.Builder.withUrl(AppUrls.BUILD_FILTERS).param(PARAM_ACTION, ACTION_DELETE));
+                    final boolean hasReachedTimeOut = deleteFilter(clazz, startTime);
+                    if (hasReachedTimeOut) {
 
-                    AppUtils.print("Deletion in process", resp, startTime, LOGGER);
-                    return;
+                        final Queue queue = QueueFactory.getQueue(AppQueues.BUILD_FILTERS);
+                        queue.add(TaskOptions.Builder.withUrl(AppUrls.BUILD_FILTERS).param(PARAM_ACTION, ACTION_DELETE));
+
+                        AppUtils.print("Deletion in process", resp, startTime, LOGGER);
+                        return;
+                    }
                 }
-            }
-            // next step: put new filters
-            final Queue queue = QueueFactory.getQueue(AppQueues.BUILD_FILTERS);
-            queue.add(TaskOptions.Builder.withUrl(AppUrls.BUILD_FILTERS).param(PARAM_ACTION, ACTION_PUT));
+                // next step: put new filters
+                final Queue queue = QueueFactory.getQueue(AppQueues.BUILD_FILTERS);
+                queue.add(TaskOptions.Builder.withUrl(AppUrls.BUILD_FILTERS).param(PARAM_ACTION, ACTION_PUT));
 
-            AppUtils.print("Deletion process is over", resp, startTime, LOGGER);
-            return;
+                AppUtils.print("Deletion process is over", resp, startTime, LOGGER);
+                return;
+
+            } else if (isPutAction(action)) {
+
+            } else if (isCleanupAction(action)) {
+
+            } else {
+                setBadRequest("Unknown action " + action, resp, LOGGER);
+            }
+
+        } else if (isLetterStage(stage)) {
+
+            if (isDeleteAction(action)) {
+
+            } else if (isPutAction(action)) {
+
+            } else if (isCleanupAction(action)) {
+
+            } else {
+                setBadRequest("Unknown action " + action, resp, LOGGER);
+            }
+
+        } else {
+            setBadRequest("Unknown stage " + stage, resp, LOGGER);
+        }
+
+        if (ACTION_DELETE.equalsIgnoreCase(action)) {
 
         } else if (ACTION_PUT.equalsIgnoreCase(action)) {
             //
@@ -278,6 +306,26 @@ public class BuildFiltersServlet extends HttpServlet {
         }
     }
 
+    private boolean isCleanupAction(final String action) {
+        return ACTION_CLEANUP.equals(action);
+    }
+
+    private boolean isPutAction(final String action) {
+        return ACTION_PUT.equals(action);
+    }
+
+    private boolean isDeleteAction(final String action) {
+        return ACTION_DELETE.equals(action);
+    }
+
+    private boolean isLetterStage(final String stage) {
+        return STAGE_LETTER.equals(stage);
+    }
+
+    private boolean isFilterStage(final String stage) {
+        return STAGE_FILTER.equals(stage);
+    }
+
     private static class ParserRequest {
         private String       paramName;
         private List<String> references;
@@ -305,7 +353,7 @@ public class BuildFiltersServlet extends HttpServlet {
         parser.paramName = PARAM_ACTION;
         parser.references = actions;
         parser.tag = "action";
-        parser.defaultValue = ACTION_DELETE_ALL;
+        parser.defaultValue = ACTION_DELETE;
 
         return getParameter(parser, req, resp);
     }
