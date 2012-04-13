@@ -4,10 +4,10 @@ import javax.persistence.Id;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class Filter implements IsSerializable, IsFilter {
+public class Filter implements IsSerializable {
 
     @Id
-    private Long   id;
+    private Long id;
 
     private String value;
 
@@ -54,7 +54,6 @@ public class Filter implements IsSerializable, IsFilter {
         this.id = id;
     }
 
-    @Override
     public String getValue() {
         return value;
     }
