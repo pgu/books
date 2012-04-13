@@ -49,6 +49,7 @@ public class BuildFiltersServlet extends HttpServlet {
     private static final String ACTION_DELETE = "delete";
     private static final String ACTION_PUT = "put";
     private static final String ACTION_CLEANUP = "cleanup";
+    private static final String ACTION_COUNT = "count";
 
     private static final String PARAM_FILTER = "filter";
     private static final String FILTER_AUTHOR = "author";
@@ -62,7 +63,8 @@ public class BuildFiltersServlet extends HttpServlet {
     private static final List<String> actions = Arrays.asList( //
             ACTION_DELETE, //
             ACTION_PUT, //
-            ACTION_CLEANUP //
+            ACTION_CLEANUP, //
+            ACTION_COUNT //
             );
     private static final List<String> filters = Arrays.asList( //
             FILTER_AUTHOR, //
@@ -118,6 +120,10 @@ public class BuildFiltersServlet extends HttpServlet {
                     putLetters(filter, req, appUtils);
 
                 } else if (isCleanupAction(action)) {
+                    cleanupLetters(filter, req, appUtils);
+
+                } else if (isCountAction(action)) {
+                    countLetters(filter, req, appUtils);
 
                 } else {
                     appUtils.throwProcessException("Unknown action " + action);
@@ -136,6 +142,61 @@ public class BuildFiltersServlet extends HttpServlet {
             // fail silently, it is already logged
         } catch (final InterruptProcessException e) {
             // fail silently, it is already logged
+        }
+    }
+
+    private void countLetters(final String filter, final HttpServletRequest req, final AppUtils appUtils) {
+    }
+
+    private void cleanupLetters(final String filter, final HttpServletRequest req, final AppUtils appUtils)
+            throws IOException, InterruptProcessException {
+
+        final Class<? extends LetterFilter> letterClass = getLetterClass(filter);
+
+        final Query<? extends LetterFilter> query = dao.ofy().query(letterClass);
+        setStartCursor(req, query);
+
+        final QueryResultIterator<? extends LetterFilter> itr = query.iterator();
+        while (itr.hasNext()) {
+
+            final LetterFilter isLetter = itr.next();
+            final List<?> keys = dao.ofy().query(letterClass).filter("letter =", isLetter.getLetter()).listKeys();
+
+            if (keys.size() > 1) {
+                keys.remove(keys.size() - 1); // keeps one value
+                dao.ofy().delete(keys); // delete the others
+            }
+
+            if (appUtils.hasReachedTimeOut()) {
+
+                new FilterTask() //
+                        .stage(STAGE_LETTER) //
+                        .action(ACTION_CLEANUP) //
+                        .filter(filter) //
+                        .cursor(itr.getCursor().toWebSafeString()) //
+                        .addToQueue();
+
+                appUtils.throwInterruptProcessException("Cleaning up letterFilters has reached its time's limit");
+            }
+        }
+        appUtils.info("Cleaning up letterFilters is over for " + filter);
+
+        final String nextFilter = getNextFilter(filter);
+        if (nextFilter != null) {
+            new FilterTask() //
+                    .stage(STAGE_LETTER) //
+                    .action(ACTION_CLEANUP) //
+                    .filter(nextFilter) //
+                    .addToQueue();
+
+            appUtils.info("Starts cleaning up letterFilters for " + nextFilter);
+        } else {
+            new FilterTask() //
+                    .stage(STAGE_LETTER) //
+                    .action(ACTION_COUNT) //
+                    .addToQueue();
+
+            appUtils.info("Let's start the letters count");
         }
     }
 
@@ -487,6 +548,10 @@ public class BuildFiltersServlet extends HttpServlet {
         } else {
             throw new IllegalArgumentException("Unknown filter: " + filter);
         }
+    }
+
+    private boolean isCountAction(final String action) {
+        return ACTION_COUNT.equals(action);
     }
 
     private boolean isCleanupAction(final String action) {
