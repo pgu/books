@@ -29,22 +29,24 @@ import com.pgu.books.shared.Book;
 @SuppressWarnings("serial")
 public class BuildFiltersServlet extends HttpServlet {
 
-    private static final Logger LOGGER = Logger.getLogger(BuildFiltersServlet.class.getName());
+    private static final Logger       LOGGER          = Logger.getLogger(BuildFiltersServlet.class.getName());
 
-    private final DAO dao = new DAO();
+    private final DAO                 dao             = new DAO();
 
-    private static final String PARAM_ACTION = "action";
-    private static final String ACTION_START = "start";
-    private static final String ACTION_DELETE = "delete";
-    private static final String ACTION_PUT = "put";
-    private static final String ACTION_CLEAN = "clean";
+    private static final String       PARAM_ACTION    = "action";
+    private static final String       ACTION_START    = "start";
+    private static final String       ACTION_DELETE   = "delete";
+    private static final String       ACTION_PUT      = "put";
+    private static final String       ACTION_CLEAN    = "clean";
+    private static final String       ACTION_COUNTS   = "counts";
 
-    private static final List<String> actions = Arrays.asList(ACTION_CLEAN, ACTION_DELETE, ACTION_PUT, ACTION_START);
+    private static final List<String> actions         = Arrays.asList(ACTION_CLEAN, ACTION_DELETE, ACTION_PUT,
+                                                              ACTION_START);
 
-    private static final String PARAM_FILTER = "filter";
-    private static final String FILTER_AUTHOR = "author";
-    private static final String FILTER_EDITOR = "editor";
-    private static final String FILTER_CATEGORY = "category";
+    private static final String       PARAM_FILTER    = "filter";
+    private static final String       FILTER_AUTHOR   = "author";
+    private static final String       FILTER_EDITOR   = "editor";
+    private static final String       FILTER_CATEGORY = "category";
 
     @Override
     protected void doGet(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException,
@@ -133,21 +135,10 @@ public class BuildFiltersServlet extends HttpServlet {
         } else if (ACTION_CLEAN.equalsIgnoreCase(action)) {
             //
             // loop through all filters to remove duplicates
-            Class<? extends IsFilter> filterClass;
+            final Class<? extends IsFilter> filterClass = parseFilterClass(req);
 
-            final String paramFilter = req.getParameter(PARAM_FILTER);
-            if (paramFilter == null //
-                    || FILTER_AUTHOR.equalsIgnoreCase(paramFilter)) {
-                filterClass = AuthorFilter.class;
-
-            } else if (FILTER_EDITOR.equalsIgnoreCase(paramFilter)) {
-                filterClass = EditorFilter.class;
-
-            } else if (FILTER_CATEGORY.equalsIgnoreCase(paramFilter)) {
-                filterClass = CategoryFilter.class;
-
-            } else {
-                AppUtils.setBadRequest("Unknown filter: " + paramFilter, resp, LOGGER);
+            if (filterClass == null) {
+                AppUtils.setBadRequest("Unknown filter: " + req.getParameter(PARAM_FILTER), resp, LOGGER);
                 return;
             }
 
@@ -212,14 +203,59 @@ public class BuildFiltersServlet extends HttpServlet {
                 return;
             } else {
 
+                // TODO PGU starts action count
                 AppUtils.print("Cleaning process is over", resp, startTime, LOGGER);
                 return;
             }
+
+        } else if (ACTION_COUNTS.equalsIgnoreCase(action)) {
+            // create letters indices
+            final Class<? extends IsFilter> filterClass = parseFilterClass(req);
+
+            if (filterClass == null) {
+                AppUtils.setBadRequest("Unknown filter: " + req.getParameter(PARAM_FILTER), resp, LOGGER);
+                return;
+            }
+
+            final Query<? extends IsFilter> query = dao.ofy().query(filterClass);
+
+            final String cursorParam = req.getParameter(AppUrls.PARAM_CURSOR);
+            if (cursorParam != null) {
+                query.startCursor(Cursor.fromWebSafeString(cursorParam));
+            }
+
+            final QueryResultIterator<? extends IsFilter> itr = query.iterator();
+            while (itr.hasNext()) {
+                final IsFilter hasValue = itr.next();
+
+                final String firstLetter = hasValue.getValue().substring(0, 1);
+                dao.ofy().put(new AuthorFilterLetter().letter(firstLetter.toUpperCase()));
+            }
+            // all letters as uppercase
+            // for each letter, count how many filters begins with, for lowercase and uppercase
+            // save counts
 
         } else {
             AppUtils.setBadRequest("Unknown action: " + action, resp, LOGGER);
             return;
         }
+    }
+
+    private Class<? extends IsFilter> parseFilterClass(final HttpServletRequest req) {
+        final String paramFilter = req.getParameter(PARAM_FILTER);
+
+        if (paramFilter == null //
+                || FILTER_AUTHOR.equalsIgnoreCase(paramFilter)) {
+            return AuthorFilter.class;
+
+        } else if (FILTER_EDITOR.equalsIgnoreCase(paramFilter)) {
+            return EditorFilter.class;
+
+        } else if (FILTER_CATEGORY.equalsIgnoreCase(paramFilter)) {
+            return CategoryFilter.class;
+        }
+
+        return null;
     }
 
     private <T extends IsFilter> boolean deleteFilter(final Class<T> clazz, final long startTime) {
