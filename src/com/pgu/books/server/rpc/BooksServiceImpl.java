@@ -231,17 +231,29 @@ public class BooksServiceImpl extends RemoteServiceServlet implements BooksServi
 
     private ArrayList<String> fetchFilters(final String letter, final Class<? extends Filter> clazz) {
 
-        final Query<? extends Filter> query = dao.ofy().query(clazz) //
-                .filter("value >=", letter) //
-                .filter("value <", letter + "\uFFFD");
+        final String uppercaseLetter = letter.toUpperCase();
+        final String lowercaseLetter = letter.toLowerCase();
 
-        final int nbItems = query.count();
+        final Query<? extends Filter> upperQuery = dao.ofy().query(clazz) //
+                .filter("value >=", uppercaseLetter) //
+                .filter("value <", uppercaseLetter + "\uFFFD");
+
+        final Query<? extends Filter> lowerQuery = dao.ofy().query(clazz) //
+                .filter("value >=", lowercaseLetter) //
+                .filter("value <", lowercaseLetter + "\uFFFD");
+
+        final int nbItems = upperQuery.count() + lowerQuery.count();
         final ArrayList<String> filters = new ArrayList<String>(nbItems);
 
-        final QueryResultIterator<? extends Filter> itr = query.order("value").iterator();
-        while (itr.hasNext()) {
+        final QueryResultIterator<? extends Filter> upperItr = upperQuery.order("value").iterator();
+        final QueryResultIterator<? extends Filter> lowerItr = lowerQuery.order("value").iterator();
+        while (upperItr.hasNext()) {
 
-            filters.add(itr.next().getValue());
+            filters.add(upperItr.next().getValue());
+        }
+        while (lowerItr.hasNext()) {
+
+            filters.add(lowerItr.next().getValue());
         }
         return filters;
     }
