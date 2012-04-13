@@ -18,9 +18,13 @@ import com.google.appengine.api.taskqueue.TaskOptions;
 import com.googlecode.objectify.Query;
 import com.pgu.books.server.access.DAO;
 import com.pgu.books.server.domain.AuthorFilter;
+import com.pgu.books.server.domain.AuthorLetterFilter;
 import com.pgu.books.server.domain.CategoryFilter;
+import com.pgu.books.server.domain.CategoryLetterFilter;
 import com.pgu.books.server.domain.EditorFilter;
+import com.pgu.books.server.domain.EditorLetterFilter;
 import com.pgu.books.server.domain.Filter;
+import com.pgu.books.server.domain.LetterFilter;
 import com.pgu.books.server.exception.InterruptProcessException;
 import com.pgu.books.server.exception.ProcessException;
 import com.pgu.books.server.utils.AppQueues;
@@ -73,7 +77,6 @@ public class BuildFiltersServlet extends HttpServlet {
         doPost(req, resp);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     protected void doPost(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException,
             IOException {
@@ -86,45 +89,72 @@ public class BuildFiltersServlet extends HttpServlet {
                 .startInMs(startTime) //
                 .response(resp);
 
-        final String stage = getParameterStage(req, appUtils);
-        final String action = getParameterAction(req, appUtils);
-        final String filter = getParameterFilter(req, appUtils);
+        try {
+            final String stage = getParameterStage(req, appUtils);
+            final String action = getParameterAction(req, appUtils);
+            final String filter = getParameterFilter(req, appUtils);
 
-        if (isFilterStage(stage)) {
+            if (isFilterStage(stage)) {
 
-            if (isDeleteAction(action)) {
-                deleteFilters(filter, appUtils);
+                if (isDeleteAction(action)) {
+                    deleteFilters(filter, appUtils);
 
-            } else if (isPutAction(action)) {
-                putFilters(req, appUtils);
+                } else if (isPutAction(action)) {
+                    putFilters(req, appUtils);
 
-            } else if (isCleanupAction(action)) {
-                cleanupFilters(filter, req, appUtils);
+                } else if (isCleanupAction(action)) {
+                    cleanupFilters(filter, req, appUtils);
+
+                } else {
+                    appUtils.throwProcessException("Unknown action " + action);
+                }
+
+            } else if (isLetterStage(stage)) {
+
+                if (isDeleteAction(action)) {
+                    deleteLetters(filter, appUtils);
+
+                } else if (isPutAction(action)) {
+
+                } else if (isCleanupAction(action)) {
+
+                } else {
+                    appUtils.throwProcessException("Unknown action " + action);
+                    // TODO PGU
+                    // add clean param (remove all)
+                    // add put param (create letters)
+                    // add clean param (remove duplicates)
+                    // add count param (for each letter, count items and save the counts)
+                }
 
             } else {
-                appUtils.throwProcessException("Unknown action " + action);
+                appUtils.throwProcessException("Unknown stage " + stage);
             }
 
-        } else if (isLetterStage(stage)) {
+        } catch (final ProcessException e) {
+            // fail silently, it is already logged
+        } catch (final InterruptProcessException e) {
+            // fail silently, it is already logged
+        }
+    }
 
-            if (isDeleteAction(action)) {
-                deleteLetters(filter, appUtils);
+    private void deleteLetters(final String filter, final AppUtils appUtils) {
+        final Class<? extends LetterFilter> letterClass = getLetterClass(filter);
 
-            } else if (isPutAction(action)) {
+    }
 
-            } else if (isCleanupAction(action)) {
+    private Class<? extends LetterFilter> getLetterClass(final String filter) {
+        if (FILTER_AUTHOR.equalsIgnoreCase(filter)) {
+            return AuthorLetterFilter.class;
 
-            } else {
-                appUtils.throwProcessException("Unknown action " + action);
-                // TODO PGU
-                // add clean param (remove all)
-                // add put param (create letters)
-                // add clean param (remove duplicates)
-                // add count param (for each letter, count items and save the counts)
-            }
+        } else if (FILTER_EDITOR.equalsIgnoreCase(filter)) {
+            return EditorLetterFilter.class;
+
+        } else if (FILTER_CATEGORY.equalsIgnoreCase(filter)) {
+            return CategoryLetterFilter.class;
 
         } else {
-            appUtils.throwProcessException("Unknown stage " + stage);
+            throw new IllegalArgumentException("Unknown filter: " + filter);
         }
     }
 
@@ -159,6 +189,7 @@ public class BuildFiltersServlet extends HttpServlet {
                 appUtils.throwInterruptProcessException("Cleaning up filters has reached its time's limit");
             }
         }
+        appUtils.info("Cleaning up filters is over for " + filter);
 
         final String nextFilter = getNextFilter(filter);
         if (nextFilter != null) {
@@ -168,7 +199,7 @@ public class BuildFiltersServlet extends HttpServlet {
                     .filter(nextFilter) //
                     .addToQueue();
 
-            appUtils.info("Starts the next step in clean up process for " + nextFilter);
+            appUtils.info("Starts cleaning up filters for " + nextFilter);
 
         } else {
             new FilterTask() //
@@ -176,7 +207,7 @@ public class BuildFiltersServlet extends HttpServlet {
                     .action(ACTION_DELETE) //
                     .addToQueue();
 
-            appUtils.info("Cleaning up filters process is over");
+            appUtils.info("Let's start the letters deletion");
         }
     }
 
@@ -205,14 +236,14 @@ public class BuildFiltersServlet extends HttpServlet {
                 appUtils.throwInterruptProcessException("Creating filters has reached its time's limit");
             }
         }
+        appUtils.info("Creating filters is over");
 
         new FilterTask() //
                 .stage(STAGE_FILTER) //
                 .action(ACTION_CLEANUP) //
                 .addToQueue();
 
-        appUtils.info("Filters creation process is over");
-
+        appUtils.info("Let's start the filters clean up");
     }
 
     private static class FilterTask {
@@ -255,7 +286,27 @@ public class BuildFiltersServlet extends HttpServlet {
 
         final Class<? extends Filter> filterClass = getFilterClass(filter);
 
-        deleteFilter(filterClass, appUtils);
+        final boolean hasFilter = dao.ofy().query(filterClass).limit(1).count() > 0;
+        if (hasFilter) {
+
+            final QueryResultIterator<? extends Filter> itr = dao.ofy().query(filterClass).iterator();
+            while (itr.hasNext()) {
+
+                dao.ofy().delete(itr.next());
+
+                if (appUtils.hasReachedTimeOut()) {
+
+                    new FilterTask() //
+                            .stage(STAGE_FILTER) //
+                            .action(ACTION_DELETE) //
+                            .filter(getFilterValue(filterClass)) //
+                            .addToQueue();
+
+                    appUtils.throwInterruptProcessException("Deleting filters has reached its time's limit");
+                }
+            }
+        }
+        appUtils.info("Deleting filters is over for " + filter);
 
         final String nextFilter = getNextFilter(filter);
         if (nextFilter != null) {
@@ -265,7 +316,7 @@ public class BuildFiltersServlet extends HttpServlet {
                     .filter(nextFilter) //
                     .addToQueue();
 
-            appUtils.info("Starts the next step in deletion process for " + nextFilter);
+            appUtils.info("Deleting filters starts for " + nextFilter);
 
         } else {
             new FilterTask() //
@@ -273,7 +324,7 @@ public class BuildFiltersServlet extends HttpServlet {
                     .action(ACTION_PUT) //
                     .addToQueue();
 
-            appUtils.info("Deleting filters is over");
+            appUtils.info("Let's start the filters creation");
         }
     }
 
@@ -399,48 +450,6 @@ public class BuildFiltersServlet extends HttpServlet {
 
         } else {
             throw new IllegalArgumentException("Unknown filter " + filterClass);
-        }
-    }
-
-    private Class<? extends Filter> parseFilterClass(final HttpServletRequest req) {
-        final String paramFilter = req.getParameter(PARAM_FILTER);
-
-        if (paramFilter == null //
-                || FILTER_AUTHOR.equalsIgnoreCase(paramFilter)) {
-            return AuthorFilter.class;
-
-        } else if (FILTER_EDITOR.equalsIgnoreCase(paramFilter)) {
-            return EditorFilter.class;
-
-        } else if (FILTER_CATEGORY.equalsIgnoreCase(paramFilter)) {
-            return CategoryFilter.class;
-        }
-
-        return null;
-    }
-
-    private void deleteFilter(final Class<? extends Filter> filterClass, final AppUtils appUtils)
-            throws InterruptProcessException, IOException {
-
-        final boolean hasFilter = dao.ofy().query(filterClass).limit(1).count() > 0;
-
-        if (hasFilter) {
-            final QueryResultIterator<? extends Filter> itr = dao.ofy().query(filterClass).iterator();
-            while (itr.hasNext()) {
-
-                dao.ofy().delete(itr.next());
-
-                if (appUtils.hasReachedTimeOut()) {
-
-                    new FilterTask() //
-                            .stage(STAGE_FILTER) //
-                            .action(ACTION_DELETE) //
-                            .filter(getFilterValue(filterClass)) //
-                            .addToQueue();
-
-                    appUtils.throwInterruptProcessException("Deleting filters has reached its time's limit");
-                }
-            }
         }
     }
 
