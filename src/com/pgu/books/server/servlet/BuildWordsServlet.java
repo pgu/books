@@ -22,9 +22,11 @@ import com.pgu.books.server.access.DAO;
 import com.pgu.books.server.domain.BookWord;
 import com.pgu.books.server.domain.IsWord;
 import com.pgu.books.server.domain.Word;
+import com.pgu.books.server.exception.ProcessException;
 import com.pgu.books.server.utils.AppQueues;
 import com.pgu.books.server.utils.AppUrls;
 import com.pgu.books.server.utils.AppUtils;
+import com.pgu.books.server.utils.ParserRequest;
 import com.pgu.books.shared.Book;
 
 @SuppressWarnings("serial")
@@ -66,36 +68,39 @@ public class BuildWordsServlet extends HttpServlet {
                 .startInMs(startTime) //
                 .response(resp);
 
-        final String action = req.getParameter(PARAM_ACTION);
-        if (action == null //
-                || !actions.contains(action.toLowerCase())) {
-            AppUtils.setBadRequest("Illegal action for this request: " + action, resp, LOGGER);
-            return;
-        }
+        final String action = getParameterAction(req, appUtils);
 
-        if (ACTION_START.equalsIgnoreCase(action) //
-                || ACTION_DELETE.equalsIgnoreCase(action)) {
+        if (isDeleteAction(action)) {
 
             // delete the current bookWords and words
             for (final Class<? extends IsWord> clazz : Arrays.asList(BookWord.class, Word.class)) {
 
-                final boolean hasReachedTimeOut = deleteWords(clazz, startTime);
-                if (hasReachedTimeOut) {
+                final boolean hasWord = dao.ofy().query(clazz).limit(1).count() > 0;
 
-                    final Queue queue = QueueFactory.getQueue(AppQueues.BUILD_WORDS);
-                    queue.add(TaskOptions.Builder.withUrl(AppUrls.BUILD_WORDS).param(PARAM_ACTION, ACTION_DELETE));
+                if (hasWord) {
+                    final QueryResultIterator<? extends IsWord> itr = dao.ofy().query(clazz).iterator();
+                    while (itr.hasNext()) {
 
-                    AppUtils.print("Deletion in process", resp, startTime, LOGGER);
-                    return;
+                        dao.ofy().delete(itr.next());
+
+                        if (appUtils.hasReachedTimeOut()) {
+
+                            new WordTask() //
+                                    .action(ACTION_DELETE) //
+                                    .addToQueue();
+
+                            appUtils.throwInterruptProcessException("Deleting words has reached its time's limit");
+                        }
+                    }
                 }
             }
 
             // next step: put new bookWords
-            final Queue queue = QueueFactory.getQueue(AppQueues.BUILD_WORDS);
-            queue.add(TaskOptions.Builder.withUrl(AppUrls.BUILD_WORDS).param(PARAM_ACTION, ACTION_BOOK_WORDS));
+            new WordTask() //
+                    .action(ACTION_BOOK_WORDS) //
+                    .addToQueue();
 
-            AppUtils.print("Deletion process is over", resp, startTime, LOGGER);
-            return;
+            appUtils.info("Deleting words is over");
 
         } else if (ACTION_BOOK_WORDS.equalsIgnoreCase(action)) {
             //
@@ -212,22 +217,45 @@ public class BuildWordsServlet extends HttpServlet {
         }
     }
 
-    private <T extends IsWord> boolean deleteWords(final Class<T> clazz, final long startTime) {
+    private boolean isDeleteAction(final String action) {
+        return ACTION_DELETE.equals(action);
+    }
 
-        final boolean hasWord = dao.ofy().query(clazz).limit(1).count() > 0;
+    private String getParameterAction(final HttpServletRequest req, final AppUtils appUtils) throws IOException,
+            ProcessException {
 
-        if (hasWord) {
-            final QueryResultIterator<T> itr = dao.ofy().query(clazz).iterator();
-            while (itr.hasNext()) {
+        final ParserRequest parser = new ParserRequest();
 
-                dao.ofy().delete(itr.next());
+        parser.paramName = PARAM_ACTION;
+        parser.references = actions;
+        parser.defaultValue = ACTION_DELETE;
 
-                if (AppUtils.hasReachedTimeOut(startTime)) {
-                    return true;
-                }
-            }
+        return appUtils.getParameter(parser, req);
+    }
+
+    private static class WordTask {
+
+        private final TaskOptions task;
+
+        private WordTask() {
+            task = TaskOptions.Builder.withUrl(AppUrls.BUILD_WORDS);
         }
-        return false;
+
+        public WordTask action(final String action) {
+            task.param(PARAM_ACTION, action);
+            return this;
+        }
+
+        public WordTask cursor(final String cursor) {
+            task.param(AppUrls.PARAM_CURSOR, cursor);
+            return this;
+        }
+
+        public WordTask addToQueue() {
+            final Queue queue = QueueFactory.getQueue(AppQueues.BUILD_WORDS);
+            queue.add(task);
+            return this;
+        }
     }
 
 }
