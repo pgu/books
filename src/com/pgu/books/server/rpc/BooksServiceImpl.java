@@ -17,8 +17,12 @@ import com.googlecode.objectify.Key;
 import com.googlecode.objectify.Query;
 import com.pgu.books.client.BooksService;
 import com.pgu.books.server.access.DAO;
+import com.pgu.books.server.domain.AuthorLetterFilter;
 import com.pgu.books.server.domain.BookWord;
+import com.pgu.books.server.domain.CategoryLetterFilter;
+import com.pgu.books.server.domain.EditorLetterFilter;
 import com.pgu.books.server.domain.Filter;
+import com.pgu.books.server.domain.LetterFilter;
 import com.pgu.books.server.domain.Word;
 import com.pgu.books.server.utils.AppQueues;
 import com.pgu.books.server.utils.AppUrls;
@@ -194,29 +198,32 @@ public class BooksServiceImpl extends RemoteServiceServlet implements BooksServi
 
     @Override
     public ArrayList<String> countAuthorsByLetters() {
-        final ArrayList<String> counts = new ArrayList<String>();
-        counts.add("A (1)");
-        counts.add("B (10)");
-        counts.add("C (2)");
-        return counts;
+        return fetchCounts(AuthorLetterFilter.class);
     }
 
     @Override
     public ArrayList<String> countEditorsByLetters() {
-        final ArrayList<String> counts = new ArrayList<String>();
-        counts.add("M (1)");
-        counts.add("N (10)");
-        counts.add("O (2)");
-        return counts;
+        return fetchCounts(EditorLetterFilter.class);
     }
 
     @Override
     public ArrayList<String> countCategoriesByLetters() {
-        final ArrayList<String> counts = new ArrayList<String>();
-        counts.add("X (1)");
-        counts.add("Y (10)");
-        counts.add("Z (2)");
-        return counts;
+        return fetchCounts(CategoryLetterFilter.class);
+    }
+
+    private ArrayList<String> fetchCounts(final Class<? extends LetterFilter> letterClass) {
+
+        final Query<? extends LetterFilter> query = dao.ofy().query(letterClass);
+
+        final int nbItems = query.count();
+        final ArrayList<String> letters = new ArrayList<String>(nbItems);
+
+        final QueryResultIterator<? extends LetterFilter> itr = query.order("letter").iterator();
+        while (itr.hasNext()) {
+
+            letters.add(itr.next().getLetter());
+        }
+        return letters;
     }
 
     @Override
