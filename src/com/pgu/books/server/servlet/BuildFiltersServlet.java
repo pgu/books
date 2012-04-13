@@ -96,15 +96,15 @@ public class BuildFiltersServlet extends HttpServlet {
         if (isFilterStage(stage)) {
 
             if (isDeleteAction(action)) {
-
-                deleteFilters(filter, startTime);
+                deleteFilters(filter, appUtils);
 
             } else if (isPutAction(action)) {
+                putFilters(filter, appUtils);
 
             } else if (isCleanupAction(action)) {
 
             } else {
-                setBadRequest("Unknown action " + action, resp, LOGGER);
+                appUtils.throwProcessException("Unknown action " + action);
             }
 
         } else if (isLetterStage(stage)) {
@@ -116,11 +116,11 @@ public class BuildFiltersServlet extends HttpServlet {
             } else if (isCleanupAction(action)) {
 
             } else {
-                setBadRequest("Unknown action " + action, resp, LOGGER);
+                appUtils.throwProcessException("Unknown action " + action);
             }
 
         } else {
-            setBadRequest("Unknown stage " + stage, resp, LOGGER);
+            appUtils.throwProcessException("Unknown stage " + stage);
         }
 
         if (ACTION_DELETE.equalsIgnoreCase(action)) {
@@ -284,6 +284,10 @@ public class BuildFiltersServlet extends HttpServlet {
         }
     }
 
+    private void putFilters(final String filter, final AppUtils appUtils) {
+        // TODO PGU
+    }
+
     private static class FilterTask {
 
         private final TaskOptions task;
@@ -314,12 +318,13 @@ public class BuildFiltersServlet extends HttpServlet {
         }
     }
 
-    private void deleteFilters(final String filter, final long startTime) {
+    private void deleteFilters(final String filter, final AppUtils appUtils) throws IOException,
+            InterruptProcessException {
 
         final Class<? extends Filter> filterClass = getFilterClass(filter);
 
         try {
-            deleteFilter(filterClass, startTime);
+            deleteFilter(filterClass, appUtils);
 
         } catch (final InterruptProcessException e) {
 
@@ -332,7 +337,7 @@ public class BuildFiltersServlet extends HttpServlet {
             throw e;
         }
 
-        final String nextFilter = getNextFilter();
+        final String nextFilter = getNextFilter(filter);
         if (nextFilter != null) {
             new FilterTask() //
                     .stage(STAGE_FILTER) //
@@ -340,7 +345,7 @@ public class BuildFiltersServlet extends HttpServlet {
                     .filter(nextFilter) //
                     .addToQueue();
 
-            AppUtils.print("Starts the next step in deletion process for " + nextFilter, resp, startTime, LOGGER);
+            appUtils.info("Starts the next step in deletion process for " + nextFilter);
 
         } else {
             new FilterTask() //
@@ -349,7 +354,18 @@ public class BuildFiltersServlet extends HttpServlet {
                     .filter(nextFilter) //
                     .addToQueue();
 
-            AppUtils.print("Deletion process is over", resp, startTime, LOGGER);
+            appUtils.info("Deletion process is over");
+        }
+    }
+
+    private String getNextFilter(final String filter) {
+        if (FILTER_AUTHOR.equalsIgnoreCase(filter)) {
+            return FILTER_EDITOR;
+
+        } else if (FILTER_EDITOR.equalsIgnoreCase(filter)) {
+            return FILTER_CATEGORY;
+        } else {
+            return null;
         }
     }
 
@@ -396,6 +412,7 @@ public class BuildFiltersServlet extends HttpServlet {
 
     private String getParameterStage(final HttpServletRequest req, final AppUtils appUtils) throws IOException,
             ProcessException {
+
         final ParserRequest parser = new ParserRequest();
 
         parser.paramName = PARAM_STAGE;
@@ -466,7 +483,7 @@ public class BuildFiltersServlet extends HttpServlet {
         }
     }
 
-    private Class<? extends IsFilter> parseFilterClass(final HttpServletRequest req) {
+    private Class<? extends Filter> parseFilterClass(final HttpServletRequest req) {
         final String paramFilter = req.getParameter(PARAM_FILTER);
 
         if (paramFilter == null //
@@ -483,8 +500,8 @@ public class BuildFiltersServlet extends HttpServlet {
         return null;
     }
 
-    private void deleteFilter(final Class<? extends Filter> filterClass, final long startTime)
-            throws InterruptProcessException {
+    private void deleteFilter(final Class<? extends Filter> filterClass, final AppUtils appUtils)
+            throws InterruptProcessException, IOException {
 
         final boolean hasFilter = dao.ofy().query(filterClass).limit(1).count() > 0;
 
@@ -494,8 +511,8 @@ public class BuildFiltersServlet extends HttpServlet {
 
                 dao.ofy().delete(itr.next());
 
-                if (hasReachedTimeOut(startTime)) {
-                    throw new InterruptProcessException("deleteFilter has reached time's limit", startTime);
+                if (appUtils.hasReachedTimeOut()) {
+                    appUtils.throwInterruptProcessException("deleteFilter has reached time's limit");
                 }
             }
         }

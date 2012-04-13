@@ -52,14 +52,21 @@ public final class AppUtils {
         throw new ProcessException(msg);
     }
 
-    public void printInterrupt(final InterruptProcessException ex) throws IOException {
+    public void throwInterruptProcessException(final String msg) throws IOException, InterruptProcessException {
 
-        final String msg = ex.getMessage();
+        resp.setContentType("text/plain");
+        resp.getWriter().println(msg);
+
+        logger.warning(msg);
+
+        throw new InterruptProcessException(msg, startTime);
+    }
+
+    public void info(final String msg) throws IOException {
 
         resp.setContentType("text/plain");
         resp.getWriter().println(msg);
 
         logger.info(msg);
     }
-
 }
