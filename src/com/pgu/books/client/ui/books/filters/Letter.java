@@ -2,19 +2,34 @@ package com.pgu.books.client.ui.books.filters;
 
 public class Letter {
 
-    private String  value;
+    private String label;
+    private String letter;
+
     private boolean hasBeenFetched = false;
 
     public Letter() {
     }
 
-    public Letter value(final String value) {
-        setValue(value);
+    public Letter label(final String label) {
+        setLabel(label);
+        setLetter(label.substring(0, 1));
         return this;
     }
 
-    public void setValue(final String value) {
-        this.value = value;
+    public void setLabel(final String label) {
+        this.label = label;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public String getLetter() {
+        return letter;
+    }
+
+    public void setLetter(final String letter) {
+        this.letter = letter;
     }
 
     public boolean hasBeenFetched() {
@@ -29,7 +44,7 @@ public class Letter {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + (value == null ? 0 : value.hashCode());
+        result = prime * result + (label == null ? 0 : label.hashCode());
         return result;
     }
 
@@ -45,23 +60,19 @@ public class Letter {
             return false;
         }
         final Letter other = (Letter) obj;
-        if (value == null) {
-            if (other.value != null) {
+        if (label == null) {
+            if (other.label != null) {
                 return false;
             }
-        } else if (!value.equals(other.value)) {
+        } else if (!label.equals(other.label)) {
             return false;
         }
         return true;
     }
 
-    public String getValue() {
-        return value;
-    }
-
     @Override
     public String toString() {
-        return "Letter [value=" + value + ", hasBeenFetched=" + hasBeenFetched + "]";
+        return "Letter [label=" + label + ", letter=" + letter + ", hasBeenFetched=" + hasBeenFetched + "]";
     }
 
 }

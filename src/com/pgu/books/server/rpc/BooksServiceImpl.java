@@ -158,21 +158,6 @@ public class BooksServiceImpl extends RemoteServiceServlet implements BooksServi
         dao.ofy().delete(keys);
     }
 
-    private <T extends Filter> ArrayList<String> fetchFilters(final Class<T> clazz) {
-
-        final Query<T> query = dao.ofy().query(clazz);
-
-        final int nbItems = query.count();
-        final ArrayList<String> names = new ArrayList<String>(nbItems);
-
-        final QueryResultIterator<T> itr = query.order("value").iterator();
-        while (itr.hasNext()) {
-
-            names.add(itr.next().getValue());
-        }
-        return names;
-    }
-
     @Override
     public ArrayList<String> fetchWords(final String text) {
         if (text == null || text.isEmpty() || text.trim().isEmpty()) {
@@ -224,6 +209,21 @@ public class BooksServiceImpl extends RemoteServiceServlet implements BooksServi
             letters.add(itr.next().getLetter());
         }
         return letters;
+    }
+
+    private <T extends Filter> ArrayList<String> fetchFilters(final Class<T> clazz) {
+
+        final Query<T> query = dao.ofy().query(clazz);
+
+        final int nbItems = query.count();
+        final ArrayList<String> names = new ArrayList<String>(nbItems);
+
+        final QueryResultIterator<T> itr = query.order("value").iterator();
+        while (itr.hasNext()) {
+
+            names.add(itr.next().getValue());
+        }
+        return names;
     }
 
     @Override

@@ -106,7 +106,7 @@ public class FilterTreeViewModel implements TreeViewModel {
         @Override
         public void render(final com.google.gwt.cell.client.Cell.Context context, final Letter value,
                 final SafeHtmlBuilder sb) {
-            sb.appendEscaped(value.getValue());
+            sb.appendEscaped(value.getLabel());
         }
 
     }
@@ -149,7 +149,7 @@ public class FilterTreeViewModel implements TreeViewModel {
 
     public void setCounts(final ArrayList<String> countsByLetters) {
         for (final String count : countsByLetters) {
-            final Letter letter = new Letter().value(count);
+            final Letter letter = new Letter().label(count);
             letters.getList().add(letter);
             cache.put(letter, new ListDataProvider<FilterValue>());
         }

@@ -35,10 +35,10 @@ public class DashboardActivity implements //
 
     private final BooksServiceAsync booksService = GWT.create(BooksService.class);
 
-    private Dashboard               dashboardUI;
+    private Dashboard dashboardUI;
 
     // search state
-    private final BooksFiltersDTO   filtersDTO   = new BooksFiltersDTO();
+    private final BooksFiltersDTO filtersDTO = new BooksFiltersDTO();
 
     public Dashboard start() {
         if (null == dashboardUI) {
@@ -232,7 +232,7 @@ public class DashboardActivity implements //
     public void fetchFiltersByLetter(final Letter letter, final FilterType filterType) {
 
         if (FilterType.AUTHOR == filterType) {
-            booksService.fetchFilterAuthors(letter.getValue(), new AsyncCallbackApp<ArrayList<String>>() {
+            booksService.fetchFilterAuthors(letter.getLetter(), new AsyncCallbackApp<ArrayList<String>>() {
 
                 @Override
                 public void onSuccess(final ArrayList<String> filters) {
@@ -242,7 +242,7 @@ public class DashboardActivity implements //
             });
 
         } else if (FilterType.EDITOR == filterType) {
-            booksService.fetchFilterEditors(letter.getValue(), new AsyncCallbackApp<ArrayList<String>>() {
+            booksService.fetchFilterEditors(letter.getLetter(), new AsyncCallbackApp<ArrayList<String>>() {
 
                 @Override
                 public void onSuccess(final ArrayList<String> filters) {
@@ -252,7 +252,7 @@ public class DashboardActivity implements //
             });
 
         } else if (FilterType.CATEGORY == filterType) {
-            booksService.fetchFilterCategories(letter.getValue(), new AsyncCallbackApp<ArrayList<String>>() {
+            booksService.fetchFilterCategories(letter.getLetter(), new AsyncCallbackApp<ArrayList<String>>() {
 
                 @Override
                 public void onSuccess(final ArrayList<String> filters) {
