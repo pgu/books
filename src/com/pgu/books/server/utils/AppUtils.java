@@ -14,16 +14,34 @@ public final class AppUtils {
 
     public static final long LIMIT_MS = 1000 * 25;
 
-    private AppUtils() {
-        throw new UnsupportedOperationException();
+    private HttpServletResponse resp;
+    private Logger logger;
+
+    private long startTime;
+
+    public AppUtils() {
     }
 
-    public static boolean hasReachedTimeOut(final long startTimeInMs) {
-        return System.currentTimeMillis() - startTimeInMs > LIMIT_MS;
+    public AppUtils response(final HttpServletResponse resp) {
+        this.resp = resp;
+        return this;
     }
 
-    public static void setBadRequest(final String msg, final HttpServletResponse resp, final Logger logger)
-            throws IOException, ProcessException {
+    public AppUtils logger(final Logger logger) {
+        this.logger = logger;
+        return this;
+    }
+
+    public AppUtils startInMs(final long startTime) {
+        this.startTime = startTime;
+        return this;
+    }
+
+    public boolean hasReachedTimeOut() {
+        return System.currentTimeMillis() - startTime > LIMIT_MS;
+    }
+
+    public void throwProcessException(final String msg) throws IOException, ProcessException {
 
         resp.setStatus(HttpStatus.SC_BAD_REQUEST);
         resp.setContentType("text/plain");
@@ -34,8 +52,7 @@ public final class AppUtils {
         throw new ProcessException(msg);
     }
 
-    public static void printInterrupt(final InterruptProcessException ex, final HttpServletResponse resp, final Logger logger)
-            throws IOException, InterruptProcessException {
+    public void printInterrupt(final InterruptProcessException ex) throws IOException {
 
         final String msg = ex.getMessage();
 
@@ -43,8 +60,6 @@ public final class AppUtils {
         resp.getWriter().println(msg);
 
         logger.info(msg);
-
-        throw ex;
     }
 
 }

@@ -1,8 +1,5 @@
 package com.pgu.books.server.servlet;
 
-import static com.pgu.books.server.utils.AppUtils.hasReachedTimeOut;
-import static com.pgu.books.server.utils.AppUtils.setBadRequest;
-
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -37,40 +34,40 @@ import com.pgu.books.shared.Book;
 @SuppressWarnings("serial")
 public class BuildFiltersServlet extends HttpServlet {
 
-    private static final Logger       LOGGER          = Logger.getLogger(BuildFiltersServlet.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(BuildFiltersServlet.class.getName());
 
-    private final DAO                 dao             = new DAO();
+    private final DAO dao = new DAO();
 
     // TODO PGU update the cron file and queue file
 
-    private static final String       PARAM_STAGE     = "stage";
-    private static final String       STAGE_FILTER    = "filter";
-    private static final String       STAGE_LETTER    = "letter";
+    private static final String PARAM_STAGE = "stage";
+    private static final String STAGE_FILTER = "filter";
+    private static final String STAGE_LETTER = "letter";
 
-    private static final String       PARAM_ACTION    = "action";
-    private static final String       ACTION_DELETE   = "delete";
-    private static final String       ACTION_PUT      = "put";
-    private static final String       ACTION_CLEANUP  = "cleanup";
+    private static final String PARAM_ACTION = "action";
+    private static final String ACTION_DELETE = "delete";
+    private static final String ACTION_PUT = "put";
+    private static final String ACTION_CLEANUP = "cleanup";
 
-    private static final String       PARAM_FILTER    = "filter";
-    private static final String       FILTER_AUTHOR   = "author";
-    private static final String       FILTER_EDITOR   = "editor";
-    private static final String       FILTER_CATEGORY = "category";
+    private static final String PARAM_FILTER = "filter";
+    private static final String FILTER_AUTHOR = "author";
+    private static final String FILTER_EDITOR = "editor";
+    private static final String FILTER_CATEGORY = "category";
 
-    private static final List<String> stages          = Arrays.asList( //
-                                                              STAGE_FILTER, //
-                                                              STAGE_LETTER //
-                                                      );
-    private static final List<String> actions         = Arrays.asList( //
-                                                              ACTION_DELETE, //
-                                                              ACTION_PUT, //
-                                                              ACTION_CLEANUP //
-                                                      );
-    private static final List<String> filters         = Arrays.asList( //
-                                                              FILTER_AUTHOR, //
-                                                              FILTER_EDITOR, //
-                                                              FILTER_CATEGORY //
-                                                      );
+    private static final List<String> stages = Arrays.asList( //
+            STAGE_FILTER, //
+            STAGE_LETTER //
+            );
+    private static final List<String> actions = Arrays.asList( //
+            ACTION_DELETE, //
+            ACTION_PUT, //
+            ACTION_CLEANUP //
+            );
+    private static final List<String> filters = Arrays.asList( //
+            FILTER_AUTHOR, //
+            FILTER_EDITOR, //
+            FILTER_CATEGORY //
+            );
 
     @Override
     protected void doGet(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException,
@@ -87,9 +84,14 @@ public class BuildFiltersServlet extends HttpServlet {
         final long startTime = System.currentTimeMillis();
         LOGGER.info("...POST request ");
 
-        final String stage = getParameterStage(req, resp);
-        final String action = getParameterAction(req, resp);
-        final String filter = getParameterFilter(req, resp);
+        final AppUtils appUtils = new AppUtils() //
+                .logger(LOGGER) //
+                .startInMs(startTime) //
+                .response(resp);
+
+        final String stage = getParameterStage(req, appUtils);
+        final String action = getParameterAction(req, appUtils);
+        final String filter = getParameterFilter(req, appUtils);
 
         if (isFilterStage(stage)) {
 
@@ -225,7 +227,7 @@ public class BuildFiltersServlet extends HttpServlet {
             }
 
         } else if (ACTION_COUNTS.equalsIgnoreCase(action)) {
-            // TODO PGU 
+            // TODO PGU
             // add clean param (remove all)
             // add put param (create letters)
             // add clean param (remove duplicates)
@@ -330,13 +332,25 @@ public class BuildFiltersServlet extends HttpServlet {
             throw e;
         }
 
-        // go to next step: delete other filters or put new filters
-        final Queue queue = QueueFactory.getQueue(AppQueues.BUILD_FILTERS);
-        queue.add(newTask().param(PARAM_ACTION, ACTION_PUT));
+        final String nextFilter = getNextFilter();
+        if (nextFilter != null) {
+            new FilterTask() //
+                    .stage(STAGE_FILTER) //
+                    .action(ACTION_DELETE) //
+                    .filter(nextFilter) //
+                    .addToQueue();
 
-        AppUtils.print("Deletion process is over", resp, startTime, LOGGER);
-        return;
+            AppUtils.print("Starts the next step in deletion process for " + nextFilter, resp, startTime, LOGGER);
 
+        } else {
+            new FilterTask() //
+                    .stage(STAGE_FILTER) //
+                    .action(ACTION_PUT) //
+                    .filter(nextFilter) //
+                    .addToQueue();
+
+            AppUtils.print("Deletion process is over", resp, startTime, LOGGER);
+        }
     }
 
     private Class<? extends Filter> getFilterClass(final String filter) {
@@ -375,51 +389,47 @@ public class BuildFiltersServlet extends HttpServlet {
     }
 
     private static class ParserRequest {
-        private String       paramName;
+        private String paramName;
         private List<String> references;
-        private String       tag;
-        private String       defaultValue;
+        private String defaultValue;
     }
 
-    private String getParameterStage(final HttpServletRequest req, final HttpServletResponse resp) throws IOException,
+    private String getParameterStage(final HttpServletRequest req, final AppUtils appUtils) throws IOException,
             ProcessException {
         final ParserRequest parser = new ParserRequest();
 
         parser.paramName = PARAM_STAGE;
         parser.references = stages;
-        parser.tag = "stage";
         parser.defaultValue = STAGE_FILTER;
 
-        return getParameter(parser, req, resp);
+        return getParameter(parser, req, appUtils);
     }
 
-    private String getParameterAction(final HttpServletRequest req, final HttpServletResponse resp) throws IOException,
+    private String getParameterAction(final HttpServletRequest req, final AppUtils appUtils) throws IOException,
             ProcessException {
 
         final ParserRequest parser = new ParserRequest();
 
         parser.paramName = PARAM_ACTION;
         parser.references = actions;
-        parser.tag = "action";
         parser.defaultValue = ACTION_DELETE;
 
-        return getParameter(parser, req, resp);
+        return getParameter(parser, req, appUtils);
     }
 
-    private String getParameterFilter(final HttpServletRequest req, final HttpServletResponse resp) throws IOException,
+    private String getParameterFilter(final HttpServletRequest req, final AppUtils appUtils) throws IOException,
             ProcessException {
 
         final ParserRequest parser = new ParserRequest();
 
         parser.paramName = PARAM_FILTER;
         parser.references = filters;
-        parser.tag = "filter";
         parser.defaultValue = FILTER_AUTHOR;
 
-        return getParameter(parser, req, resp);
+        return getParameter(parser, req, appUtils);
     }
 
-    private String getParameter(final ParserRequest parser, final HttpServletRequest req, final HttpServletResponse resp)
+    private String getParameter(final ParserRequest parser, final HttpServletRequest req, final AppUtils appUtils)
             throws IOException, ProcessException {
 
         final String value = req.getParameter(parser.paramName);
@@ -427,15 +437,13 @@ public class BuildFiltersServlet extends HttpServlet {
         if (value != null //
                 && !parser.references.contains(value.toLowerCase())) {
 
-            AppUtils.setBadRequest( //
-                    String.format("Illegal %s for this request: %s", parser.tag, value), //
-                    resp, LOGGER);
+            appUtils.throwProcessException(String.format("Illegal %s for this request: %s", parser.paramName, value));
         }
 
         return value == null ? parser.defaultValue : value.toLowerCase();
     }
 
-    private void setStartCursor(final HttpServletRequest req, final Query<? extends IsFilter> query) {
+    private void setStartCursor(final HttpServletRequest req, final Query<? extends Filter> query) {
         final String cursorParam = req.getParameter(AppUrls.PARAM_CURSOR);
         if (cursorParam != null) {
             query.startCursor(Cursor.fromWebSafeString(cursorParam));
