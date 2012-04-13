@@ -7,6 +7,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.http.HttpStatus;
 
+import com.pgu.books.server.exception.ProcessException;
+
 public final class AppUtils {
 
     public static final long LIMIT_MS = 1000 * 25;
@@ -20,13 +22,15 @@ public final class AppUtils {
     }
 
     public static void setBadRequest(final String msg, final HttpServletResponse resp, final Logger logger)
-            throws IOException {
+            throws IOException, ProcessException {
 
         resp.setStatus(HttpStatus.SC_BAD_REQUEST);
         resp.setContentType("text/plain");
         resp.getWriter().print(msg);
 
-        logger.info(msg);
+        logger.severe(msg);
+
+        throw new ProcessException(msg);
     }
 
     public static void print(final String msg, final HttpServletResponse resp, final long startTime, final Logger logger)
