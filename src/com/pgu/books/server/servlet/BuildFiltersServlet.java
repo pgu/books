@@ -115,6 +115,7 @@ public class BuildFiltersServlet extends HttpServlet {
                     deleteLetters(filter, appUtils);
 
                 } else if (isPutAction(action)) {
+                    putLetters(filter, req, appUtils);
 
                 } else if (isCleanupAction(action)) {
 
@@ -136,6 +137,62 @@ public class BuildFiltersServlet extends HttpServlet {
         } catch (final InterruptProcessException e) {
             // fail silently, it is already logged
         }
+    }
+
+    private void putLetters(final String filter, final HttpServletRequest req, final AppUtils appUtils) {
+
+        final boolean isAuthor = isAuthor(filter);
+        final boolean isEditor = isEditor(filter);
+        final boolean isCategory = isCategory(filter);
+
+        final Class<? extends Filter> filterClass = getFilterClass(filter);
+
+        final Query<? extends Filter> query = dao.ofy().query(filterClass);
+        setStartCursor(req, query);
+
+        final QueryResultIterator<? extends Filter> itr = query.iterator();
+        while (itr.hasNext()) {
+
+            final Filter isFilter = itr.next();
+            final String letter = isFilter.getValue().substring(0, 1);
+
+            if (isAuthor) {
+                dao.ofy().put(new AuthorLetterFilter().letter(letter));
+
+            } else if (isEditor) {
+                dao.ofy().put(new EditorLetterFilter().letter(letter));
+
+            } else if (isCategory) {
+                dao.ofy().put(new CategoryLetterFilter().letter(letter));
+
+            } else {
+                throw new IllegalArgumentException("Unknown filter " + filter);
+            }
+
+            if (appUtils.hasReachedTimeOut()) {
+
+                new FilterTask() //
+                        .stage(STAGE_LETTER) //
+                        .action(ACTION_PUT) //
+                        .filter(filter) //
+                        .cursor(itr.getCursor().toWebSafeString()) //
+                        .addToQueue();
+
+                appUtils.throwInterruptProcessException("Creating filters has reached its time's limit");
+            }
+        }
+    }
+
+    private boolean isAuthor(final String filter) {
+        return FILTER_AUTHOR.equalsIgnoreCase(filter);
+    }
+
+    private boolean isEditor(final String filter) {
+        return FILTER_EDITOR.equalsIgnoreCase(filter);
+    }
+
+    private boolean isCategory(final String filter) {
+        return FILTER_CATEGORY.equalsIgnoreCase(filter);
     }
 
     private void deleteLetters(final String filter, final AppUtils appUtils) throws IOException,
@@ -238,7 +295,7 @@ public class BuildFiltersServlet extends HttpServlet {
                 new FilterTask() //
                         .stage(STAGE_FILTER) //
                         .action(ACTION_CLEANUP) //
-                        .filter(getFilterValue(filterClass)) //
+                        .filter(filter) //
                         .cursor(itr.getCursor().toWebSafeString()) //
                         .addToQueue();
 
@@ -355,7 +412,7 @@ public class BuildFiltersServlet extends HttpServlet {
                     new FilterTask() //
                             .stage(STAGE_FILTER) //
                             .action(ACTION_DELETE) //
-                            .filter(getFilterValue(filterClass)) //
+                            .filter(filter) //
                             .addToQueue();
 
                     appUtils.throwInterruptProcessException("Deleting filters has reached its time's limit");
@@ -490,22 +547,6 @@ public class BuildFiltersServlet extends HttpServlet {
         final String cursorParam = req.getParameter(AppUrls.PARAM_CURSOR);
         if (cursorParam != null) {
             query.startCursor(Cursor.fromWebSafeString(cursorParam));
-        }
-    }
-
-    private String getFilterValue(final Class<? extends Filter> filterClass) {
-
-        if (AuthorFilter.class.equals(filterClass)) {
-            return FILTER_AUTHOR;
-
-        } else if (EditorFilter.class.equals(filterClass)) {
-            return FILTER_EDITOR;
-
-        } else if (CategoryFilter.class.equals(filterClass)) {
-            return FILTER_CATEGORY;
-
-        } else {
-            throw new IllegalArgumentException("Unknown filter " + filterClass);
         }
     }
 
