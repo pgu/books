@@ -138,9 +138,65 @@ public class BuildFiltersServlet extends HttpServlet {
         }
     }
 
-    private void deleteLetters(final String filter, final AppUtils appUtils) {
+    private void deleteLetters(final String filter, final AppUtils appUtils) throws IOException,
+            InterruptProcessException {
         final Class<? extends LetterFilter> letterClass = getLetterClass(filter);
 
+        final boolean hasLetter = dao.ofy().query(letterClass).limit(1).count() > 0;
+        if (hasLetter) {
+
+            final QueryResultIterator<? extends LetterFilter> itr = dao.ofy().query(letterClass).iterator();
+            while (itr.hasNext()) {
+
+                dao.ofy().delete(itr.next());
+
+                if (appUtils.hasReachedTimeOut()) {
+
+                    new FilterTask() //
+                            .stage(STAGE_LETTER) //
+                            .action(ACTION_DELETE) //
+                            .filter(getLetterFilterValue(letterClass)) //
+                            .addToQueue();
+
+                    appUtils.throwInterruptProcessException("Deleting letterFilters has reached its time's limit");
+                }
+            }
+        }
+        appUtils.info("Deleting letterFilters is over for " + filter);
+
+        final String nextFilter = getNextFilter(filter);
+        if (nextFilter != null) {
+            new FilterTask() //
+                    .stage(STAGE_LETTER) //
+                    .action(ACTION_DELETE) //
+                    .filter(nextFilter) //
+                    .addToQueue();
+
+            appUtils.info("Deleting letterFilters starts for " + nextFilter);
+
+        } else {
+            new FilterTask() //
+                    .stage(STAGE_LETTER) //
+                    .action(ACTION_PUT) //
+                    .addToQueue();
+
+            appUtils.info("Let's start the letterFilters creation");
+        }
+    }
+
+    private String getLetterFilterValue(final Class<? extends LetterFilter> letterClass) {
+        if (AuthorLetterFilter.class.equals(letterClass)) {
+            return FILTER_AUTHOR;
+
+        } else if (EditorLetterFilter.class.equals(letterClass)) {
+            return FILTER_EDITOR;
+
+        } else if (CategoryLetterFilter.class.equals(letterClass)) {
+            return FILTER_CATEGORY;
+
+        } else {
+            throw new IllegalArgumentException("Unknown letterFilter " + letterClass);
+        }
     }
 
     private Class<? extends LetterFilter> getLetterClass(final String filter) {
