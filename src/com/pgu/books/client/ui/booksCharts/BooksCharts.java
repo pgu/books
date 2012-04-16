@@ -17,6 +17,7 @@ import com.google.gwt.visualization.client.events.SelectHandler;
 import com.google.gwt.visualization.client.visualizations.corechart.CoreChart;
 import com.google.gwt.visualization.client.visualizations.corechart.PieChart;
 import com.google.gwt.visualization.client.visualizations.corechart.PieChart.PieOptions;
+import com.pgu.books.client.activity.booksCharts.BooksChartsPresenter;
 
 public class BooksCharts extends Composite {
 
@@ -26,9 +27,15 @@ public class BooksCharts extends Composite {
     }
 
     @UiField
-    HTMLPanel       charts;
+    HTMLPanel                    charts;
 
-    private boolean isVisuApiLoaded = false;
+    private boolean              isVisuApiLoaded = false;
+
+    private BooksChartsPresenter presenter;
+
+    public void setPresenter(final BooksChartsPresenter presenter) {
+        this.presenter = presenter;
+    }
 
     public BooksCharts() {
 

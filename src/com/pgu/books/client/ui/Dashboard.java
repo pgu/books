@@ -5,13 +5,13 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DockPanel;
-import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.Widget;
 import com.pgu.books.client.activity.dashboard.DashboardPresenter;
 import com.pgu.books.client.ui.books.board.Booksboard;
 import com.pgu.books.client.ui.books.filters.BooksFilters;
 import com.pgu.books.client.ui.books.search.BooksSearch;
+import com.pgu.books.client.ui.booksCharts.BooksCharts;
 import com.pgu.books.client.ui.booksImport.BooksImport;
 import com.pgu.books.client.ui.booksImport.BooksImportUI;
 import com.pgu.books.client.ui.menuAdmin.MenuAdmin;
@@ -27,7 +27,7 @@ public class Dashboard extends Composite {
     MenuAdmin            menuAdmin;
 
     @UiField
-    HTMLPanel            charts;
+    BooksCharts          booksCharts;
 
     @UiField
     BooksImport          booksImport;
@@ -67,7 +67,7 @@ public class Dashboard extends Composite {
     }
 
     public void showCharts() {
-        show(charts);
+        show(booksCharts);
     }
 
     public void showImport() {
@@ -75,7 +75,7 @@ public class Dashboard extends Composite {
     }
 
     private void show(final Widget widgetToShow) {
-        for (final Widget w : new Widget[] { booksDock, charts, booksImport }) {
+        for (final Widget w : new Widget[] { booksDock, booksCharts, booksImport }) {
             if (w == null) {
                 continue;
             }
@@ -104,4 +104,9 @@ public class Dashboard extends Composite {
     public BooksSearch getBooksSearchUI() {
         return booksSearch;
     }
+
+    public BooksCharts getBooksChartsUI() {
+        return booksCharts;
+    }
+
 }

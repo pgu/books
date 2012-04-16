@@ -12,6 +12,7 @@ import com.pgu.books.client.BooksServiceAsync;
 import com.pgu.books.client.activity.books.board.BooksboardPresenter;
 import com.pgu.books.client.activity.books.filters.BooksFiltersPresenter;
 import com.pgu.books.client.activity.books.search.BooksSearchPresenter;
+import com.pgu.books.client.activity.booksCharts.BooksChartsPresenter;
 import com.pgu.books.client.activity.booksImport.BooksImportPresenter;
 import com.pgu.books.client.activity.utils.FilterType;
 import com.pgu.books.client.app.AsyncCallbackApp;
@@ -25,6 +26,7 @@ public class DashboardActivity implements //
         BooksImportPresenter, //
         BooksboardPresenter, //
         BooksFiltersPresenter, //
+        BooksChartsPresenter, //
         BooksSearchPresenter //
 {
 
@@ -48,6 +50,7 @@ public class DashboardActivity implements //
             dashboardUI.getBooksboardUI().setPresenter(this);
             dashboardUI.getBooksFiltersUI().setPresenter(this);
             dashboardUI.getBooksSearchUI().setPresenter(this);
+            dashboardUI.getBooksChartsUI().setPresenter(this);
 
             Scheduler.get().scheduleDeferred(new ScheduledCommand() {
 
