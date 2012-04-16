@@ -6,8 +6,6 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.visualization.client.VisualizationUtils;
-import com.google.gwt.visualization.client.visualizations.corechart.CoreChart;
 import com.pgu.books.client.activity.dashboard.DashboardActivity;
 import com.pgu.books.client.ui.Dashboard;
 
@@ -56,16 +54,5 @@ public class Books implements EntryPoint {
             }
         });
         History.fireCurrentHistoryState();
-
-        //
-        // charts
-        final Runnable onLoadCallback = new Runnable() {
-            @Override
-            public void run() {
-                DashboardActivity.INSTANCE.buildCharts();
-            }
-        };
-
-        VisualizationUtils.loadVisualizationApi(onLoadCallback, CoreChart.PACKAGE);
     }
 }
