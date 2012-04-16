@@ -1,13 +1,12 @@
 package com.pgu.books.client;
 
 import com.google.gwt.core.client.EntryPoint;
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.History;
+import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.pgu.books.client.activity.dashboard.DashboardActivity;
-import com.pgu.books.client.ui.Dashboard;
+import com.pgu.books.client.activity.AppActivity;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -23,8 +22,8 @@ public class Books implements EntryPoint {
 
         //
         // UI
-        final Dashboard dashboard = DashboardActivity.INSTANCE.start();
-        RootPanel.get().add(dashboard);
+        final IsWidget firstView = AppActivity.get().initView();
+        RootPanel.get().add(firstView);
 
         //
         // history
@@ -40,16 +39,16 @@ public class Books implements EntryPoint {
                 final String tag = event.getValue();
 
                 if (TAG_BOOKS.equals(tag)) {
-                    dashboard.showBooks();
+                    AppActivity.get().showBooks();
 
                 } else if (TAG_CHARTS.equals(tag)) {
-                    dashboard.showCharts();
+                    AppActivity.get().showCharts();
 
                 } else if (TAG_IMPORT.equals(tag)) {
-                    dashboard.showImport();
+                    AppActivity.get().showImport();
 
                 } else {
-                    GWT.log("other tag [" + tag + "]");
+                    AppActivity.get().showUnknownTag(tag);
                 }
             }
         });

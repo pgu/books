@@ -1,4 +1,4 @@
-package com.pgu.books.client.activity.books.search;
+package com.pgu.books.client.activity.booksBoard.search;
 
 public interface BooksSearchPresenter {
 

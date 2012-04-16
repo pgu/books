@@ -1,4 +1,4 @@
-package com.pgu.books.client.ui.books.filters;
+package com.pgu.books.client.ui.booksBoard.filters;
 
 import com.google.gwt.user.cellview.client.CellBrowser;
 import com.google.gwt.user.client.ui.SplitLayoutPanel;

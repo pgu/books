@@ -1,4 +1,4 @@
-package com.pgu.books.client.ui.books.board;
+package com.pgu.books.client.ui.booksBoard.grid;
 
 import java.util.ArrayList;
 
@@ -15,28 +15,28 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.HasData;
-import com.pgu.books.client.activity.books.board.BooksboardPresenter;
+import com.pgu.books.client.activity.booksBoard.grid.BooksGridPresenter;
 import com.pgu.books.shared.Book;
 
 // TODO PGU EDITION of a book: edition in the grid and a new form to create a new book
 // TODO PGU server sorting on columns
 // TODO PGU edition only for logged admin
-public class Booksboard extends Composite {
+public class BooksGrid extends Composite implements BooksGridUI {
 
-    private static BooksboardUiBinder uiBinder = GWT.create(BooksboardUiBinder.class);
+    private static BooksGridUiBinder uiBinder = GWT.create(BooksGridUiBinder.class);
 
-    interface BooksboardUiBinder extends UiBinder<Widget, Booksboard> {
+    interface BooksGridUiBinder extends UiBinder<Widget, BooksGrid> {
     }
 
     @UiField(provided = true)
-    DataGrid<Book> grid;
+    DataGrid<Book>             grid;
 
     @UiField(provided = true)
-    SimplePager pager;
+    SimplePager                pager;
 
-    private BooksboardPresenter presenter;
+    private BooksGridPresenter presenter;
 
-    public void setPresenter(final BooksboardPresenter presenter) {
+    public void setPresenter(final BooksGridPresenter presenter) {
         this.presenter = presenter;
     }
 
@@ -44,7 +44,7 @@ public class Booksboard extends Composite {
     // https://developers.google.com/web-toolkit/doc/latest/DevGuideUiCellTable
     // http://gwt.google.com/samples/Showcase/Showcase.html#!CwCellTable
     // http://www.mytechtip.com/2010/11/gwt-celltable-example-using_8168.html
-    public Booksboard() {
+    public BooksGrid() {
 
         buildCellTableWithPager();
 
@@ -112,11 +112,11 @@ public class Booksboard extends Composite {
         grid.addColumn(categoryColumn, "Categoría");
     }
 
-    private boolean isGettingNbBooks = false;
-    private boolean isGettingBooks = false;
-    private Integer nbBooks = 0;
+    private boolean         isGettingNbBooks = false;
+    private boolean         isGettingBooks   = false;
+    private Integer         nbBooks          = 0;
     private ArrayList<Book> books;
-    private int currentStart = 0;
+    private int             currentStart     = 0;
 
     public void initFetch() {
         isGettingNbBooks = true;
@@ -152,7 +152,7 @@ public class Booksboard extends Composite {
     }
 
     private AsyncDataProvider<Book> provider;
-    private int length;
+    private int                     length;
 
     public void initFetchBooks() {
         provider = new AsyncDataProvider<Book>() {

@@ -1,4 +1,4 @@
-package com.pgu.books.client.ui.books.filters;
+package com.pgu.books.client.ui.booksBoard.filters;
 
 public class FilterValue implements Comparable<FilterValue> {
 

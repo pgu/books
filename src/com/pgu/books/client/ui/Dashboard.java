@@ -1,22 +1,27 @@
 package com.pgu.books.client.ui;
 
+import java.util.Arrays;
+import java.util.List;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.DockPanel;
-import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.Widget;
-import com.pgu.books.client.activity.dashboard.DashboardPresenter;
-import com.pgu.books.client.ui.books.board.Booksboard;
-import com.pgu.books.client.ui.books.filters.BooksFilters;
-import com.pgu.books.client.ui.books.search.BooksSearch;
+import com.pgu.books.client.activity.AppPresenter;
+import com.pgu.books.client.ui.booksBoard.BooksBoard;
+import com.pgu.books.client.ui.booksBoard.BooksBoardUI;
+import com.pgu.books.client.ui.booksBoard.filters.BooksFiltersUI;
+import com.pgu.books.client.ui.booksBoard.grid.BooksGridUI;
+import com.pgu.books.client.ui.booksBoard.search.BooksSearchUI;
 import com.pgu.books.client.ui.booksCharts.BooksCharts;
 import com.pgu.books.client.ui.booksImport.BooksImport;
 import com.pgu.books.client.ui.booksImport.BooksImportUI;
 import com.pgu.books.client.ui.menuAdmin.MenuAdmin;
+import com.pgu.books.client.ui.utils.IsFocusable;
 
-public class Dashboard extends Composite {
+public class Dashboard extends Composite implements AppUI {
 
     private static DashboardUiBinder uiBinder = GWT.create(DashboardUiBinder.class);
 
@@ -27,86 +32,98 @@ public class Dashboard extends Composite {
     MenuAdmin            menuAdmin;
 
     @UiField
+    BooksBoard           booksBoard;
+
+    @UiField
     BooksCharts          booksCharts;
 
     @UiField
     BooksImport          booksImport;
 
-    @UiField(provided = true)
-    DockPanel            booksDock;
-
-    private Booksboard   booksboard;
-    private BooksFilters booksFilters;
-    private BooksSearch  booksSearch;
+    private AppPresenter dashboardPresenter;
 
     public Dashboard() {
-        buildBooksboard();
-
         initWidget(uiBinder.createAndBindUi(this));
     }
 
-    private void buildBooksboard() {
-        booksDock = new DockPanel();
-        booksDock.setSpacing(4);
-        booksDock.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
-
-        booksSearch = new BooksSearch();
-        booksFilters = new BooksFilters();
-
-        booksDock.add(booksSearch, DockPanel.NORTH);
-        booksDock.add(booksFilters, DockPanel.WEST);
-
-        booksboard = new Booksboard();
-        booksboard.setHeight("600px");
-        booksboard.setWidth("1000px");
-        booksDock.add(booksboard, DockPanel.CENTER);
-    }
-
-    public void showBooks() {
-        show(booksDock);
-    }
-
-    public void showCharts() {
-        show(booksCharts);
-    }
-
-    public void showImport() {
-        show(booksImport);
-    }
-
-    private void show(final Widget widgetToShow) {
-        for (final Widget w : new Widget[] { booksDock, booksCharts, booksImport }) {
-            if (w == null) {
-                continue;
-            }
-            w.setVisible(w.equals(widgetToShow));
-        }
-    }
-
-    private DashboardPresenter dashboardPresenter;
-
-    public void setPresenter(final DashboardPresenter dashboardPresenter) {
+    @Override
+    public void setPresenter(final AppPresenter dashboardPresenter) {
         this.dashboardPresenter = dashboardPresenter;
     }
 
+    @Override
     public BooksImportUI getBooksImportUI() {
         return booksImport;
     }
 
-    public Booksboard getBooksboardUI() {
-        return booksboard;
-    }
-
-    public BooksFilters getBooksFiltersUI() {
-        return booksFilters;
-    }
-
-    public BooksSearch getBooksSearchUI() {
-        return booksSearch;
-    }
-
+    @Override
     public BooksCharts getBooksChartsUI() {
         return booksCharts;
+    }
+
+    @Override
+    public BooksBoardUI getBooksBoardUI() {
+        return booksBoard;
+    }
+
+    @Override
+    public BooksFiltersUI getBooksFiltersUI() {
+        return booksBoard.getBooksFilters();
+    }
+
+    @Override
+    public BooksSearchUI getBooksSearchUI() {
+        return booksBoard.getBooksSearch();
+    }
+
+    @Override
+    public BooksGridUI getBooksGridUI() {
+        return booksBoard.getBooksGrid();
+    }
+
+    @Override
+    public void showBooks() {
+        show(booksBoard);
+    }
+
+    @Override
+    public void showCharts() {
+        show(booksCharts);
+    }
+
+    @Override
+    public void showImport() {
+        show(booksImport);
+    }
+
+    @Override
+    public void showUnknownTag(final String tag) {
+        final String msg = "Unknown tag [" + tag + "]";
+        GWT.log(msg);
+        Window.alert(msg);
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<? extends IsFocusable> getFocusables() {
+        return Arrays.asList( //
+                getBooksBoardUI(), //
+                getBooksChartsUI(), //
+                getBooksImportUI());
+    }
+
+    private void show(final Widget widgetToShow) {
+        for (final IsFocusable w : getFocusables()) {
+            if (w == null) {
+                continue;
+            }
+
+            final boolean isWidgetToFocus = w.equals(widgetToShow);
+            if (isWidgetToFocus) {
+                w.startFocus();
+            } else {
+                w.loseFocus();
+            }
+        }
     }
 
 }

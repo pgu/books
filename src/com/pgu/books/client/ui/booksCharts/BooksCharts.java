@@ -19,7 +19,7 @@ import com.google.gwt.visualization.client.visualizations.corechart.PieChart;
 import com.google.gwt.visualization.client.visualizations.corechart.PieChart.PieOptions;
 import com.pgu.books.client.activity.booksCharts.BooksChartsPresenter;
 
-public class BooksCharts extends Composite {
+public class BooksCharts extends Composite implements BooksChartsUI {
 
     private static BooksChartsUiBinder uiBinder = GWT.create(BooksChartsUiBinder.class);
 
@@ -33,6 +33,7 @@ public class BooksCharts extends Composite {
 
     private BooksChartsPresenter presenter;
 
+    @Override
     public void setPresenter(final BooksChartsPresenter presenter) {
         this.presenter = presenter;
     }
@@ -124,6 +125,18 @@ public class BooksCharts extends Composite {
                 Window.alert(message);
             }
         };
+    }
+
+    @Override
+    public void startFocus() {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void loseFocus() {
+        // TODO Auto-generated method stub
+
     }
 
 }

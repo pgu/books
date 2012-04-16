@@ -1,4 +1,4 @@
-package com.pgu.books.client.ui.books.filters;
+package com.pgu.books.client.ui.booksBoard.filters;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,7 +16,7 @@ import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.ListDataProvider;
 import com.google.gwt.view.client.MultiSelectionModel;
 import com.google.gwt.view.client.TreeViewModel;
-import com.pgu.books.client.activity.books.filters.BooksFiltersPresenter;
+import com.pgu.books.client.activity.booksBoard.filters.BooksFiltersPresenter;
 import com.pgu.books.client.activity.utils.FilterType;
 
 public class FilterTreeViewModel implements TreeViewModel {

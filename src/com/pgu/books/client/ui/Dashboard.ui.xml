@@ -2,17 +2,18 @@
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder" 
     xmlns:g="urn:import:com.google.gwt.user.client.ui"
     xmlns:ma="urn:import:com.pgu.books.client.ui.menuAdmin"
-    xmlns:bc="urn:import:com.pgu.books.client.ui.booksCharts"
+    xmlns:board="urn:import:com.pgu.books.client.ui.booksBoard"
+    xmlns:charts="urn:import:com.pgu.books.client.ui.booksCharts"
     xmlns:bi="urn:import:com.pgu.books.client.ui.booksImport">
-    <ui:style>
-        .dashboard {
-            border: 3px solid #e7e7e7;
-        }
-    </ui:style>
+    
     <g:HTMLPanel>
-        <ma:MenuAdmin ui:field="menuAdmin" />
-        <g:DockPanel ui:field="booksDock" styleName="{style.dashboard}"></g:DockPanel>
-        <bc:BooksCharts ui:field="booksCharts"></bc:BooksCharts>
-        <bi:BooksImport ui:field="booksImport"></bi:BooksImport>
+        <ma:MenuAdmin       
+            ui:field="menuAdmin" />
+        <board:BooksBoard   
+            ui:field="booksBoard"></board:BooksBoard>
+        <charts:BooksCharts 
+            ui:field="booksCharts"></charts:BooksCharts>
+        <bi:BooksImport     
+            ui:field="booksImport"></bi:BooksImport>
     </g:HTMLPanel>
 </ui:UiBinder> 

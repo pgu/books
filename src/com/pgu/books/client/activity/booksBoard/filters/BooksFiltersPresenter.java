@@ -1,9 +1,9 @@
-package com.pgu.books.client.activity.books.filters;
+package com.pgu.books.client.activity.booksBoard.filters;
 
 import java.util.ArrayList;
 
 import com.pgu.books.client.activity.utils.FilterType;
-import com.pgu.books.client.ui.books.filters.Letter;
+import com.pgu.books.client.ui.booksBoard.filters.Letter;
 
 public interface BooksFiltersPresenter {
 

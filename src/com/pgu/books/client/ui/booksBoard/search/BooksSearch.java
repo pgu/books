@@ -1,4 +1,4 @@
-package com.pgu.books.client.ui.books.search;
+package com.pgu.books.client.ui.booksBoard.search;
 
 import java.util.ArrayList;
 
@@ -12,9 +12,9 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SuggestBox;
 import com.google.gwt.user.client.ui.Widget;
-import com.pgu.books.client.activity.books.search.BooksSearchPresenter;
+import com.pgu.books.client.activity.booksBoard.search.BooksSearchPresenter;
 
-public class BooksSearch extends Composite {
+public class BooksSearch extends Composite implements BooksSearchUI {
 
     private static BooksSearchMenuUiBinder uiBinder = GWT.create(BooksSearchMenuUiBinder.class);
 
@@ -41,11 +41,13 @@ public class BooksSearch extends Composite {
         initWidget(uiBinder.createAndBindUi(this));
     }
 
+    @Override
     public void setPresenter(final BooksSearchPresenter presenter) {
         this.presenter = presenter;
         booksSearchSuggestOracle.setPresenter(presenter);
     }
 
+    @Override
     public void setWords(final ArrayList<String> words, final String text) {
         if (suggestBox.getText().startsWith(text)) {
             booksSearchSuggestOracle.setWords(words, text);
@@ -56,4 +58,5 @@ public class BooksSearch extends Composite {
     public void clickSearch(final ClickEvent e) {
         presenter.searchBooks(suggestBox.getText());
     }
+
 }

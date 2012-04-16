@@ -1,12 +1,12 @@
-package com.pgu.books.client.ui.books.search;
+package com.pgu.books.client.ui.booksBoard.search;
 
 import com.google.gwt.user.client.ui.SuggestOracle.Suggestion;
 
-public class MySuggestion implements Suggestion {
+public class BooksSuggestion implements Suggestion {
 
     private final String word;
 
-    public MySuggestion(final String word) {
+    public BooksSuggestion(final String word) {
         this.word = word;
     }
 

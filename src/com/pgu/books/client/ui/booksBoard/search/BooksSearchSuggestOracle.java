@@ -1,9 +1,9 @@
-package com.pgu.books.client.ui.books.search;
+package com.pgu.books.client.ui.booksBoard.search;
 
 import java.util.ArrayList;
 
 import com.google.gwt.user.client.ui.SuggestOracle;
-import com.pgu.books.client.activity.books.search.BooksSearchPresenter;
+import com.pgu.books.client.activity.booksBoard.search.BooksSearchPresenter;
 
 public class BooksSearchSuggestOracle extends SuggestOracle {
 
@@ -35,9 +35,9 @@ public class BooksSearchSuggestOracle extends SuggestOracle {
     }
 
     public void setWords(final ArrayList<String> words, final String text) {
-        final ArrayList<MySuggestion> suggestions = new ArrayList<MySuggestion>(words.size());
+        final ArrayList<BooksSuggestion> suggestions = new ArrayList<BooksSuggestion>(words.size());
         for (final String word : words) {
-            suggestions.add(new MySuggestion(word));
+            suggestions.add(new BooksSuggestion(word));
         }
 
         final Response response = new Response(suggestions);

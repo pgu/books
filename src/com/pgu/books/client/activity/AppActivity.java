@@ -1,4 +1,4 @@
-package com.pgu.books.client.activity.dashboard;
+package com.pgu.books.client.activity;
 
 import java.util.ArrayList;
 
@@ -7,56 +7,69 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.IsWidget;
 import com.pgu.books.client.BooksService;
 import com.pgu.books.client.BooksServiceAsync;
-import com.pgu.books.client.activity.books.board.BooksboardPresenter;
-import com.pgu.books.client.activity.books.filters.BooksFiltersPresenter;
-import com.pgu.books.client.activity.books.search.BooksSearchPresenter;
+import com.pgu.books.client.activity.booksBoard.BooksBoardPresenter;
+import com.pgu.books.client.activity.booksBoard.filters.BooksFiltersPresenter;
+import com.pgu.books.client.activity.booksBoard.grid.BooksGridPresenter;
+import com.pgu.books.client.activity.booksBoard.search.BooksSearchPresenter;
 import com.pgu.books.client.activity.booksCharts.BooksChartsPresenter;
 import com.pgu.books.client.activity.booksImport.BooksImportPresenter;
 import com.pgu.books.client.activity.utils.FilterType;
 import com.pgu.books.client.app.AsyncCallbackApp;
+import com.pgu.books.client.ui.AppUI;
 import com.pgu.books.client.ui.Dashboard;
-import com.pgu.books.client.ui.books.filters.Letter;
+import com.pgu.books.client.ui.booksBoard.filters.Letter;
 import com.pgu.books.shared.Book;
 import com.pgu.books.shared.BooksFiltersDTO;
 
-public class DashboardActivity implements //
-        DashboardPresenter, //
-        BooksImportPresenter, //
-        BooksboardPresenter, //
-        BooksFiltersPresenter, //
+public class AppActivity implements //
+        AppPresenter, //
+        //
+        BooksBoardPresenter, //
         BooksChartsPresenter, //
+        BooksImportPresenter, //
+        //
+        BooksGridPresenter, //
+        BooksFiltersPresenter, //
         BooksSearchPresenter //
 {
 
-    public static DashboardActivity INSTANCE = new DashboardActivity();
+    private static AppActivity INSTANCE = new AppActivity();
 
-    private DashboardActivity() {
+    private AppActivity() {
+    }
+
+    public static AppActivity get() {
+        return INSTANCE;
     }
 
     private final BooksServiceAsync booksService = GWT.create(BooksService.class);
 
-    private Dashboard               dashboardUI;
+    private AppUI                   dashboard;
 
     // search state
     private final BooksFiltersDTO   filtersDTO   = new BooksFiltersDTO();
 
-    public Dashboard start() {
-        if (null == dashboardUI) {
-            dashboardUI = new Dashboard();
-            dashboardUI.setPresenter(this);
-            dashboardUI.getBooksImportUI().setPresenter(this);
-            dashboardUI.getBooksboardUI().setPresenter(this);
-            dashboardUI.getBooksFiltersUI().setPresenter(this);
-            dashboardUI.getBooksSearchUI().setPresenter(this);
-            dashboardUI.getBooksChartsUI().setPresenter(this);
+    public IsWidget initView() {
+        if (null == dashboard) {
+            dashboard = new Dashboard();
+            dashboard.setPresenter(this);
+            //
+            dashboard.getBooksBoardUI().setPresenter(this);
+            dashboard.getBooksChartsUI().setPresenter(this);
+            dashboard.getBooksImportUI().setPresenter(this);
+            //
+            dashboard.getBooksGridUI().setPresenter(this);
+            dashboard.getBooksFiltersUI().setPresenter(this);
+            dashboard.getBooksSearchUI().setPresenter(this);
 
             Scheduler.get().scheduleDeferred(new ScheduledCommand() {
 
                 @Override
                 public void execute() {
-                    dashboardUI.getBooksboardUI().initFetchBooks();
+                    dashboard.getBooksGridUI().initFetchBooks();
                 }
             });
             Scheduler.get().scheduleDeferred(new ScheduledCommand() {
@@ -67,7 +80,7 @@ public class DashboardActivity implements //
                 }
             });
         }
-        return dashboardUI;
+        return dashboard;
     }
 
     @Override
@@ -76,12 +89,12 @@ public class DashboardActivity implements //
 
             @Override
             public void onFailure(final Throwable caught) {
-                dashboardUI.getBooksImportUI().enableImport(categoryTitle);
+                dashboard.getBooksImportUI().enableImport(categoryTitle);
             }
 
             @Override
             public void onSuccess(final String importResult) {
-                dashboardUI.getBooksImportUI().disableImport(categoryTitle, importResult);
+                dashboard.getBooksImportUI().disableImport(categoryTitle, importResult);
             }
         });
 
@@ -103,20 +116,20 @@ public class DashboardActivity implements //
     public void fetchBooks(final int start, final int length) {
         GWT.log("start -> " + start + ", " + "length -> " + length);
 
-        dashboardUI.getBooksboardUI().initFetch();
+        dashboard.getBooksGridUI().initFetch();
 
         booksService.countBooks(filtersDTO, new AsyncCallbackApp<Integer>() {
 
             @Override
             public void onSuccess(final Integer count) {
                 GWT.log("success count " + count);
-                dashboardUI.getBooksboardUI().setNbBooks(count);
+                dashboard.getBooksGridUI().setNbBooks(count);
             }
 
             @Override
             public void onFailure(final Throwable caught) {
                 super.onFailure(caught);
-                dashboardUI.getBooksboardUI().setNbBooks(0);
+                dashboard.getBooksGridUI().setNbBooks(0);
             }
 
         });
@@ -126,13 +139,13 @@ public class DashboardActivity implements //
             @Override
             public void onSuccess(final ArrayList<Book> books) {
                 GWT.log("success list " + books.size());
-                dashboardUI.getBooksboardUI().showBooks(books);
+                dashboard.getBooksGridUI().showBooks(books);
             }
 
             @Override
             public void onFailure(final Throwable caught) {
                 super.onFailure(caught);
-                dashboardUI.getBooksboardUI().showBooks(new ArrayList<Book>());
+                dashboard.getBooksGridUI().showBooks(new ArrayList<Book>());
             }
 
         });
@@ -149,7 +162,7 @@ public class DashboardActivity implements //
                 .editors(selectedEditors) //
                 .categories(selectedCategories);
 
-        fetchBooks(0, dashboardUI.getBooksboardUI().getLength());
+        fetchBooks(0, dashboard.getBooksGridUI().getLength());
     }
 
     @Override
@@ -170,7 +183,7 @@ public class DashboardActivity implements //
 
             @Override
             public void onSuccess(final ArrayList<String> words) {
-                dashboardUI.getBooksSearchUI().setWords(words, text);
+                dashboard.getBooksSearchUI().setWords(words, text);
             }
 
         });
@@ -179,7 +192,7 @@ public class DashboardActivity implements //
     @Override
     public void searchBooks(final String text) {
         filtersDTO.setSearchText(text);
-        fetchBooks(0, dashboardUI.getBooksboardUI().getLength());
+        fetchBooks(0, dashboard.getBooksGridUI().getLength());
     }
 
     private void initFetchFilters() {
@@ -191,7 +204,7 @@ public class DashboardActivity implements //
 
                     @Override
                     public void onSuccess(final ArrayList<String> countsByLetters) {
-                        dashboardUI.getBooksFiltersUI().setCounts(countsByLetters, FilterType.AUTHOR);
+                        dashboard.getBooksFiltersUI().setCounts(countsByLetters, FilterType.AUTHOR);
                     }
 
                 });
@@ -205,7 +218,7 @@ public class DashboardActivity implements //
 
                     @Override
                     public void onSuccess(final ArrayList<String> countsByLetters) {
-                        dashboardUI.getBooksFiltersUI().setCounts(countsByLetters, FilterType.EDITOR);
+                        dashboard.getBooksFiltersUI().setCounts(countsByLetters, FilterType.EDITOR);
                     }
 
                 });
@@ -219,7 +232,7 @@ public class DashboardActivity implements //
 
                     @Override
                     public void onSuccess(final ArrayList<String> countsByLetters) {
-                        dashboardUI.getBooksFiltersUI().setCounts(countsByLetters, FilterType.CATEGORY);
+                        dashboard.getBooksFiltersUI().setCounts(countsByLetters, FilterType.CATEGORY);
                     }
 
                 });
@@ -235,7 +248,7 @@ public class DashboardActivity implements //
 
                 @Override
                 public void onSuccess(final ArrayList<String> filters) {
-                    dashboardUI.getBooksFiltersUI().setFilters(filters, letter, filterType);
+                    dashboard.getBooksFiltersUI().setFilters(filters, letter, filterType);
                 }
 
             });
@@ -245,7 +258,7 @@ public class DashboardActivity implements //
 
                 @Override
                 public void onSuccess(final ArrayList<String> filters) {
-                    dashboardUI.getBooksFiltersUI().setFilters(filters, letter, filterType);
+                    dashboard.getBooksFiltersUI().setFilters(filters, letter, filterType);
                 }
 
             });
@@ -255,11 +268,26 @@ public class DashboardActivity implements //
 
                 @Override
                 public void onSuccess(final ArrayList<String> filters) {
-                    dashboardUI.getBooksFiltersUI().setFilters(filters, letter, filterType);
+                    dashboard.getBooksFiltersUI().setFilters(filters, letter, filterType);
                 }
 
             });
         }
     }
 
+    public void showBooks() {
+        dashboard.showBooks();
+    }
+
+    public void showCharts() {
+        dashboard.showCharts();
+    }
+
+    public void showImport() {
+        dashboard.showImport();
+    }
+
+    public void showUnknownTag(final String tag) {
+        dashboard.showUnknownTag(tag);
+    }
 }

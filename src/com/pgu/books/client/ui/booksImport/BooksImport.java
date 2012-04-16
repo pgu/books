@@ -107,4 +107,16 @@ public class BooksImport extends Composite implements BooksImportUI {
     public void clickDelete(final ClickEvent e) {
         presenter.deleteBooks();
     }
+
+    @Override
+    public void startFocus() {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void loseFocus() {
+        // TODO Auto-generated method stub
+
+    }
 }

@@ -1,4 +1,4 @@
-package com.pgu.books.client.ui.books.filters;
+package com.pgu.books.client.ui.booksBoard.filters;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,10 +25,10 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.MultiSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
-import com.pgu.books.client.activity.books.filters.BooksFiltersPresenter;
+import com.pgu.books.client.activity.booksBoard.filters.BooksFiltersPresenter;
 import com.pgu.books.client.activity.utils.FilterType;
 
-public class BooksFilters extends Composite {
+public class BooksFilters extends Composite implements BooksFiltersUI {
 
     private static BooksFiltersUiBinder uiBinder = GWT.create(BooksFiltersUiBinder.class);
 
@@ -36,32 +36,32 @@ public class BooksFilters extends Composite {
     }
 
     @UiField
-    Button btnApplyFilters;
+    Button                                         btnApplyFilters;
 
     @UiField(provided = true)
-    StackLayoutPanel stackPanel;
+    StackLayoutPanel                               stackPanel;
 
-    private final FilterCellBrowser<String> authors;
-    private final FilterCellBrowser<String> editors;
-    private final FilterCellBrowser<String> categories;
+    private final FilterCellBrowser<String>        authors;
+    private final FilterCellBrowser<String>        editors;
+    private final FilterCellBrowser<String>        categories;
 
-    private final FilterTreeViewModel authorTVM = new FilterTreeViewModel(FilterType.AUTHOR);
-    private final FilterTreeViewModel editorTVM = new FilterTreeViewModel(FilterType.EDITOR);
-    private final FilterTreeViewModel categoryTVM = new FilterTreeViewModel(FilterType.CATEGORY);
+    private final FilterTreeViewModel              authorTVM              = new FilterTreeViewModel(FilterType.AUTHOR);
+    private final FilterTreeViewModel              editorTVM              = new FilterTreeViewModel(FilterType.EDITOR);
+    private final FilterTreeViewModel              categoryTVM            = new FilterTreeViewModel(FilterType.CATEGORY);
 
-    private final String authorTitle = "Autores";
-    private final String editorTitle = "Editores";
-    private final String categoryTitle = "Categorías";
+    private final String                           authorTitle            = "Autores";
+    private final String                           editorTitle            = "Editores";
+    private final String                           categoryTitle          = "Categorías";
 
-    private final HTML authorHeader = new HTML(authorTitle);
-    private final HTML editorHeader = new HTML(editorTitle);
-    private final HTML categoryHeader = new HTML(categoryTitle);
+    private final HTML                             authorHeader           = new HTML(authorTitle);
+    private final HTML                             editorHeader           = new HTML(editorTitle);
+    private final HTML                             categoryHeader         = new HTML(categoryTitle);
 
-    private final MultiSelectionModel<FilterValue> authorSelectionModel = new MultiSelectionModel<FilterValue>();
-    private final MultiSelectionModel<FilterValue> editorSelectionModel = new MultiSelectionModel<FilterValue>();
+    private final MultiSelectionModel<FilterValue> authorSelectionModel   = new MultiSelectionModel<FilterValue>();
+    private final MultiSelectionModel<FilterValue> editorSelectionModel   = new MultiSelectionModel<FilterValue>();
     private final MultiSelectionModel<FilterValue> categorySelectionModel = new MultiSelectionModel<FilterValue>();
 
-    private BooksFiltersPresenter presenter;
+    private BooksFiltersPresenter                  presenter;
 
     public BooksFilters() {
 
