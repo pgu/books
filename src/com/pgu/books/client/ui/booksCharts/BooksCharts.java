@@ -9,6 +9,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
@@ -66,11 +67,25 @@ public class BooksCharts extends Composite implements BooksChartsUI {
         initWidget(uiBinder.createAndBindUi(this));
     }
 
+    private Timer timer = null;
+
     // http://code.google.com/p/gwt-google-apis/wiki/VisualizationGettingStarted
     private void initCharts() {
         if (!isVisuApiLoaded) {
-            Window.alert("Visu api is still not loaded :-/");
+            GWT.log("Visu api is still not loaded :-/");
+
+            timer = new Timer() {
+                @Override
+                public void run() {
+                    GWT.log("timer run");
+                    initCharts();
+                }
+            };
+
+            timer.schedule(500);
             return;
+        } else {
+            timer = null;
         }
 
         if (!isDataLoaded) {
