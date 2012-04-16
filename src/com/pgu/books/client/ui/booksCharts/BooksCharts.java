@@ -1,7 +1,7 @@
 package com.pgu.books.client.ui.booksCharts;
 
-import java.util.HashMap;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JsArray;
@@ -10,6 +10,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.visualization.client.AbstractDataTable;
 import com.google.gwt.visualization.client.AbstractDataTable.ColumnType;
@@ -30,10 +31,10 @@ public class BooksCharts extends Composite implements BooksChartsUI {
     }
 
     @UiField
-    HTMLPanel                    charts;
+    HTMLPanel charts;
 
-    private boolean              isVisuApiLoaded = false;
-    private boolean              isDataLoaded    = false;
+    private boolean isVisuApiLoaded = false;
+    private boolean isDataLoaded = false;
 
     private BooksChartsPresenter presenter;
 
@@ -78,50 +79,73 @@ public class BooksCharts extends Composite implements BooksChartsUI {
             return;
         }
 
-        final String chartTitle = "Books repartition by categories";
-        final String nameHeader = "Categories";
-        final String valueHeader = "Books per category";
+        final TreeMap<String, Integer> categoryData = new TreeMap<String, Integer>();
+        categoryData.put("Category A", 10);
+        categoryData.put("Category B", 20);
+        categoryData.put("Category C", 15);
 
-        final HashMap<String, Integer> name2value = new HashMap<String, Integer>();
-        name2value.put("Category A", 10);
-        name2value.put("Category B", 20);
-        name2value.put("Category C", 15);
+        final TreeMap<String, Integer> editorData = new TreeMap<String, Integer>();
+        editorData.put("Editor A", 100);
+        editorData.put("Editor B", 200);
+        editorData.put("Editor C", 150);
 
-        final PieChart pie = new PieChart(createTable(name2value, nameHeader, valueHeader), createOptions(chartTitle));
+        final ChartConfig categoryConfig = new ChartConfig() //
+                .title("Books repartition by categories") //
+                .headerKey("Categories") //
+                .headerValue("Books per category") //
+                .data(categoryData);
 
-        pie.addSelectHandler(createSelectHandler(pie));
-        charts.add(pie);
+        final ChartConfig editorConfig = new ChartConfig() //
+                .title("Books repartition by editors") //
+                .headerKey("Editors") //
+                .headerValue("Books per editor") //
+                .data(editorData);
+
+        createPieCharts(categoryConfig, editorConfig);
 
         isDataLoaded = true;
     }
 
-    private static final int COL_NAME  = 0;
-    private static final int COL_VALUE = 1;
+    private void createPieCharts(final ChartConfig... chartConfigs) {
+        final HorizontalPanel chartsContainer = new HorizontalPanel();
 
-    private AbstractDataTable createTable(final HashMap<String, Integer> name2value, final String nameHeader,
-            final String valueHeader) {
+        for (final ChartConfig chartConfig : chartConfigs) {
 
-        final DataTable data = DataTable.create();
-        data.addColumn(ColumnType.STRING, nameHeader);
-        data.addColumn(ColumnType.NUMBER, valueHeader);
+            final PieChart pieChart = new PieChart(createTable(chartConfig), createOptions(chartConfig));
+            pieChart.addSelectHandler(createSelectHandler(pieChart));
 
-        data.addRows(name2value.size());
-
-        int row = 0;
-        for (final Entry<String, Integer> e : name2value.entrySet()) {
-            data.setValue(row, COL_NAME, e.getKey());
-            data.setValue(row, COL_VALUE, e.getValue());
-            row++;
+            chartsContainer.add(pieChart);
         }
-        return data;
+        charts.add(chartsContainer);
     }
 
-    private PieOptions createOptions(final String title) {
+    private static final int COL_NAME = 0;
+    private static final int COL_VALUE = 1;
+
+    private AbstractDataTable createTable(final ChartConfig chartConfig) {
+
+        final DataTable table = DataTable.create();
+        table.addColumn(ColumnType.STRING, chartConfig.getHeader1());
+        table.addColumn(ColumnType.NUMBER, chartConfig.getHeader2());
+
+        final TreeMap<String, Integer> data = chartConfig.getData();
+        table.addRows(data.size());
+
+        int row = 0;
+        for (final Entry<String, Integer> e : data.entrySet()) {
+            table.setValue(row, COL_NAME, e.getKey());
+            table.setValue(row, COL_VALUE, e.getValue());
+            row++;
+        }
+        return table;
+    }
+
+    private PieOptions createOptions(final ChartConfig chartConfig) {
         final PieOptions options = PieOptions.create();
         options.setWidth(400);
         options.setHeight(240);
         options.set3D(true);
-        options.setTitle(title);
+        options.setTitle(chartConfig.getTitle());
         return options;
     }
 
