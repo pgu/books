@@ -110,13 +110,11 @@ public class BooksImport extends Composite implements BooksImportUI {
 
     @Override
     public void startFocus() {
-        // TODO Auto-generated method stub
-
+        setVisible(true);
     }
 
     @Override
     public void loseFocus() {
-        // TODO Auto-generated method stub
-
+        setVisible(false);
     }
 }

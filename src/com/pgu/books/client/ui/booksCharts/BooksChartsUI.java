@@ -8,4 +8,6 @@ public interface BooksChartsUI extends IsWidget, IsFocusable {
 
     void setPresenter(BooksChartsPresenter presenter);
 
+    void buildCharts();
+
 }

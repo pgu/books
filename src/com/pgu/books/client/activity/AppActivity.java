@@ -290,4 +290,11 @@ public class AppActivity implements //
     public void showUnknownTag(final String tag) {
         dashboard.showUnknownTag(tag);
     }
+
+    @Override
+    public void fetchData() {
+        // TODO PGU 
+        dashboard.getBooksChartsUI().buildCharts();
+
+    }
 }

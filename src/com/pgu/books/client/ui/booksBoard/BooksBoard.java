@@ -70,14 +70,12 @@ public class BooksBoard extends Composite implements BooksBoardUI {
 
     @Override
     public void startFocus() {
-        // TODO Auto-generated method stub
-
+        setVisible(true);
     }
 
     @Override
     public void loseFocus() {
-        // TODO Auto-generated method stub
-
+        setVisible(false);
     }
 
 }

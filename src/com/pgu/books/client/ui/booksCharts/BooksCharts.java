@@ -30,6 +30,7 @@ public class BooksCharts extends Composite implements BooksChartsUI {
     HTMLPanel                    charts;
 
     private boolean              isVisuApiLoaded = false;
+    private boolean              isDataLoaded    = false;
 
     private BooksChartsPresenter presenter;
 
@@ -53,12 +54,22 @@ public class BooksCharts extends Composite implements BooksChartsUI {
     }
 
     // http://code.google.com/p/gwt-google-apis/wiki/VisualizationGettingStarted
-    public void buildCharts() {
+    private void initCharts() {
         if (!isVisuApiLoaded) {
             Window.alert("Visu api is still not loaded :-/");
             return;
         }
 
+        if (!isDataLoaded) {
+            presenter.fetchData();
+            return;
+        }
+
+        buildCharts();
+    }
+
+    public void buildCharts() {
+        isDataLoaded = true;
         final PieChart pie = new PieChart(createTable(), createOptions());
 
         pie.addSelectHandler(createSelectHandler(pie));
@@ -68,11 +79,11 @@ public class BooksCharts extends Composite implements BooksChartsUI {
     private AbstractDataTable createTable() {
         final DataTable data = DataTable.create();
         data.addColumn(ColumnType.STRING, "Task");
-        data.addColumn(ColumnType.NUMBER, "Hours per Day");
+        data.addColumn(ColumnType.NUMBER, "Books per category");
         data.addRows(2);
-        data.setValue(0, 0, "Work");
+        data.setValue(0, 0, "Category A");
         data.setValue(0, 1, 14);
-        data.setValue(1, 0, "Sleep");
+        data.setValue(1, 0, "Category B");
         data.setValue(1, 1, 10);
         return data;
     }
@@ -82,7 +93,7 @@ public class BooksCharts extends Composite implements BooksChartsUI {
         options.setWidth(400);
         options.setHeight(240);
         options.set3D(true);
-        options.setTitle("My Daily Activities");
+        options.setTitle("Books repartition by categories");
         return options;
     }
 
@@ -129,14 +140,13 @@ public class BooksCharts extends Composite implements BooksChartsUI {
 
     @Override
     public void startFocus() {
-        // TODO Auto-generated method stub
-
+        initCharts();
+        setVisible(true);
     }
 
     @Override
     public void loseFocus() {
-        // TODO Auto-generated method stub
-
+        setVisible(false);
     }
 
 }
