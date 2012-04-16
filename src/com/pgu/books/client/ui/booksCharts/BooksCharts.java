@@ -1,5 +1,8 @@
 package com.pgu.books.client.ui.booksCharts;
 
+import java.util.HashMap;
+import java.util.Map.Entry;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -68,32 +71,57 @@ public class BooksCharts extends Composite implements BooksChartsUI {
         buildCharts();
     }
 
+    @Override
     public void buildCharts() {
-        isDataLoaded = true;
-        final PieChart pie = new PieChart(createTable(), createOptions());
+
+        if (isDataLoaded) {
+            return;
+        }
+
+        final String chartTitle = "Books repartition by categories";
+        final String nameHeader = "Categories";
+        final String valueHeader = "Books per category";
+
+        final HashMap<String, Integer> name2value = new HashMap<String, Integer>();
+        name2value.put("Category A", 10);
+        name2value.put("Category B", 20);
+        name2value.put("Category C", 15);
+
+        final PieChart pie = new PieChart(createTable(name2value, nameHeader, valueHeader), createOptions(chartTitle));
 
         pie.addSelectHandler(createSelectHandler(pie));
         charts.add(pie);
+
+        isDataLoaded = true;
     }
 
-    private AbstractDataTable createTable() {
+    private static final int COL_NAME  = 0;
+    private static final int COL_VALUE = 1;
+
+    private AbstractDataTable createTable(final HashMap<String, Integer> name2value, final String nameHeader,
+            final String valueHeader) {
+
         final DataTable data = DataTable.create();
-        data.addColumn(ColumnType.STRING, "Task");
-        data.addColumn(ColumnType.NUMBER, "Books per category");
-        data.addRows(2);
-        data.setValue(0, 0, "Category A");
-        data.setValue(0, 1, 14);
-        data.setValue(1, 0, "Category B");
-        data.setValue(1, 1, 10);
+        data.addColumn(ColumnType.STRING, nameHeader);
+        data.addColumn(ColumnType.NUMBER, valueHeader);
+
+        data.addRows(name2value.size());
+
+        int row = 0;
+        for (final Entry<String, Integer> e : name2value.entrySet()) {
+            data.setValue(row, COL_NAME, e.getKey());
+            data.setValue(row, COL_VALUE, e.getValue());
+            row++;
+        }
         return data;
     }
 
-    private PieOptions createOptions() {
+    private PieOptions createOptions(final String title) {
         final PieOptions options = PieOptions.create();
         options.setWidth(400);
         options.setHeight(240);
         options.set3D(true);
-        options.setTitle("Books repartition by categories");
+        options.setTitle(title);
         return options;
     }
 
