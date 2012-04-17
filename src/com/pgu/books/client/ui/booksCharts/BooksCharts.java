@@ -1,19 +1,21 @@
 package com.pgu.books.client.ui.booksCharts;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JsArray;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.visualization.client.AbstractDataTable;
 import com.google.gwt.visualization.client.AbstractDataTable.ColumnType;
@@ -24,13 +26,12 @@ import com.google.gwt.visualization.client.events.SelectHandler;
 import com.google.gwt.visualization.client.visualizations.corechart.AreaChart;
 import com.google.gwt.visualization.client.visualizations.corechart.BarChart;
 import com.google.gwt.visualization.client.visualizations.corechart.ColumnChart;
-import com.google.gwt.visualization.client.visualizations.corechart.ComboChart;
 import com.google.gwt.visualization.client.visualizations.corechart.CoreChart;
+import com.google.gwt.visualization.client.visualizations.corechart.CoreChart.Type;
 import com.google.gwt.visualization.client.visualizations.corechart.LineChart;
 import com.google.gwt.visualization.client.visualizations.corechart.Options;
 import com.google.gwt.visualization.client.visualizations.corechart.PieChart;
 import com.google.gwt.visualization.client.visualizations.corechart.PieChart.PieOptions;
-import com.google.gwt.visualization.client.visualizations.corechart.ScatterChart;
 import com.pgu.books.client.activity.booksCharts.BooksChartsPresenter;
 
 public class BooksCharts extends Composite implements BooksChartsUI {
@@ -41,12 +42,17 @@ public class BooksCharts extends Composite implements BooksChartsUI {
     }
 
     @UiField
-    HTMLPanel charts;
+    HTMLPanel                                              charts;
 
-    private boolean isVisuApiLoaded = false;
-    private boolean isDataLoaded = false;
+    @UiField
+    RadioButton                                            btnArea, btnBar, btnColumn, btnLine, btnPie;
 
-    private BooksChartsPresenter presenter;
+    private boolean                                        isVisuApiLoaded        = false;
+    private boolean                                        isDataLoaded           = false;
+    private Timer                                          timerForLoadingVisuApi = null;
+
+    private BooksChartsPresenter                           presenter;
+    private final HashMap<CoreChart.Type, HorizontalPanel> type2charts            = new HashMap<CoreChart.Type, HorizontalPanel>();
 
     @Override
     public void setPresenter(final BooksChartsPresenter presenter) {
@@ -67,25 +73,22 @@ public class BooksCharts extends Composite implements BooksChartsUI {
         initWidget(uiBinder.createAndBindUi(this));
     }
 
-    private Timer timer = null;
-
     // http://code.google.com/p/gwt-google-apis/wiki/VisualizationGettingStarted
     private void initCharts() {
         if (!isVisuApiLoaded) {
-            GWT.log("Visu api is still not loaded :-/");
 
-            timer = new Timer() {
+            timerForLoadingVisuApi = new Timer() {
                 @Override
                 public void run() {
-                    GWT.log("timer run");
                     initCharts();
                 }
             };
 
-            timer.schedule(500);
+            timerForLoadingVisuApi.schedule(500);
             return;
+
         } else {
-            timer = null;
+            timerForLoadingVisuApi = null;
         }
 
         if (!isDataLoaded) {
@@ -93,6 +96,7 @@ public class BooksCharts extends Composite implements BooksChartsUI {
             return;
         }
 
+        // TODO PGU review the flow
         buildCharts();
     }
 
@@ -125,85 +129,65 @@ public class BooksCharts extends Composite implements BooksChartsUI {
                 .headerValue("Books per editor") //
                 .data(editorData);
 
-        createScatterCharts(categoryConfig, editorConfig);
-        createLineCharts(categoryConfig, editorConfig);
-        createComboCharts(categoryConfig, editorConfig);
-        createColumnCharts(categoryConfig, editorConfig);
-        createBarCharts(categoryConfig, editorConfig);
         createAreaCharts(categoryConfig, editorConfig);
+        createBarCharts(categoryConfig, editorConfig);
+        createColumnCharts(categoryConfig, editorConfig);
+        createLineCharts(categoryConfig, editorConfig);
         createPieCharts(categoryConfig, editorConfig);
 
         isDataLoaded = true;
     }
 
-    private void createScatterCharts(final ChartConfig... chartConfigs) {
-        final List<ScatterChart> charts = new ArrayList<ScatterChart>();
-
-        for (final ChartConfig chartConfig : chartConfigs) {
-            charts.add(new ScatterChart(createTable(chartConfig), createOptions(chartConfig)));
-        }
-
-        addCoreCharts(charts);
-    }
-
     private void createLineCharts(final ChartConfig... chartConfigs) {
-        final List<LineChart> charts = new ArrayList<LineChart>();
+        final HorizontalPanel hp = new HorizontalPanel();
+        hp.setVisible(false);
 
         for (final ChartConfig chartConfig : chartConfigs) {
-            charts.add(new LineChart(createTable(chartConfig), createOptions(chartConfig)));
+            final LineChart chart = new LineChart(createTable(chartConfig), createOptions(chartConfig));
+            chart.addSelectHandler(createSelectHandler(chart));
+            hp.add(chart);
         }
-
-        addCoreCharts(charts);
-    }
-
-    private void createComboCharts(final ChartConfig... chartConfigs) {
-        final List<ComboChart> charts = new ArrayList<ComboChart>();
-
-        for (final ChartConfig chartConfig : chartConfigs) {
-            charts.add(new ComboChart(createTable(chartConfig), createComboOptions(chartConfig)));
-        }
-
-        addCoreCharts(charts);
-    }
-
-    private com.google.gwt.visualization.client.visualizations.corechart.ComboChart.Options createComboOptions(
-            final ChartConfig chartConfig) {
-        final com.google.gwt.visualization.client.visualizations.corechart.ComboChart.Options options = ComboChart
-                .createComboOptions();
-        options.setWidth(400);
-        options.setHeight(240);
-        options.setTitle(chartConfig.getTitle());
-        return options;
+        charts.add(hp);
+        type2charts.put(Type.LINE, hp);
     }
 
     private void createColumnCharts(final ChartConfig... chartConfigs) {
-        final List<ColumnChart> charts = new ArrayList<ColumnChart>();
+        final HorizontalPanel hp = new HorizontalPanel();
+        hp.setVisible(false);
 
         for (final ChartConfig chartConfig : chartConfigs) {
-            charts.add(new ColumnChart(createTable(chartConfig), createOptions(chartConfig)));
+            final ColumnChart chart = new ColumnChart(createTable(chartConfig), createOptions(chartConfig));
+            chart.addSelectHandler(createSelectHandler(chart));
+            hp.add(chart);
         }
-
-        addCoreCharts(charts);
+        charts.add(hp);
+        type2charts.put(Type.COLUMNS, hp);
     }
 
     private void createBarCharts(final ChartConfig... chartConfigs) {
-        final List<BarChart> charts = new ArrayList<BarChart>();
+        final HorizontalPanel hp = new HorizontalPanel();
+        hp.setVisible(false);
 
         for (final ChartConfig chartConfig : chartConfigs) {
-            charts.add(new BarChart(createTable(chartConfig), createOptions(chartConfig)));
+            final BarChart chart = new BarChart(createTable(chartConfig), createOptions(chartConfig));
+            chart.addSelectHandler(createSelectHandler(chart));
+            hp.add(chart);
         }
-
-        addCoreCharts(charts);
+        charts.add(hp);
+        type2charts.put(Type.BARS, hp);
     }
 
     private void createAreaCharts(final ChartConfig... chartConfigs) {
-        final List<AreaChart> charts = new ArrayList<AreaChart>();
+        final HorizontalPanel hp = new HorizontalPanel();
+        hp.setVisible(false);
 
         for (final ChartConfig chartConfig : chartConfigs) {
-            charts.add(new AreaChart(createTable(chartConfig), createOptions(chartConfig)));
+            final AreaChart chart = new AreaChart(createTable(chartConfig), createOptions(chartConfig));
+            chart.addSelectHandler(createSelectHandler(chart));
+            hp.add(chart);
         }
-
-        addCoreCharts(charts);
+        charts.add(hp);
+        type2charts.put(Type.AREA, hp);
     }
 
     private Options createOptions(final ChartConfig chartConfig) {
@@ -215,13 +199,16 @@ public class BooksCharts extends Composite implements BooksChartsUI {
     }
 
     private void createPieCharts(final ChartConfig... chartConfigs) {
-        final List<PieChart> charts = new ArrayList<PieChart>();
+        final HorizontalPanel hp = new HorizontalPanel();
+        hp.setVisible(true);
 
         for (final ChartConfig chartConfig : chartConfigs) {
-            charts.add(new PieChart(createTable(chartConfig), createPieOptions(chartConfig)));
+            final PieChart chart = new PieChart(createTable(chartConfig), createPieOptions(chartConfig));
+            chart.addSelectHandler(createSelectHandler(chart));
+            hp.add(chart);
         }
-
-        addCoreCharts(charts);
+        charts.add(hp);
+        type2charts.put(Type.PIE, hp);
     }
 
     private PieOptions createPieOptions(final ChartConfig chartConfig) {
@@ -233,18 +220,7 @@ public class BooksCharts extends Composite implements BooksChartsUI {
         return options;
     }
 
-    private void addCoreCharts(final List<? extends CoreChart> coreCharts) {
-
-        final HorizontalPanel chartsContainer = new HorizontalPanel();
-        for (final CoreChart coreChart : coreCharts) {
-
-            coreChart.addSelectHandler(createSelectHandler(coreChart));
-            chartsContainer.add(coreChart);
-        }
-        charts.add(chartsContainer);
-    }
-
-    private static final int COL_NAME = 0;
+    private static final int COL_NAME  = 0;
     private static final int COL_VALUE = 1;
 
     private AbstractDataTable createTable(final ChartConfig chartConfig) {
@@ -315,6 +291,37 @@ public class BooksCharts extends Composite implements BooksChartsUI {
     @Override
     public void loseFocus() {
         setVisible(false);
+    }
+
+    @UiHandler("btnArea")
+    public void clickBtnArea(final ClickEvent click) {
+        clickBtnChart(CoreChart.Type.AREA);
+    }
+
+    public void clickBtnChart(final CoreChart.Type chartType) {
+        for (final Entry<Type, HorizontalPanel> e : type2charts.entrySet()) {
+            e.getValue().setVisible(e.getKey() == chartType);
+        }
+    }
+
+    @UiHandler("btnBar")
+    public void clickBtnBar(final ClickEvent click) {
+        clickBtnChart(CoreChart.Type.BARS);
+    }
+
+    @UiHandler("btnColumn")
+    public void clickBtnColumn(final ClickEvent click) {
+        clickBtnChart(CoreChart.Type.COLUMNS);
+    }
+
+    @UiHandler("btnLine")
+    public void clickBtnLine(final ClickEvent click) {
+        clickBtnChart(CoreChart.Type.LINE);
+    }
+
+    @UiHandler("btnPie")
+    public void clickBtnPie(final ClickEvent click) {
+        clickBtnChart(CoreChart.Type.PIE);
     }
 
 }
