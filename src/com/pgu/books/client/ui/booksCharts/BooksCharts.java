@@ -133,11 +133,11 @@ public class BooksCharts extends Composite implements BooksChartsUI {
                 .headerValue("Nb books") //
                 .data(editorData);
 
+        createPieCharts(categoryConfig, editorConfig);
         createAreaCharts(categoryConfig, editorConfig);
         createBarCharts(categoryConfig, editorConfig);
         createColumnCharts(categoryConfig, editorConfig);
         createLineCharts(categoryConfig, editorConfig);
-        createPieCharts(categoryConfig, editorConfig);
 
         isDataLoaded = true;
     }
