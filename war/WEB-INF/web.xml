@@ -42,7 +42,6 @@
     </welcome-file-list>
 
     <!-- Security for cron jobs -->
-    <!--
     <security-constraint>
         <web-resource-collection>
             <url-pattern>/cron/*</url-pattern>
@@ -51,5 +50,5 @@
             <role-name>admin</role-name>
         </auth-constraint>
     </security-constraint>
-    -->
+    
 </web-app>

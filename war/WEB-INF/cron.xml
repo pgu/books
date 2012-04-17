@@ -13,7 +13,7 @@
     <cron>
         <url>/cron/test</url>
         <description>Test cron features</description>
-        <schedule>every 60 minutes</schedule>
+        <schedule>every 1 minutes</schedule>
     </cron>
     <!-- 
         <schedule>every 1 minutes</schedule>
