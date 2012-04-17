@@ -1,8 +1,13 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder" xmlns:g="urn:import:com.google.gwt.user.client.ui">
+    <ui:style>
+    	.radioBtns {
+    		margin-top: 70px;
+    	}
+    </ui:style>
     <g:HTMLPanel>
         <g:HorizontalPanel>
-            <g:VerticalPanel>
+            <g:VerticalPanel addStyleNames="{style.radioBtns}">
                 <g:RadioButton name="chartType" ui:field="btnArea" >Area Chart</g:RadioButton>
                 <g:RadioButton name="chartType" ui:field="btnBar" >Bar Chart</g:RadioButton>
                 <g:RadioButton name="chartType" ui:field="btnColumn" >Column Chart</g:RadioButton>

@@ -293,8 +293,8 @@ public class AppActivity implements //
 
     @Override
     public void fetchData() {
-        // TODO PGU 
-        dashboard.getBooksChartsUI().buildCharts();
+        // TODO PGU make a service for getting charts data
+        dashboard.getBooksChartsUI().showCharts();
 
     }
 }

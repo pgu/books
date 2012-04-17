@@ -74,13 +74,16 @@ public class BooksCharts extends Composite implements BooksChartsUI {
     }
 
     // http://code.google.com/p/gwt-google-apis/wiki/VisualizationGettingStarted
-    private void initCharts() {
+    @Override
+    public void showCharts() {
+        isDataLoaded = true;
+
         if (!isVisuApiLoaded) {
 
             timerForLoadingVisuApi = new Timer() {
                 @Override
                 public void run() {
-                    initCharts();
+                    showCharts();
                 }
             };
 
@@ -89,22 +92,6 @@ public class BooksCharts extends Composite implements BooksChartsUI {
 
         } else {
             timerForLoadingVisuApi = null;
-        }
-
-        if (!isDataLoaded) {
-            presenter.fetchData();
-            return;
-        }
-
-        // TODO PGU review the flow
-        buildCharts();
-    }
-
-    @Override
-    public void buildCharts() {
-
-        if (isDataLoaded) {
-            return;
         }
 
         // TODO PGU combo chart: for each year, by categories, nb books
@@ -138,8 +125,6 @@ public class BooksCharts extends Composite implements BooksChartsUI {
         createBarCharts(categoryConfig, editorConfig);
         createColumnCharts(categoryConfig, editorConfig);
         createLineCharts(categoryConfig, editorConfig);
-
-        isDataLoaded = true;
     }
 
     private void createLineCharts(final ChartConfig... chartConfigs) {
@@ -288,8 +273,11 @@ public class BooksCharts extends Composite implements BooksChartsUI {
 
     @Override
     public void startFocus() {
-        initCharts();
         setVisible(true);
+
+        if (!isDataLoaded) {
+            presenter.fetchData();
+        }
     }
 
     @Override
