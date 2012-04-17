@@ -493,6 +493,7 @@ public class BuildFiltersServlet extends HttpServlet {
 
         private FilterTask() {
             task = TaskOptions.Builder.withUrl(AppUrls.BUILD_FILTERS);
+            task.header("X-AppEngine-Cron", "true");
         }
 
         public FilterTask stage(final String stage) {

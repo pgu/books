@@ -250,6 +250,7 @@ public class BuildWordsServlet extends HttpServlet {
 
         private WordTask() {
             task = TaskOptions.Builder.withUrl(AppUrls.BUILD_WORDS);
+            task.header("X-AppEngine-Cron", "true");
         }
 
         public WordTask action(final String action) {

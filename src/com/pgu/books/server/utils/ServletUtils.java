@@ -96,17 +96,16 @@ public final class ServletUtils {
     }
 
     public ServletUtils checkCallingEntity(final HttpServletRequest req) {
-        boolean isInProduction = SystemProperty.Environment.Value.Production == SystemProperty.environment.value();
-        final String msg = "******* is production: "
-                + isInProduction;
-        final String msg2 = "******* header X-AppEngine-Cron: " + req.getHeader("X-AppEngine-Cron");
-        logger.info(msg);
-        logger.info(msg2);
+        final boolean isInProduction = SystemProperty.Environment.Value.Production == SystemProperty.environment
+                .value();
+        final String headerCron = req.getHeader("X-AppEngine-Cron");
 
-        if (isInProduction) {
-            if (!"true".equalsIgnoreCase(req.getHeader("X-AppEngine-Cron"))) {
-                throw new IllegalArgumentException("Only cron jobs can call this job");
-            }
+        logger.info("******* is production: " + isInProduction);
+        logger.info("******* header X-AppEngine-Cron: " + headerCron);
+
+        if (isInProduction //
+                && !"true".equalsIgnoreCase(headerCron)) {
+            throw new IllegalArgumentException("Only cron jobs can call this job");
         }
         return this;
     }
