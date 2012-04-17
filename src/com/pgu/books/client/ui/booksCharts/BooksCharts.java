@@ -120,13 +120,13 @@ public class BooksCharts extends Composite implements BooksChartsUI {
         final ChartConfig categoryConfig = new ChartConfig() //
                 .title("Books repartition by categories") //
                 .headerKey("Categories") //
-                .headerValue("Books per category") //
+                .headerValue("Nb books") //
                 .data(categoryData);
 
         final ChartConfig editorConfig = new ChartConfig() //
                 .title("Books repartition by editors") //
                 .headerKey("Editors") //
-                .headerValue("Books per editor") //
+                .headerValue("Nb books") //
                 .data(editorData);
 
         createAreaCharts(categoryConfig, editorConfig);
