@@ -24,14 +24,17 @@ import com.google.gwt.visualization.client.Selection;
 import com.google.gwt.visualization.client.VisualizationUtils;
 import com.google.gwt.visualization.client.events.SelectHandler;
 import com.google.gwt.visualization.client.visualizations.corechart.AreaChart;
+import com.google.gwt.visualization.client.visualizations.corechart.AxisOptions;
 import com.google.gwt.visualization.client.visualizations.corechart.BarChart;
 import com.google.gwt.visualization.client.visualizations.corechart.ColumnChart;
+import com.google.gwt.visualization.client.visualizations.corechart.ComboChart;
 import com.google.gwt.visualization.client.visualizations.corechart.CoreChart;
 import com.google.gwt.visualization.client.visualizations.corechart.CoreChart.Type;
 import com.google.gwt.visualization.client.visualizations.corechart.LineChart;
 import com.google.gwt.visualization.client.visualizations.corechart.Options;
 import com.google.gwt.visualization.client.visualizations.corechart.PieChart;
 import com.google.gwt.visualization.client.visualizations.corechart.PieChart.PieOptions;
+import com.google.gwt.visualization.client.visualizations.corechart.Series;
 import com.pgu.books.client.activity.booksCharts.BooksChartsPresenter;
 
 public class BooksCharts extends Composite implements BooksChartsUI {
@@ -42,7 +45,7 @@ public class BooksCharts extends Composite implements BooksChartsUI {
     }
 
     @UiField
-    HTMLPanel                                              charts;
+    HTMLPanel                                              container, charts;
 
     @UiField
     RadioButton                                            btnArea, btnBar, btnColumn, btnLine, btnPie;
@@ -126,6 +129,8 @@ public class BooksCharts extends Composite implements BooksChartsUI {
         createBarCharts(categoryConfig, editorConfig);
         createColumnCharts(categoryConfig, editorConfig);
         createLineCharts(categoryConfig, editorConfig);
+
+        addExtraCharts();
     }
 
     private void createLineCharts(final ChartConfig... chartConfigs) {
@@ -317,4 +322,65 @@ public class BooksCharts extends Composite implements BooksChartsUI {
         clickBtnChart(CoreChart.Type.PIE);
     }
 
+    //    http://code.google.com/p/gwt-google-apis/source/browse/trunk/visualization/visualization/test/com/google/gwt/visualization/client/CoreComboChartTest.java?r=1958&spec=svn1958
+    private void addExtraCharts() {
+        ////
+        final com.google.gwt.visualization.client.visualizations.corechart.ComboChart.Options options = ComboChart
+                .createComboOptions();
+        options.setTitle("title...");
+        options.setWidth(400);
+        options.setHeight(240);
+
+        final AxisOptions vAxisOpts = AxisOptions.create();
+        vAxisOpts.setTitle("Nb books");
+        options.setVAxisOptions(vAxisOpts);
+
+        final AxisOptions hAxisOpts = AxisOptions.create();
+        hAxisOpts.setTitle("Years");
+        options.setHAxisOptions(hAxisOpts);
+
+        options.setSeriesType(Series.Type.BARS);
+
+        final Series average = Series.create();
+        average.setColor("blue");
+        average.setLineWidth(1);
+        average.setPointSize(2);
+        average.setType(Series.Type.LINE);
+        options.setSeries(4, average);
+
+        ////
+        final DataTable table = DataTable.create();
+        table.addColumn(ColumnType.STRING, "Year");
+        table.addColumn(ColumnType.NUMBER, "Category A");
+        table.addColumn(ColumnType.NUMBER, "Category B");
+        table.addColumn(ColumnType.NUMBER, "Category C");
+        table.addColumn(ColumnType.NUMBER, "Category D");
+        table.addColumn(ColumnType.NUMBER, "Average");
+
+        table.addRows(5);
+        table.setValue(0, 0, "1970"); // row, col
+        table.setValue(0, 1, 10);
+        table.setValue(0, 2, 20);
+        table.setValue(0, 3, 30);
+        table.setValue(0, 4, 40);
+        table.setValue(0, 5, 25);
+        //
+        table.setValue(1, 0, "1980"); // row, col
+        table.setValue(1, 1, 15);
+        table.setValue(1, 2, 25);
+        table.setValue(1, 3, 35);
+        table.setValue(1, 4, 45);
+        table.setValue(1, 5, 30);
+        //
+        table.setValue(2, 0, "1990"); // row, col
+        table.setValue(2, 1, 5);
+        table.setValue(2, 2, 15);
+        table.setValue(2, 3, 25);
+        table.setValue(2, 4, 35);
+        table.setValue(2, 5, 20);
+
+        ////
+        final ComboChart chart = new ComboChart(table, options);
+        container.add(chart);
+    }
 }

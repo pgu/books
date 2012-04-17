@@ -5,7 +5,7 @@
     		margin-top: 70px;
     	}
     </ui:style>
-    <g:HTMLPanel>
+    <g:HTMLPanel ui:field="container">
         <g:HorizontalPanel>
             <g:VerticalPanel addStyleNames="{style.radioBtns}">
                 <g:RadioButton name="chartType" ui:field="btnArea" >Area Chart</g:RadioButton>
