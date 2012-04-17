@@ -9,11 +9,12 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.http.HttpStatus;
 
 import com.google.appengine.api.datastore.Cursor;
+import com.google.appengine.api.utils.SystemProperty;
 import com.googlecode.objectify.Query;
 import com.pgu.books.server.exception.InterruptProcessException;
 import com.pgu.books.server.exception.ProcessException;
 
-public final class AppUtils {
+public final class ServletUtils {
 
     public static final long LIMIT_MS = 1000 * 25;
 
@@ -22,20 +23,20 @@ public final class AppUtils {
 
     private long startTime;
 
-    public AppUtils() {
+    public ServletUtils() {
     }
 
-    public AppUtils response(final HttpServletResponse resp) {
+    public ServletUtils response(final HttpServletResponse resp) {
         this.resp = resp;
         return this;
     }
 
-    public AppUtils logger(final Logger logger) {
+    public ServletUtils logger(final Logger logger) {
         this.logger = logger;
         return this;
     }
 
-    public AppUtils startInMs(final long startTime) {
+    public ServletUtils startInMs(final long startTime) {
         this.startTime = startTime;
         return this;
     }
@@ -92,6 +93,22 @@ public final class AppUtils {
         if (cursorParam != null) {
             query.startCursor(Cursor.fromWebSafeString(cursorParam));
         }
+    }
+
+    public ServletUtils checkCallingEntity(final HttpServletRequest req) {
+        boolean isInProduction = SystemProperty.Environment.Value.Production == SystemProperty.environment.value();
+        final String msg = "******* is production: "
+                + isInProduction;
+        final String msg2 = "******* header X-AppEngine-Cron: " + req.getHeader("X-AppEngine-Cron");
+        logger.info(msg);
+        logger.info(msg2);
+
+        if (isInProduction) {
+            if (!"true".equalsIgnoreCase(req.getHeader("X-AppEngine-Cron"))) {
+                throw new IllegalArgumentException("Only cron jobs can call this job");
+            }
+        }
+        return this;
     }
 
 }

@@ -28,8 +28,8 @@ import com.pgu.books.server.exception.InterruptProcessException;
 import com.pgu.books.server.exception.ProcessException;
 import com.pgu.books.server.utils.AppQueues;
 import com.pgu.books.server.utils.AppUrls;
-import com.pgu.books.server.utils.AppUtils;
 import com.pgu.books.server.utils.ParserRequest;
+import com.pgu.books.server.utils.ServletUtils;
 import com.pgu.books.shared.Book;
 
 @SuppressWarnings("serial")
@@ -84,50 +84,52 @@ public class BuildFiltersServlet extends HttpServlet {
         final long startTime = System.currentTimeMillis();
         LOGGER.info("...POST request ");
 
-        final AppUtils appUtils = new AppUtils() //
+        final ServletUtils servletUtils = new ServletUtils() //
                 .logger(LOGGER) //
                 .startInMs(startTime) //
-                .response(resp);
+                .response(resp) //
+                .checkCallingEntity(req) //
+        ;
 
         try {
-            final String stage = getParameterStage(req, appUtils);
-            final String action = getParameterAction(req, appUtils);
-            final String filter = getParameterFilter(req, appUtils);
+            final String stage = getParameterStage(req, servletUtils);
+            final String action = getParameterAction(req, servletUtils);
+            final String filter = getParameterFilter(req, servletUtils);
 
             if (isFilterStage(stage)) {
 
                 if (isDeleteAction(action)) {
-                    deleteFilters(filter, appUtils);
+                    deleteFilters(filter, servletUtils);
 
                 } else if (isPutAction(action)) {
-                    putFilters(req, appUtils);
+                    putFilters(req, servletUtils);
 
                 } else if (isCleanupAction(action)) {
-                    cleanupFilters(filter, req, appUtils);
+                    cleanupFilters(filter, req, servletUtils);
 
                 } else {
-                    appUtils.throwProcessException("Unknown action " + action);
+                    servletUtils.throwProcessException("Unknown action " + action);
                 }
 
             } else if (isLetterStage(stage)) {
 
                 if (isDeleteAction(action)) {
-                    deleteLetters(filter, appUtils);
+                    deleteLetters(filter, servletUtils);
 
                 } else if (isPutAction(action)) {
-                    putLetters(filter, req, appUtils);
+                    putLetters(filter, req, servletUtils);
 
                 } else if (isCleanupAction(action)) {
-                    cleanupLetters(filter, req, appUtils);
+                    cleanupLetters(filter, req, servletUtils);
 
                 } else if (isCountAction(action)) {
-                    countLetters(filter, req, appUtils);
+                    countLetters(filter, req, servletUtils);
 
                 } else {
-                    appUtils.throwProcessException("Unknown action " + action);
+                    servletUtils.throwProcessException("Unknown action " + action);
                 }
             } else {
-                appUtils.throwProcessException("Unknown stage " + stage);
+                servletUtils.throwProcessException("Unknown stage " + stage);
             }
 
         } catch (final ProcessException e) {
@@ -137,14 +139,14 @@ public class BuildFiltersServlet extends HttpServlet {
         }
     }
 
-    private void countLetters(final String filter, final HttpServletRequest req, final AppUtils appUtils)
+    private void countLetters(final String filter, final HttpServletRequest req, final ServletUtils servletUtils)
             throws IOException, InterruptProcessException {
 
         final Class<? extends LetterFilter> letterClass = getLetterClass(filter);
         final Class<? extends Filter> filterClass = getFilterClass(filter);
 
         final Query<? extends LetterFilter> query = dao.ofy().query(letterClass);
-        appUtils.setStartCursor(req, query);
+        servletUtils.setStartCursor(req, query);
 
         final QueryResultIterator<? extends LetterFilter> itr = query.iterator();
         while (itr.hasNext()) {
@@ -166,7 +168,7 @@ public class BuildFiltersServlet extends HttpServlet {
             isLetter.setLetter(uppercaseLetter + " (" + (uppercaseCount + lowercaseCount) + ")");
             dao.ofy().put(isLetter);
 
-            if (appUtils.hasReachedTimeOut()) {
+            if (servletUtils.hasReachedTimeOut()) {
 
                 new FilterTask() //
                         .stage(STAGE_LETTER) //
@@ -175,10 +177,10 @@ public class BuildFiltersServlet extends HttpServlet {
                         .cursor(itr.getCursor().toWebSafeString()) //
                         .addToQueue();
 
-                appUtils.throwInterruptProcessException("Counting letterFilters has reached its time's limit");
+                servletUtils.throwInterruptProcessException("Counting letterFilters has reached its time's limit");
             }
         }
-        appUtils.info("Counting letterFilters is over for the filter " + filter);
+        servletUtils.info("Counting letterFilters is over for the filter " + filter);
 
         final String nextFilter = getNextFilter(filter);
         if (nextFilter != null) {
@@ -188,17 +190,17 @@ public class BuildFiltersServlet extends HttpServlet {
                     .filter(nextFilter) //
                     .addToQueue();
 
-            appUtils.info("Starts counting letterFilters for " + nextFilter);
+            servletUtils.info("Starts counting letterFilters for " + nextFilter);
         }
     }
 
-    private void cleanupLetters(final String filter, final HttpServletRequest req, final AppUtils appUtils)
+    private void cleanupLetters(final String filter, final HttpServletRequest req, final ServletUtils servletUtils)
             throws IOException, InterruptProcessException {
 
         final Class<? extends LetterFilter> letterClass = getLetterClass(filter);
 
         final Query<? extends LetterFilter> query = dao.ofy().query(letterClass);
-        appUtils.setStartCursor(req, query);
+        servletUtils.setStartCursor(req, query);
 
         final QueryResultIterator<? extends LetterFilter> itr = query.iterator();
         while (itr.hasNext()) {
@@ -211,7 +213,7 @@ public class BuildFiltersServlet extends HttpServlet {
                 dao.ofy().delete(keys); // delete the others
             }
 
-            if (appUtils.hasReachedTimeOut()) {
+            if (servletUtils.hasReachedTimeOut()) {
 
                 new FilterTask() //
                         .stage(STAGE_LETTER) //
@@ -220,10 +222,10 @@ public class BuildFiltersServlet extends HttpServlet {
                         .cursor(itr.getCursor().toWebSafeString()) //
                         .addToQueue();
 
-                appUtils.throwInterruptProcessException("Cleaning up letterFilters has reached its time's limit");
+                servletUtils.throwInterruptProcessException("Cleaning up letterFilters has reached its time's limit");
             }
         }
-        appUtils.info("Cleaning up letterFilters is over for " + filter);
+        servletUtils.info("Cleaning up letterFilters is over for " + filter);
 
         final String nextFilter = getNextFilter(filter);
         if (nextFilter != null) {
@@ -233,18 +235,18 @@ public class BuildFiltersServlet extends HttpServlet {
                     .filter(nextFilter) //
                     .addToQueue();
 
-            appUtils.info("Starts cleaning up letterFilters for " + nextFilter);
+            servletUtils.info("Starts cleaning up letterFilters for " + nextFilter);
         } else {
             new FilterTask() //
                     .stage(STAGE_LETTER) //
                     .action(ACTION_COUNT) //
                     .addToQueue();
 
-            appUtils.info("Let's start the letters count");
+            servletUtils.info("Let's start the letters count");
         }
     }
 
-    private void putLetters(final String filter, final HttpServletRequest req, final AppUtils appUtils)
+    private void putLetters(final String filter, final HttpServletRequest req, final ServletUtils servletUtils)
             throws IOException, InterruptProcessException {
 
         final boolean isAuthor = isAuthor(filter);
@@ -254,7 +256,7 @@ public class BuildFiltersServlet extends HttpServlet {
         final Class<? extends Filter> filterClass = getFilterClass(filter);
 
         final Query<? extends Filter> query = dao.ofy().query(filterClass);
-        appUtils.setStartCursor(req, query);
+        servletUtils.setStartCursor(req, query);
 
         final QueryResultIterator<? extends Filter> itr = query.iterator();
         while (itr.hasNext()) {
@@ -275,7 +277,7 @@ public class BuildFiltersServlet extends HttpServlet {
                 throw new IllegalArgumentException("Unknown filter " + filter);
             }
 
-            if (appUtils.hasReachedTimeOut()) {
+            if (servletUtils.hasReachedTimeOut()) {
 
                 new FilterTask() //
                         .stage(STAGE_LETTER) //
@@ -284,10 +286,10 @@ public class BuildFiltersServlet extends HttpServlet {
                         .cursor(itr.getCursor().toWebSafeString()) //
                         .addToQueue();
 
-                appUtils.throwInterruptProcessException("Creating letterFilters has reached its time's limit");
+                servletUtils.throwInterruptProcessException("Creating letterFilters has reached its time's limit");
             }
         }
-        appUtils.info("Creating letterFilters is over for the filter " + filter);
+        servletUtils.info("Creating letterFilters is over for the filter " + filter);
 
         final String nextFilter = getNextFilter(filter);
         if (nextFilter != null) {
@@ -297,7 +299,7 @@ public class BuildFiltersServlet extends HttpServlet {
                     .filter(nextFilter) //
                     .addToQueue();
 
-            appUtils.info("Starts creating letterFilters for " + nextFilter);
+            servletUtils.info("Starts creating letterFilters for " + nextFilter);
 
         } else {
             new FilterTask() //
@@ -305,7 +307,7 @@ public class BuildFiltersServlet extends HttpServlet {
                     .action(ACTION_CLEANUP) //
                     .addToQueue();
 
-            appUtils.info("Let's start the letterFilters clean up");
+            servletUtils.info("Let's start the letterFilters clean up");
         }
     }
 
@@ -321,7 +323,7 @@ public class BuildFiltersServlet extends HttpServlet {
         return FILTER_CATEGORY.equalsIgnoreCase(filter);
     }
 
-    private void deleteLetters(final String filter, final AppUtils appUtils) throws IOException,
+    private void deleteLetters(final String filter, final ServletUtils servletUtils) throws IOException,
             InterruptProcessException {
         final Class<? extends LetterFilter> letterClass = getLetterClass(filter);
 
@@ -333,7 +335,7 @@ public class BuildFiltersServlet extends HttpServlet {
 
                 dao.ofy().delete(itr.next());
 
-                if (appUtils.hasReachedTimeOut()) {
+                if (servletUtils.hasReachedTimeOut()) {
 
                     new FilterTask() //
                             .stage(STAGE_LETTER) //
@@ -341,11 +343,11 @@ public class BuildFiltersServlet extends HttpServlet {
                             .filter(getLetterFilterValue(letterClass)) //
                             .addToQueue();
 
-                    appUtils.throwInterruptProcessException("Deleting letterFilters has reached its time's limit");
+                    servletUtils.throwInterruptProcessException("Deleting letterFilters has reached its time's limit");
                 }
             }
         }
-        appUtils.info("Deleting letterFilters is over for " + filter);
+        servletUtils.info("Deleting letterFilters is over for " + filter);
 
         final String nextFilter = getNextFilter(filter);
         if (nextFilter != null) {
@@ -355,7 +357,7 @@ public class BuildFiltersServlet extends HttpServlet {
                     .filter(nextFilter) //
                     .addToQueue();
 
-            appUtils.info("Deleting letterFilters starts for " + nextFilter);
+            servletUtils.info("Deleting letterFilters starts for " + nextFilter);
 
         } else {
             new FilterTask() //
@@ -363,7 +365,7 @@ public class BuildFiltersServlet extends HttpServlet {
                     .action(ACTION_PUT) //
                     .addToQueue();
 
-            appUtils.info("Let's start the letterFilters creation");
+            servletUtils.info("Let's start the letterFilters creation");
         }
     }
 
@@ -397,13 +399,13 @@ public class BuildFiltersServlet extends HttpServlet {
         }
     }
 
-    private void cleanupFilters(final String filter, final HttpServletRequest req, final AppUtils appUtils)
+    private void cleanupFilters(final String filter, final HttpServletRequest req, final ServletUtils servletUtils)
             throws IOException, InterruptProcessException {
 
         final Class<? extends Filter> filterClass = getFilterClass(filter);
 
         final Query<? extends Filter> query = dao.ofy().query(filterClass);
-        appUtils.setStartCursor(req, query);
+        servletUtils.setStartCursor(req, query);
 
         final QueryResultIterator<? extends Filter> itr = query.iterator();
         while (itr.hasNext()) {
@@ -416,7 +418,7 @@ public class BuildFiltersServlet extends HttpServlet {
                 dao.ofy().delete(keys); // delete the others
             }
 
-            if (appUtils.hasReachedTimeOut()) {
+            if (servletUtils.hasReachedTimeOut()) {
 
                 new FilterTask() //
                         .stage(STAGE_FILTER) //
@@ -425,10 +427,10 @@ public class BuildFiltersServlet extends HttpServlet {
                         .cursor(itr.getCursor().toWebSafeString()) //
                         .addToQueue();
 
-                appUtils.throwInterruptProcessException("Cleaning up filters has reached its time's limit");
+                servletUtils.throwInterruptProcessException("Cleaning up filters has reached its time's limit");
             }
         }
-        appUtils.info("Cleaning up filters is over for " + filter);
+        servletUtils.info("Cleaning up filters is over for " + filter);
 
         final String nextFilter = getNextFilter(filter);
         if (nextFilter != null) {
@@ -438,7 +440,7 @@ public class BuildFiltersServlet extends HttpServlet {
                     .filter(nextFilter) //
                     .addToQueue();
 
-            appUtils.info("Starts cleaning up filters for " + nextFilter);
+            servletUtils.info("Starts cleaning up filters for " + nextFilter);
 
         } else {
             new FilterTask() //
@@ -446,15 +448,15 @@ public class BuildFiltersServlet extends HttpServlet {
                     .action(ACTION_DELETE) //
                     .addToQueue();
 
-            appUtils.info("Let's start the letters deletion");
+            servletUtils.info("Let's start the letters deletion");
         }
     }
 
-    private void putFilters(final HttpServletRequest req, final AppUtils appUtils) throws IOException,
+    private void putFilters(final HttpServletRequest req, final ServletUtils servletUtils) throws IOException,
             InterruptProcessException {
 
         final Query<Book> query = dao.ofy().query(Book.class);
-        appUtils.setStartCursor(req, query);
+        servletUtils.setStartCursor(req, query);
 
         final QueryResultIterator<Book> itr = query.iterator();
         while (itr.hasNext()) {
@@ -464,7 +466,7 @@ public class BuildFiltersServlet extends HttpServlet {
             dao.ofy().put(new EditorFilter().value(book.getEditor()));
             dao.ofy().put(new CategoryFilter().value(book.getCategory()));
 
-            if (appUtils.hasReachedTimeOut()) {
+            if (servletUtils.hasReachedTimeOut()) {
 
                 new FilterTask() //
                         .stage(STAGE_FILTER) //
@@ -472,17 +474,17 @@ public class BuildFiltersServlet extends HttpServlet {
                         .cursor(itr.getCursor().toWebSafeString()) //
                         .addToQueue();
 
-                appUtils.throwInterruptProcessException("Creating filters has reached its time's limit");
+                servletUtils.throwInterruptProcessException("Creating filters has reached its time's limit");
             }
         }
-        appUtils.info("Creating filters is over");
+        servletUtils.info("Creating filters is over");
 
         new FilterTask() //
                 .stage(STAGE_FILTER) //
                 .action(ACTION_CLEANUP) //
                 .addToQueue();
 
-        appUtils.info("Let's start the filters clean up");
+        servletUtils.info("Let's start the filters clean up");
     }
 
     private static class FilterTask {
@@ -520,7 +522,7 @@ public class BuildFiltersServlet extends HttpServlet {
         }
     }
 
-    private void deleteFilters(final String filter, final AppUtils appUtils) throws IOException,
+    private void deleteFilters(final String filter, final ServletUtils servletUtils) throws IOException,
             InterruptProcessException {
 
         final Class<? extends Filter> filterClass = getFilterClass(filter);
@@ -533,7 +535,7 @@ public class BuildFiltersServlet extends HttpServlet {
 
                 dao.ofy().delete(itr.next());
 
-                if (appUtils.hasReachedTimeOut()) {
+                if (servletUtils.hasReachedTimeOut()) {
 
                     new FilterTask() //
                             .stage(STAGE_FILTER) //
@@ -541,11 +543,11 @@ public class BuildFiltersServlet extends HttpServlet {
                             .filter(filter) //
                             .addToQueue();
 
-                    appUtils.throwInterruptProcessException("Deleting filters has reached its time's limit");
+                    servletUtils.throwInterruptProcessException("Deleting filters has reached its time's limit");
                 }
             }
         }
-        appUtils.info("Deleting filters is over for " + filter);
+        servletUtils.info("Deleting filters is over for " + filter);
 
         final String nextFilter = getNextFilter(filter);
         if (nextFilter != null) {
@@ -555,7 +557,7 @@ public class BuildFiltersServlet extends HttpServlet {
                     .filter(nextFilter) //
                     .addToQueue();
 
-            appUtils.info("Deleting filters starts for " + nextFilter);
+            servletUtils.info("Deleting filters starts for " + nextFilter);
 
         } else {
             new FilterTask() //
@@ -563,7 +565,7 @@ public class BuildFiltersServlet extends HttpServlet {
                     .action(ACTION_PUT) //
                     .addToQueue();
 
-            appUtils.info("Let's start the filters creation");
+            servletUtils.info("Let's start the filters creation");
         }
     }
 
@@ -617,7 +619,7 @@ public class BuildFiltersServlet extends HttpServlet {
         return STAGE_FILTER.equals(stage);
     }
 
-    private String getParameterStage(final HttpServletRequest req, final AppUtils appUtils) throws IOException,
+    private String getParameterStage(final HttpServletRequest req, final ServletUtils servletUtils) throws IOException,
             ProcessException {
 
         final ParserRequest parser = new ParserRequest();
@@ -626,11 +628,11 @@ public class BuildFiltersServlet extends HttpServlet {
         parser.references = stages;
         parser.defaultValue = STAGE_FILTER;
 
-        return appUtils.getParameter(parser, req);
+        return servletUtils.getParameter(parser, req);
     }
 
-    private String getParameterAction(final HttpServletRequest req, final AppUtils appUtils) throws IOException,
-            ProcessException {
+    private String getParameterAction(final HttpServletRequest req, final ServletUtils servletUtils)
+            throws IOException, ProcessException {
 
         final ParserRequest parser = new ParserRequest();
 
@@ -638,11 +640,11 @@ public class BuildFiltersServlet extends HttpServlet {
         parser.references = actions;
         parser.defaultValue = ACTION_DELETE;
 
-        return appUtils.getParameter(parser, req);
+        return servletUtils.getParameter(parser, req);
     }
 
-    private String getParameterFilter(final HttpServletRequest req, final AppUtils appUtils) throws IOException,
-            ProcessException {
+    private String getParameterFilter(final HttpServletRequest req, final ServletUtils servletUtils)
+            throws IOException, ProcessException {
 
         final ParserRequest parser = new ParserRequest();
 
@@ -650,7 +652,7 @@ public class BuildFiltersServlet extends HttpServlet {
         parser.references = filters;
         parser.defaultValue = FILTER_AUTHOR;
 
-        return appUtils.getParameter(parser, req);
+        return servletUtils.getParameter(parser, req);
     }
 
 }

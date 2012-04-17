@@ -1,16 +1,21 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <cronentries>
     <cron>
-        <url>/buildFilters</url>
+        <url>/cron/buildFilters</url>
         <description>Builds filters for books</description>
         <schedule>every day 01:00</schedule>
     </cron>
     <cron>
-        <url>/buildWords</url>
+        <url>/cron/buildWords</url>
         <description>Builds words for books</description>
         <schedule>every day 02:00</schedule>
     </cron>
+    <cron>
+        <url>/cron/test</url>
+        <description>Test cron features</description>
+        <schedule>every 60 minutes</schedule>
+    </cron>
     <!-- 
         <schedule>every 1 minutes</schedule>
-    -->
+    --> 
 </cronentries>

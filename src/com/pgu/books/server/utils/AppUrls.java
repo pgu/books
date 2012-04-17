@@ -6,8 +6,9 @@ public final class AppUrls {
         throw new UnsupportedOperationException();
     }
 
-    public static final String BUILD_FILTERS = "/buildFilters";
-    public static final String BUILD_WORDS = "/buildWords";
+    public static final String BUILD_FILTERS = "/cron/buildFilters";
+    public static final String BUILD_WORDS = "/cron/buildWords";
+    public static final String TEST = "/cron/test";
 
     public static final String PARAM_CURSOR = "cursor";
 

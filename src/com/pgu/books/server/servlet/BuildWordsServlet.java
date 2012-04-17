@@ -25,8 +25,8 @@ import com.pgu.books.server.exception.InterruptProcessException;
 import com.pgu.books.server.exception.ProcessException;
 import com.pgu.books.server.utils.AppQueues;
 import com.pgu.books.server.utils.AppUrls;
-import com.pgu.books.server.utils.AppUtils;
 import com.pgu.books.server.utils.ParserRequest;
+import com.pgu.books.server.utils.ServletUtils;
 import com.pgu.books.shared.Book;
 
 @SuppressWarnings("serial")
@@ -63,13 +63,15 @@ public class BuildWordsServlet extends HttpServlet {
         final long startTime = System.currentTimeMillis();
         LOGGER.info("...POST request ");
 
-        final AppUtils appUtils = new AppUtils() //
+        final ServletUtils servletUtils = new ServletUtils() //
                 .logger(LOGGER) //
                 .startInMs(startTime) //
-                .response(resp);
+                .response(resp) //
+                .checkCallingEntity(req) //
+        ;
 
         try {
-            final String action = getParameterAction(req, appUtils);
+            final String action = getParameterAction(req, servletUtils);
 
             if (isDeleteAction(action)) {
 
@@ -84,32 +86,33 @@ public class BuildWordsServlet extends HttpServlet {
 
                             dao.ofy().delete(itr.next());
 
-                            if (appUtils.hasReachedTimeOut()) {
+                            if (servletUtils.hasReachedTimeOut()) {
 
                                 new WordTask() //
                                         .action(ACTION_DELETE) //
                                         .addToQueue();
 
-                                appUtils.throwInterruptProcessException("Deleting words has reached its time's limit");
+                                servletUtils
+                                        .throwInterruptProcessException("Deleting words has reached its time's limit");
                             }
                         }
                     }
                 }
-                appUtils.info("Deleting words is over");
+                servletUtils.info("Deleting words is over");
 
                 // next step: put new bookWords
                 new WordTask() //
                         .action(ACTION_BOOK_WORDS) //
                         .addToQueue();
 
-                appUtils.info("Let's start the bookwords creation");
+                servletUtils.info("Let's start the bookwords creation");
 
             } else if (isBookWordsAction(action)) {
                 //
                 // loop through all books to create the bookWords
                 final Query<Book> query = dao.ofy().query(Book.class);
 
-                appUtils.setStartCursor(req, query);
+                servletUtils.setStartCursor(req, query);
 
                 final QueryResultIterator<Book> itr = query.iterator();
                 while (itr.hasNext()) {
@@ -130,31 +133,31 @@ public class BuildWordsServlet extends HttpServlet {
 
                     extractWordsAndCreateBookWords(sb.toString(), book.getId());
 
-                    if (appUtils.hasReachedTimeOut()) {
+                    if (servletUtils.hasReachedTimeOut()) {
 
                         new WordTask() //
                                 .action(ACTION_BOOK_WORDS) //
                                 .cursor(itr.getCursor().toWebSafeString()) //
                                 .addToQueue();
 
-                        appUtils.throwInterruptProcessException("Creating bookWords has reached its time's limit");
+                        servletUtils.throwInterruptProcessException("Creating bookWords has reached its time's limit");
                     }
                 }
-                appUtils.info("Creating bookWords is over");
+                servletUtils.info("Creating bookWords is over");
 
                 // next step: put new words
                 new WordTask() //
                         .action(ACTION_WORDS) //
                         .addToQueue();
 
-                appUtils.info("Let's start the words creation");
+                servletUtils.info("Let's start the words creation");
 
             } else if (isWordsAction(action)) {
                 //
                 // loop through all bookWords to create the words
                 final Query<BookWord> query = dao.ofy().query(BookWord.class);
 
-                appUtils.setStartCursor(req, query);
+                servletUtils.setStartCursor(req, query);
 
                 final List<String> wordsCache = new ArrayList<String>();
                 final QueryResultIterator<BookWord> itr = query.iterator();
@@ -182,21 +185,21 @@ public class BuildWordsServlet extends HttpServlet {
                     dao.ofy().put(new Word().value(value).display(display));
                     wordsCache.add(wordCache); // update cache
 
-                    if (appUtils.hasReachedTimeOut()) {
+                    if (servletUtils.hasReachedTimeOut()) {
 
                         new WordTask() //
                                 .action(ACTION_WORDS) //
                                 .cursor(itr.getCursor().toWebSafeString()) //
                                 .addToQueue();
 
-                        appUtils.throwInterruptProcessException("Creating bookWords has reached its time's limit");
+                        servletUtils.throwInterruptProcessException("Creating bookWords has reached its time's limit");
                     }
                 }
-                appUtils.info("Creating words is over");
+                servletUtils.info("Creating words is over");
 
             } else {
 
-                appUtils.throwProcessException("Unknown action " + action);
+                servletUtils.throwProcessException("Unknown action " + action);
             }
         } catch (final ProcessException e) {
             // fail silently, it is already logged
@@ -229,8 +232,8 @@ public class BuildWordsServlet extends HttpServlet {
         return ACTION_DELETE.equals(action);
     }
 
-    private String getParameterAction(final HttpServletRequest req, final AppUtils appUtils) throws IOException,
-            ProcessException {
+    private String getParameterAction(final HttpServletRequest req, final ServletUtils servletUtils)
+            throws IOException, ProcessException {
 
         final ParserRequest parser = new ParserRequest();
 
@@ -238,7 +241,7 @@ public class BuildWordsServlet extends HttpServlet {
         parser.references = actions;
         parser.defaultValue = ACTION_DELETE;
 
-        return appUtils.getParameter(parser, req);
+        return servletUtils.getParameter(parser, req);
     }
 
     private static class WordTask {
