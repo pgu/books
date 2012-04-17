@@ -107,6 +107,10 @@ public class BooksCharts extends Composite implements BooksChartsUI {
             return;
         }
 
+        // TODO PGU combo chart: for each year, by categories, nb books
+        // TODO PGU column chart : nb books / year
+        // TODO PGU bar chart : nb books / author (<!> lots of data or not? for authors with nb books > 1)
+
         final TreeMap<String, Integer> categoryData = new TreeMap<String, Integer>();
         categoryData.put("Category A", 10);
         categoryData.put("Category B", 20);
