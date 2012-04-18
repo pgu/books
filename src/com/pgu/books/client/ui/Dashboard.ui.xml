@@ -1,19 +1,19 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder" 
     xmlns:g="urn:import:com.google.gwt.user.client.ui"
-    xmlns:ma="urn:import:com.pgu.books.client.ui.menuAdmin"
+    xmlns:ma="urn:import:com.pgu.books.client.ui.booksMenu"
     xmlns:board="urn:import:com.pgu.books.client.ui.booksBoard"
     xmlns:charts="urn:import:com.pgu.books.client.ui.booksCharts"
     xmlns:bi="urn:import:com.pgu.books.client.ui.booksImport">
     
     <g:HTMLPanel>
-        <ma:MenuAdmin       
-            ui:field="menuAdmin" />
+        <ma:BooksMenu       
+            ui:field="booksMenu" />
         <board:BooksBoard   
-            ui:field="booksBoard"></board:BooksBoard>
+            ui:field="booksBoard" />
         <charts:BooksCharts 
-            ui:field="booksCharts"></charts:BooksCharts>
+            ui:field="booksCharts" />
         <bi:BooksImport     
-            ui:field="booksImport"></bi:BooksImport>
+            ui:field="booksImport" />
     </g:HTMLPanel>
 </ui:UiBinder> 

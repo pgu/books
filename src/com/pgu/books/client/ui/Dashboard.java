@@ -18,7 +18,7 @@ import com.pgu.books.client.ui.booksBoard.search.BooksSearchUI;
 import com.pgu.books.client.ui.booksCharts.BooksCharts;
 import com.pgu.books.client.ui.booksImport.BooksImport;
 import com.pgu.books.client.ui.booksImport.BooksImportUI;
-import com.pgu.books.client.ui.menuAdmin.MenuAdmin;
+import com.pgu.books.client.ui.booksMenu.BooksMenu;
 import com.pgu.books.client.ui.utils.IsFocusable;
 
 public class Dashboard extends Composite implements AppUI {
@@ -29,7 +29,7 @@ public class Dashboard extends Composite implements AppUI {
     }
 
     @UiField
-    MenuAdmin            menuAdmin;
+    BooksMenu            booksMenu;
 
     @UiField
     BooksBoard           booksBoard;

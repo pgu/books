@@ -1,4 +1,4 @@
-package com.pgu.books.client.ui.menuAdmin;
+package com.pgu.books.client.ui.booksMenu;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -16,11 +16,11 @@ import com.pgu.books.client.app.AsyncCallbackApp;
 import com.pgu.books.client.rpc.AdminBooksService;
 import com.pgu.books.client.rpc.AdminBooksServiceAsync;
 
-public class MenuAdmin extends Composite {
+public class BooksMenu extends Composite {
 
-    private static MenuAdminUiBinder uiBinder = GWT.create(MenuAdminUiBinder.class);
+    private static BooksMenuUiBinder uiBinder = GWT.create(BooksMenuUiBinder.class);
 
-    interface MenuAdminUiBinder extends UiBinder<Widget, MenuAdmin> {
+    interface BooksMenuUiBinder extends UiBinder<Widget, BooksMenu> {
     }
 
     @UiField
@@ -31,7 +31,7 @@ public class MenuAdmin extends Composite {
 
     private final AdminBooksServiceAsync adminBooksService = GWT.create(AdminBooksService.class);
 
-    public MenuAdmin() {
+    public BooksMenu() {
         booksLink = new Hyperlink("Libros", Books.TAG_BOOKS);
         graphsLink = new Hyperlink("Gráficos", Books.TAG_CHARTS);
         importLink = new Hyperlink("Import", Books.TAG_IMPORT);
