@@ -3,6 +3,10 @@
 
     <!-- Servlets -->
     <servlet>
+        <servlet-name>login</servlet-name>
+        <servlet-class>com.pgu.books.server.rpc.LoginServiceImpl</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>books</servlet-name>
         <servlet-class>com.pgu.books.server.rpc.BooksServiceImpl</servlet-class>
     </servlet>
@@ -23,6 +27,10 @@
         <servlet-class>com.pgu.books.server.servlet.TestServlet</servlet-class>
     </servlet>
 
+    <servlet-mapping>
+        <servlet-name>login</servlet-name>
+        <url-pattern>/books/login</url-pattern>
+    </servlet-mapping>
     <servlet-mapping>
         <servlet-name>books</servlet-name>
         <url-pattern>/books/books</url-pattern>
