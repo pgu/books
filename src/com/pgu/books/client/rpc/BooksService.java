@@ -1,4 +1,4 @@
-package com.pgu.books.client;
+package com.pgu.books.client.rpc;
 
 import java.util.ArrayList;
 

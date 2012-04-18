@@ -7,6 +7,10 @@
         <servlet-class>com.pgu.books.server.rpc.BooksServiceImpl</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>adminBooks</servlet-name>
+        <servlet-class>com.pgu.books.server.rpc.AdminBooksServiceImpl</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>buildFilters</servlet-name>
         <servlet-class>com.pgu.books.server.servlet.BuildFiltersServlet</servlet-class>
     </servlet>
@@ -22,6 +26,10 @@
     <servlet-mapping>
         <servlet-name>books</servlet-name>
         <url-pattern>/books/books</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>adminBooks</servlet-name>
+        <url-pattern>/books/admin/books</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>buildFilters</servlet-name>
@@ -50,5 +58,15 @@
             <role-name>admin</role-name>
         </auth-constraint>
     </security-constraint>
-    
+
+    <!-- Security for admin -->
+    <security-constraint>
+        <web-resource-collection>
+            <url-pattern>/books/admin/*</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>admin</role-name>
+        </auth-constraint>
+    </security-constraint>
+
 </web-app>
