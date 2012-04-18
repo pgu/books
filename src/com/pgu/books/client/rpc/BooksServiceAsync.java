@@ -8,15 +8,9 @@ import com.pgu.books.shared.BooksFiltersDTO;
 
 public interface BooksServiceAsync {
 
-    void testImport(AsyncCallback<String> asyncCallbackApp);
-
-    void importBooks(String categoryTitle, AsyncCallback<String> asyncCallback);
-
     void countBooks(BooksFiltersDTO filtersDTO, AsyncCallback<Integer> asyncCallbackApp);
 
     void fetchBooks(BooksFiltersDTO filtersDTO, int start, int length, AsyncCallback<ArrayList<Book>> asyncCallbackApp);
-
-    void delete(AsyncCallback<Void> asyncCallbackApp);
 
     void fetchWords(String text, AsyncCallback<ArrayList<String>> asyncCallbackApp);
 

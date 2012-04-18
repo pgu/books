@@ -10,15 +10,9 @@ import com.pgu.books.shared.BooksFiltersDTO;
 @RemoteServiceRelativePath("books")
 public interface BooksService extends RemoteService {
 
-    String importBooks(String categoryTitle);
-
-    String testImport();
-
     ArrayList<Book> fetchBooks(BooksFiltersDTO filtersDTO, int start, int length);
 
     int countBooks(BooksFiltersDTO filtersDTO);
-
-    void delete();
 
     ArrayList<String> fetchWords(String text);
 

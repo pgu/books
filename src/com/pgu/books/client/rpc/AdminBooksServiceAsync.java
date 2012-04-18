@@ -4,6 +4,10 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public interface AdminBooksServiceAsync {
 
-    void test(String string, AsyncCallback<String> asyncCallbackApp);
+    void testImport(AsyncCallback<String> asyncCallbackApp);
+
+    void importBooks(String categoryTitle, AsyncCallback<String> asyncCallback);
+
+    void deleteAll(AsyncCallback<Void> asyncCallbackApp);
 
 }

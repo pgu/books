@@ -16,6 +16,8 @@ import com.pgu.books.client.activity.booksImport.BooksImportPresenter;
 import com.pgu.books.client.activity.booksMenu.BooksMenuPresenter;
 import com.pgu.books.client.activity.utils.FilterType;
 import com.pgu.books.client.app.AsyncCallbackApp;
+import com.pgu.books.client.rpc.AdminBooksService;
+import com.pgu.books.client.rpc.AdminBooksServiceAsync;
 import com.pgu.books.client.rpc.BooksService;
 import com.pgu.books.client.rpc.BooksServiceAsync;
 import com.pgu.books.client.ui.AppUI;
@@ -28,7 +30,7 @@ import com.pgu.books.shared.LoginInfo;
 public class AppActivity implements //
         AppPresenter, //
         //
-        BooksMenuPresenter, // 
+        BooksMenuPresenter, //
         BooksBoardPresenter, //
         BooksChartsPresenter, //
         BooksImportPresenter, //
@@ -47,12 +49,13 @@ public class AppActivity implements //
         return INSTANCE;
     }
 
-    private final BooksServiceAsync booksService = GWT.create(BooksService.class);
+    private final BooksServiceAsync      booksService      = GWT.create(BooksService.class);
+    private final AdminBooksServiceAsync adminBooksService = GWT.create(AdminBooksService.class);
 
-    private AppUI                   dashboard;
+    private AppUI                        dashboard;
 
     // search state
-    private final BooksFiltersDTO   filtersDTO   = new BooksFiltersDTO();
+    private final BooksFiltersDTO        filtersDTO        = new BooksFiltersDTO();
 
     public AppUI initView(final LoginInfo loginInfo) {
 
@@ -100,7 +103,7 @@ public class AppActivity implements //
 
     @Override
     public void importBooks(final String categoryTitle) {
-        booksService.importBooks(categoryTitle, new AsyncCallback<String>() {
+        adminBooksService.importBooks(categoryTitle, new AsyncCallback<String>() {
 
             @Override
             public void onFailure(final Throwable caught) {
@@ -117,7 +120,7 @@ public class AppActivity implements //
 
     @Override
     public void testImport() {
-        booksService.testImport(new AsyncCallbackApp<String>() {
+        adminBooksService.testImport(new AsyncCallbackApp<String>() {
 
             @Override
             public void onSuccess(final String importResult) {
@@ -182,7 +185,7 @@ public class AppActivity implements //
 
     @Override
     public void deleteBooks() {
-        booksService.delete(new AsyncCallbackApp<Void>() {
+        adminBooksService.deleteAll(new AsyncCallbackApp<Void>() {
 
             @Override
             public void onSuccess(final Void result) {

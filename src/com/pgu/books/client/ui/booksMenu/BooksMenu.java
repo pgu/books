@@ -10,8 +10,6 @@ import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Widget;
 import com.pgu.books.client.Books;
 import com.pgu.books.client.activity.booksMenu.BooksMenuPresenter;
-import com.pgu.books.client.rpc.AdminBooksService;
-import com.pgu.books.client.rpc.AdminBooksServiceAsync;
 
 public class BooksMenu extends Composite implements BooksMenuUI {
 
@@ -21,14 +19,12 @@ public class BooksMenu extends Composite implements BooksMenuUI {
     }
 
     @UiField
-    HorizontalPanel                      menu;
+    HorizontalPanel menu;
     @UiField
-    Anchor                               signin;
+    Anchor          signin;
 
     @UiField(provided = true)
-    Hyperlink                            booksLink, graphsLink, importLink;
-
-    private final AdminBooksServiceAsync adminBooksService = GWT.create(AdminBooksService.class);
+    Hyperlink       booksLink, graphsLink, importLink;
 
     public BooksMenu() {
         booksLink = new Hyperlink("Libros", Books.TAG_BOOKS);

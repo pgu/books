@@ -31,7 +31,6 @@ public class BooksImport extends Composite implements BooksImportUI {
     @UiField
     Button                                      btnAll, btnTest, btnDelete;
 
-    // TODO PGU to review the "delete" button
     private BooksImportPresenter                presenter;
     private final HashMap<String, ToggleButton> title2btns = new HashMap<String, ToggleButton>();
 

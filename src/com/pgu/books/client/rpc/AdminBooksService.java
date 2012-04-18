@@ -6,6 +6,9 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 @RemoteServiceRelativePath("admin/books")
 public interface AdminBooksService extends RemoteService {
 
-    String test(String string);
+    String importBooks(String categoryTitle);
 
+    String testImport();
+
+    void deleteAll();
 }
