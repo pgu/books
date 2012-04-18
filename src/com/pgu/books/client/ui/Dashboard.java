@@ -19,6 +19,7 @@ import com.pgu.books.client.ui.booksCharts.BooksCharts;
 import com.pgu.books.client.ui.booksImport.BooksImport;
 import com.pgu.books.client.ui.booksImport.BooksImportUI;
 import com.pgu.books.client.ui.booksMenu.BooksMenu;
+import com.pgu.books.client.ui.booksMenu.BooksMenuUI;
 import com.pgu.books.client.ui.utils.IsFocusable;
 
 public class Dashboard extends Composite implements AppUI {
@@ -124,6 +125,11 @@ public class Dashboard extends Composite implements AppUI {
                 w.loseFocus();
             }
         }
+    }
+
+    @Override
+    public BooksMenuUI getBooksMenuUI() {
+        return booksMenu;
     }
 
 }

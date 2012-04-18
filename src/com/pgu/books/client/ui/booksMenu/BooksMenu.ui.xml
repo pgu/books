@@ -10,5 +10,6 @@
         <g:Hyperlink ui:field="booksLink"  addStyleNames="{style.menuEntry}"/>
         <g:Hyperlink ui:field="graphsLink" addStyleNames="{style.menuEntry}"/>
         <g:Hyperlink ui:field="importLink" addStyleNames="{style.menuEntry}"/>
+        <g:Anchor ui:field="signin" />
     </g:HorizontalPanel>
 </ui:UiBinder> 

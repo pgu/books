@@ -7,13 +7,13 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.IsWidget;
 import com.pgu.books.client.activity.booksBoard.BooksBoardPresenter;
 import com.pgu.books.client.activity.booksBoard.filters.BooksFiltersPresenter;
 import com.pgu.books.client.activity.booksBoard.grid.BooksGridPresenter;
 import com.pgu.books.client.activity.booksBoard.search.BooksSearchPresenter;
 import com.pgu.books.client.activity.booksCharts.BooksChartsPresenter;
 import com.pgu.books.client.activity.booksImport.BooksImportPresenter;
+import com.pgu.books.client.activity.booksMenu.BooksMenuPresenter;
 import com.pgu.books.client.activity.utils.FilterType;
 import com.pgu.books.client.app.AsyncCallbackApp;
 import com.pgu.books.client.rpc.BooksService;
@@ -23,10 +23,12 @@ import com.pgu.books.client.ui.Dashboard;
 import com.pgu.books.client.ui.booksBoard.filters.Letter;
 import com.pgu.books.shared.Book;
 import com.pgu.books.shared.BooksFiltersDTO;
+import com.pgu.books.shared.LoginInfo;
 
 public class AppActivity implements //
         AppPresenter, //
         //
+        BooksMenuPresenter, // 
         BooksBoardPresenter, //
         BooksChartsPresenter, //
         BooksImportPresenter, //
@@ -52,11 +54,13 @@ public class AppActivity implements //
     // search state
     private final BooksFiltersDTO   filtersDTO   = new BooksFiltersDTO();
 
-    public IsWidget initView() {
+    public AppUI initView(final LoginInfo loginInfo) {
+
         if (null == dashboard) {
             dashboard = new Dashboard();
             dashboard.setPresenter(this);
             //
+            dashboard.getBooksMenuUI().setPresenter(this);
             dashboard.getBooksBoardUI().setPresenter(this);
             dashboard.getBooksChartsUI().setPresenter(this);
             dashboard.getBooksImportUI().setPresenter(this);
@@ -79,7 +83,18 @@ public class AppActivity implements //
                     initFetchFilters();
                 }
             });
+
+            // TODO PGU move rpc to admin/rpc
+            // TODO PGU grid -> edition
+            // TODO PGU graph -> piles
+            // TODO PGU import -> all
+            if (loginInfo.isLoggedIn()) {
+                dashboard.getBooksMenuUI().showAdminFeatures(loginInfo.getLogoutUrl());
+            } else {
+                dashboard.getBooksMenuUI().hideAdminFeatures(loginInfo.getLoginUrl());
+            }
         }
+
         return dashboard;
     }
 

@@ -8,6 +8,7 @@ import com.pgu.books.client.ui.booksBoard.grid.BooksGridUI;
 import com.pgu.books.client.ui.booksBoard.search.BooksSearchUI;
 import com.pgu.books.client.ui.booksCharts.BooksChartsUI;
 import com.pgu.books.client.ui.booksImport.BooksImportUI;
+import com.pgu.books.client.ui.booksMenu.BooksMenuUI;
 
 public interface AppUI extends IsWidget {
 
@@ -32,5 +33,7 @@ public interface AppUI extends IsWidget {
     void showImport();
 
     void showUnknownTag(String tag);
+
+    BooksMenuUI getBooksMenuUI();
 
 }
