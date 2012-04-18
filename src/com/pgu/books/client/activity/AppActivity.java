@@ -87,10 +87,8 @@ public class AppActivity implements //
                 }
             });
 
-            // TODO PGU move rpc to admin/rpc
-            // TODO PGU grid -> edition
-            // TODO PGU graph -> piles
-            // TODO PGU import -> all
+            // TODO PGU Move rpc to admin/rpc: grid -> edition
+            // TODO PGU Move rpc to admin/rpc: graph -> piles
             if (loginInfo.isLoggedIn()) {
                 dashboard.getBooksMenuUI().showAdminFeatures(loginInfo.getLogoutUrl());
             } else {
