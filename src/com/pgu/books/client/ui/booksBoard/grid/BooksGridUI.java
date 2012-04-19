@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import com.google.gwt.user.client.ui.IsWidget;
 import com.pgu.books.client.activity.booksBoard.grid.BooksGridPresenter;
-import com.pgu.books.shared.Book;
+import com.pgu.books.shared.domain.Book;
 
 public interface BooksGridUI extends IsWidget {
 

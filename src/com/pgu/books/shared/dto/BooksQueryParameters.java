@@ -1,31 +1,31 @@
-package com.pgu.books.shared;
+package com.pgu.books.shared.dto;
 
 import java.util.ArrayList;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public class BooksFiltersDTO implements IsSerializable {
+public class BooksQueryParameters implements IsSerializable {
 
     private String            searchText = "";
     private ArrayList<String> selectedAuthors;
     private ArrayList<String> selectedEditors;
     private ArrayList<String> selectedCategories;
 
-    public BooksFiltersDTO authors(final ArrayList<String> selectedAuthors) {
+    public BooksQueryParameters authors(final ArrayList<String> selectedAuthors) {
         checkNotNull(selectedAuthors);
 
         this.selectedAuthors = selectedAuthors;
         return this;
     }
 
-    public BooksFiltersDTO editors(final ArrayList<String> selectedEditors) {
+    public BooksQueryParameters editors(final ArrayList<String> selectedEditors) {
         checkNotNull(selectedEditors);
 
         this.selectedEditors = selectedEditors;
         return this;
     }
 
-    public BooksFiltersDTO categories(final ArrayList<String> selectedCategories) {
+    public BooksQueryParameters categories(final ArrayList<String> selectedCategories) {
         checkNotNull(selectedCategories);
 
         this.selectedCategories = selectedCategories;

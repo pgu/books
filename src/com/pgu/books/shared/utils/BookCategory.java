@@ -1,4 +1,4 @@
-package com.pgu.books.shared;
+package com.pgu.books.shared.utils;
 
 import java.util.ArrayList;
 

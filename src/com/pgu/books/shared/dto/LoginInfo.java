@@ -1,8 +1,9 @@
-package com.pgu.books.shared;
+package com.pgu.books.shared.dto;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class LoginInfo implements IsSerializable {
+
     private boolean loggedIn = false;
     private String  loginUrl;
     private String  logoutUrl;

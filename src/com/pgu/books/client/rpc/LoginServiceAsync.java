@@ -1,7 +1,7 @@
 package com.pgu.books.client.rpc;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.pgu.books.shared.LoginInfo;
+import com.pgu.books.shared.dto.LoginInfo;
 
 public interface LoginServiceAsync {
 

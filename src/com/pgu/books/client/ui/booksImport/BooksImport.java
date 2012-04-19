@@ -16,7 +16,7 @@ import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.ToggleButton;
 import com.google.gwt.user.client.ui.Widget;
 import com.pgu.books.client.activity.booksImport.BooksImportPresenter;
-import com.pgu.books.shared.BookCategory;
+import com.pgu.books.shared.utils.BookCategory;
 
 public class BooksImport extends Composite implements BooksImportUI {
 

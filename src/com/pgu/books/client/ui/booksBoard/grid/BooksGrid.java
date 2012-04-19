@@ -19,7 +19,8 @@ import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.HasData;
 import com.pgu.books.client.activity.booksBoard.grid.BooksGridPresenter;
-import com.pgu.books.shared.Book;
+import com.pgu.books.shared.domain.Book;
+import com.pgu.books.shared.utils.SortField;
 
 // TODO PGU EDITION of a book: edition in the grid and a new form to create a new book
 // TODO PGU server sorting on columns
@@ -32,17 +33,13 @@ public class BooksGrid extends Composite implements BooksGridUI {
     }
 
     @UiField(provided = true)
-    DataGrid<Book>             grid;
+    DataGrid<Book>                                     grid;
 
     @UiField(provided = true)
-    SimplePager                pager;
+    SimplePager                                        pager;
 
-    private BooksGridPresenter presenter;
-    private TextColumn<Book>   titleColumn;
-
-    private enum SortField {
-        AUTHOR, TITLE, EDITOR, YEAR, CATEGORY
-    }
+    private BooksGridPresenter                         presenter;
+    private TextColumn<Book>                           titleColumn;
 
     private final HashMap<TextColumn<Book>, SortField> col2field = new HashMap<TextColumn<Book>, SortField>();
 

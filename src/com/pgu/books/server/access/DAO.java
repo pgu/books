@@ -10,7 +10,7 @@ import com.pgu.books.server.domain.CategoryLetterFilter;
 import com.pgu.books.server.domain.EditorFilter;
 import com.pgu.books.server.domain.EditorLetterFilter;
 import com.pgu.books.server.domain.Word;
-import com.pgu.books.shared.Book;
+import com.pgu.books.shared.domain.Book;
 
 public class DAO extends DAOBase {
 

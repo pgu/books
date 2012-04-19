@@ -4,15 +4,15 @@ import java.util.ArrayList;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
-import com.pgu.books.shared.Book;
-import com.pgu.books.shared.BooksFiltersDTO;
+import com.pgu.books.shared.domain.Book;
+import com.pgu.books.shared.dto.BooksQueryParameters;
 
 @RemoteServiceRelativePath("books")
 public interface BooksService extends RemoteService {
 
-    ArrayList<Book> fetchBooks(BooksFiltersDTO filtersDTO, int start, int length);
+    ArrayList<Book> fetchBooks(BooksQueryParameters filtersDTO, int start, int length);
 
-    int countBooks(BooksFiltersDTO filtersDTO);
+    int countBooks(BooksQueryParameters filtersDTO);
 
     ArrayList<String> fetchWords(String text);
 

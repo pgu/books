@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.pgu.books.shared.Book;
+import com.pgu.books.shared.domain.Book;
 
 public class BooksDB {
 

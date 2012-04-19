@@ -23,9 +23,9 @@ import com.pgu.books.client.rpc.BooksServiceAsync;
 import com.pgu.books.client.ui.AppUI;
 import com.pgu.books.client.ui.Dashboard;
 import com.pgu.books.client.ui.booksBoard.filters.Letter;
-import com.pgu.books.shared.Book;
-import com.pgu.books.shared.BooksFiltersDTO;
-import com.pgu.books.shared.LoginInfo;
+import com.pgu.books.shared.domain.Book;
+import com.pgu.books.shared.dto.BooksQueryParameters;
+import com.pgu.books.shared.dto.LoginInfo;
 
 public class AppActivity implements //
         AppPresenter, //
@@ -55,7 +55,7 @@ public class AppActivity implements //
     private AppUI                        dashboard;
 
     // search state
-    private final BooksFiltersDTO        filtersDTO        = new BooksFiltersDTO();
+    private final BooksQueryParameters        queryParameters        = new BooksQueryParameters();
 
     public AppUI initView(final LoginInfo loginInfo) {
 
@@ -134,7 +134,7 @@ public class AppActivity implements //
 
         dashboard.getBooksGridUI().initFetch();
 
-        booksService.countBooks(filtersDTO, new AsyncCallbackApp<Integer>() {
+        booksService.countBooks(queryParameters, new AsyncCallbackApp<Integer>() {
 
             @Override
             public void onSuccess(final Integer count) {
@@ -150,7 +150,7 @@ public class AppActivity implements //
 
         });
 
-        booksService.fetchBooks(filtersDTO, start, length, new AsyncCallbackApp<ArrayList<Book>>() {
+        booksService.fetchBooks(queryParameters, start, length, new AsyncCallbackApp<ArrayList<Book>>() {
 
             @Override
             public void onSuccess(final ArrayList<Book> books) {
@@ -173,7 +173,7 @@ public class AppActivity implements //
             final ArrayList<String> selectedEditors, //
             final ArrayList<String> selectedCategories) {
 
-        filtersDTO //
+        queryParameters //
                 .authors(selectedAuthors) //
                 .editors(selectedEditors) //
                 .categories(selectedCategories);
@@ -207,7 +207,7 @@ public class AppActivity implements //
 
     @Override
     public void searchBooks(final String text) {
-        filtersDTO.setSearchText(text);
+        queryParameters.setSearchText(text);
         fetchBooks(0, dashboard.getBooksGridUI().getLength());
     }
 

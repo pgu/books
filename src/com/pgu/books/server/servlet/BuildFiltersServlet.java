@@ -30,7 +30,7 @@ import com.pgu.books.server.utils.AppQueues;
 import com.pgu.books.server.utils.AppUrls;
 import com.pgu.books.server.utils.ParserRequest;
 import com.pgu.books.server.utils.ServletUtils;
-import com.pgu.books.shared.Book;
+import com.pgu.books.shared.domain.Book;
 
 @SuppressWarnings("serial")
 public class BuildFiltersServlet extends HttpServlet {

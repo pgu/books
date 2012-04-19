@@ -11,7 +11,7 @@ import com.pgu.books.client.app.AsyncCallbackApp;
 import com.pgu.books.client.rpc.LoginService;
 import com.pgu.books.client.rpc.LoginServiceAsync;
 import com.pgu.books.client.ui.AppUI;
-import com.pgu.books.shared.LoginInfo;
+import com.pgu.books.shared.dto.LoginInfo;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.

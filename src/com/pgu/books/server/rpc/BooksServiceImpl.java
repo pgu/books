@@ -18,8 +18,8 @@ import com.pgu.books.server.domain.EditorLetterFilter;
 import com.pgu.books.server.domain.Filter;
 import com.pgu.books.server.domain.LetterFilter;
 import com.pgu.books.server.domain.Word;
-import com.pgu.books.shared.Book;
-import com.pgu.books.shared.BooksFiltersDTO;
+import com.pgu.books.shared.domain.Book;
+import com.pgu.books.shared.dto.BooksQueryParameters;
 
 @SuppressWarnings("serial")
 public class BooksServiceImpl extends RemoteServiceServlet implements BooksService {
@@ -29,7 +29,7 @@ public class BooksServiceImpl extends RemoteServiceServlet implements BooksServi
     private final DAO           dao = new DAO();
 
     @Override
-    public ArrayList<Book> fetchBooks(final BooksFiltersDTO filtersDTO, final int start, final int length) {
+    public ArrayList<Book> fetchBooks(final BooksQueryParameters filtersDTO, final int start, final int length) {
 
         final Query<Book> query = dao.ofy().query(Book.class);
         applyFilters(filtersDTO, query);
@@ -48,7 +48,7 @@ public class BooksServiceImpl extends RemoteServiceServlet implements BooksServi
     }
 
     @Override
-    public int countBooks(final BooksFiltersDTO filtersDTO) {
+    public int countBooks(final BooksQueryParameters filtersDTO) {
 
         final Query<Book> query = dao.ofy().query(Book.class);
 
@@ -57,7 +57,7 @@ public class BooksServiceImpl extends RemoteServiceServlet implements BooksServi
         return query.count();
     }
 
-    private void applyFilters(final BooksFiltersDTO filtersDTO, final Query<Book> query) {
+    private void applyFilters(final BooksQueryParameters filtersDTO, final Query<Book> query) {
 
         if (!filtersDTO.getSelectedAuthors().isEmpty()) {
             query.filter("author in", filtersDTO.getSelectedAuthors());

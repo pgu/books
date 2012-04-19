@@ -16,8 +16,8 @@ import com.pgu.books.client.rpc.AdminBooksService;
 import com.pgu.books.server.access.DAO;
 import com.pgu.books.server.utils.AppQueues;
 import com.pgu.books.server.utils.AppUrls;
-import com.pgu.books.shared.Book;
-import com.pgu.books.shared.BookCategory;
+import com.pgu.books.shared.domain.Book;
+import com.pgu.books.shared.utils.BookCategory;
 
 @SuppressWarnings("serial")
 public class AdminBooksServiceImpl extends RemoteServiceServlet implements AdminBooksService {

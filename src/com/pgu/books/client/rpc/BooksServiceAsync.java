@@ -3,14 +3,14 @@ package com.pgu.books.client.rpc;
 import java.util.ArrayList;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.pgu.books.shared.Book;
-import com.pgu.books.shared.BooksFiltersDTO;
+import com.pgu.books.shared.domain.Book;
+import com.pgu.books.shared.dto.BooksQueryParameters;
 
 public interface BooksServiceAsync {
 
-    void countBooks(BooksFiltersDTO filtersDTO, AsyncCallback<Integer> asyncCallbackApp);
+    void countBooks(BooksQueryParameters filtersDTO, AsyncCallback<Integer> asyncCallbackApp);
 
-    void fetchBooks(BooksFiltersDTO filtersDTO, int start, int length, AsyncCallback<ArrayList<Book>> asyncCallbackApp);
+    void fetchBooks(BooksQueryParameters filtersDTO, int start, int length, AsyncCallback<ArrayList<Book>> asyncCallbackApp);
 
     void fetchWords(String text, AsyncCallback<ArrayList<String>> asyncCallbackApp);
 

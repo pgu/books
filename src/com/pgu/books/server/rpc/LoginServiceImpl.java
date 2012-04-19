@@ -7,7 +7,7 @@ import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.pgu.books.client.rpc.LoginService;
-import com.pgu.books.shared.LoginInfo;
+import com.pgu.books.shared.dto.LoginInfo;
 
 @SuppressWarnings("serial")
 public class LoginServiceImpl extends RemoteServiceServlet implements LoginService {
