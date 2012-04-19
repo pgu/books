@@ -29,15 +29,22 @@ public class BooksServiceImpl extends RemoteServiceServlet implements BooksServi
     private final DAO           dao = new DAO();
 
     @Override
-    public ArrayList<Book> fetchBooks(final BooksQueryParameters filtersDTO, final int start, final int length) {
+    public ArrayList<Book> fetchBooks(final BooksQueryParameters queryParameters, final int start, final int length) {
 
         final Query<Book> query = dao.ofy().query(Book.class);
-        applyFilters(filtersDTO, query);
+        // 
+        // filters 
+        applyFilters(queryParameters, query);
 
-        // TODO PGU handle the cursor on filter ids
-        // TODO PGU limit the filters numbers
+        // 
+        // order 
+        final String sortDirection = queryParameters.isAscending() ? "" : "-";
+        final String sortField = queryParameters.getSortField().toString().toLowerCase();
+        query.order(sortDirection + sortField);
+
+        // TODO PGU limit the filters numbers; handle the cursor on filter ids
         // http://stackoverflow.com/questions/6905898/illegalargumentexception-splitting-the-provided-query-requires-that-too-many-su
-        final QueryResultIterator<Book> itr = query.order("title").offset(start).limit(length).iterator();
+        final QueryResultIterator<Book> itr = query.offset(start).limit(length).iterator();
 
         final ArrayList<Book> books = new ArrayList<Book>(length);
         while (itr.hasNext()) {

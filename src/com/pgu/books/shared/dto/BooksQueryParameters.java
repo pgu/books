@@ -3,13 +3,16 @@ package com.pgu.books.shared.dto;
 import java.util.ArrayList;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
+import com.pgu.books.shared.utils.SortField;
 
 public class BooksQueryParameters implements IsSerializable {
 
-    private String            searchText = "";
+    private String            searchText;
     private ArrayList<String> selectedAuthors;
     private ArrayList<String> selectedEditors;
     private ArrayList<String> selectedCategories;
+    private SortField         sortField;
+    private boolean           isAscending = true;
 
     public BooksQueryParameters authors(final ArrayList<String> selectedAuthors) {
         checkNotNull(selectedAuthors);
@@ -30,6 +33,12 @@ public class BooksQueryParameters implements IsSerializable {
 
         this.selectedCategories = selectedCategories;
         return this;
+    }
+
+    private static void checkNotNull(final ArrayList<String> selecteds) {
+        if (null == selecteds) {
+            throw new IllegalArgumentException();
+        }
     }
 
     public ArrayList<String> getSelectedAuthors() {
@@ -54,6 +63,9 @@ public class BooksQueryParameters implements IsSerializable {
     }
 
     public String getSearchText() {
+        if (searchText == null) {
+            return "";
+        }
         return searchText;
     }
 
@@ -61,16 +73,30 @@ public class BooksQueryParameters implements IsSerializable {
         this.searchText = searchText;
     }
 
-    private void checkNotNull(final ArrayList<String> selecteds) {
-        if (null == selecteds) {
-            throw new IllegalArgumentException();
+    public SortField getSortField() {
+        if (sortField == null) {
+            return SortField.TITLE;
         }
+        return sortField;
+    }
+
+    public boolean isAscending() {
+        return isAscending;
+    }
+
+    public void setAscending(final boolean isAscending) {
+        this.isAscending = isAscending;
+    }
+
+    public void setSortField(final SortField sortField) {
+        this.sortField = sortField;
     }
 
     @Override
     public String toString() {
-        return "BooksFiltersDTO [searchText=" + searchText + ", selectedAuthors=" + selectedAuthors
-                + ", selectedEditors=" + selectedEditors + ", selectedCategories=" + selectedCategories + "]";
+        return "BooksQueryParameters [searchText=" + searchText + ", selectedAuthors=" + selectedAuthors
+                + ", selectedEditors=" + selectedEditors + ", selectedCategories=" + selectedCategories
+                + ", sortField=" + sortField + ", isAscending=" + isAscending + "]";
     }
 
 }

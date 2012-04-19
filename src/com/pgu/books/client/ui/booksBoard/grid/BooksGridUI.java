@@ -12,7 +12,7 @@ public interface BooksGridUI extends IsWidget {
 
     void initFetchBooks();
 
-    void initFetch();
+    void initFetchFlags();
 
     void setNbBooks(Integer count);
 

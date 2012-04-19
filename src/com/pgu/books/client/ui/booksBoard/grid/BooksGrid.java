@@ -139,7 +139,7 @@ public class BooksGrid extends Composite implements BooksGridUI {
     private int             currentStart     = 0;
 
     @Override
-    public void initFetch() {
+    public void initFetchFlags() {
         isGettingNbBooks = true;
         isGettingBooks = true;
     }
@@ -188,34 +188,35 @@ public class BooksGrid extends Composite implements BooksGridUI {
                 currentStart = display.getVisibleRange().getStart();
                 length = display.getVisibleRange().getLength();
 
-                final ColumnSortList sortList = grid.getColumnSortList();
+                final ColumnSortList.ColumnSortInfo sortInfo = getSortInfo();
 
-                ColumnSortList.ColumnSortInfo currentInfo = null;
-                for (int i = 0; i < sortList.size(); i++) {
-                    final ColumnSortList.ColumnSortInfo info = sortList.get(i);
-                    GWT.log(" column: " + col2field.get(info.getColumn()));
-                    GWT.log("    asc: " + info.isAscending());
+                final SortField sortField = col2field.get(sortInfo.getColumn());
+                final boolean isAscending = sortInfo.isAscending();
 
-                    if (i == 0) {
-                        currentInfo = info;
-                    }
-                }
-
-                if (currentInfo != null) {
-                    sortList.clear();
-                    sortList.push(currentInfo); // keeps only one sort
-                }
-
-                // TODO PGU add the sorting column
-                presenter.fetchBooks(currentStart, length);
+                presenter.fetchBooks(currentStart, length, sortField, isAscending);
             }
+
         };
 
         provider.addDataDisplay(grid);
 
-        final AsyncHandler columnSortHandler = new AsyncHandler(grid);
-        grid.addColumnSortHandler(columnSortHandler);
+        grid.addColumnSortHandler(new AsyncHandler(grid));
         grid.getColumnSortList().push(titleColumn); // by default, we know it is sorted by titles
+    }
+
+    private ColumnSortList.ColumnSortInfo getSortInfo() {
+        final ColumnSortList sortList = grid.getColumnSortList();
+
+        if (sortList.size() > 0) {
+            final ColumnSortList.ColumnSortInfo sortInfo = sortList.get(0);
+
+            sortList.clear();
+            sortList.push(sortInfo); // keeps only one sort
+        } else {
+
+            sortList.push(titleColumn); // by default, sort by titles
+        }
+        return sortList.get(0);
     }
 
     @Override

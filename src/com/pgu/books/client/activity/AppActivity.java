@@ -26,6 +26,7 @@ import com.pgu.books.client.ui.booksBoard.filters.Letter;
 import com.pgu.books.shared.domain.Book;
 import com.pgu.books.shared.dto.BooksQueryParameters;
 import com.pgu.books.shared.dto.LoginInfo;
+import com.pgu.books.shared.utils.SortField;
 
 public class AppActivity implements //
         AppPresenter, //
@@ -55,7 +56,7 @@ public class AppActivity implements //
     private AppUI                        dashboard;
 
     // search state
-    private final BooksQueryParameters        queryParameters        = new BooksQueryParameters();
+    private final BooksQueryParameters   queryParameters   = new BooksQueryParameters();
 
     public AppUI initView(final LoginInfo loginInfo) {
 
@@ -129,10 +130,21 @@ public class AppActivity implements //
     }
 
     @Override
-    public void fetchBooks(final int start, final int length) {
-        GWT.log("start -> " + start + ", " + "length -> " + length);
+    public void fetchBooks(final int start, final int length, final SortField sortField, final boolean isAscending) {
+        queryParameters.setSortField(sortField);
+        queryParameters.setAscending(isAscending);
+        fetchBooksInternal(start, length);
+    }
 
-        dashboard.getBooksGridUI().initFetch();
+    private void fetchBooksInternal(final int start, final int length) {
+        GWT.log("---" + //
+                "start -> " + start + ", " + //
+                "length -> " + length + ", " + //
+                "sortField -> " + queryParameters.getSortField() + ", " + //
+                "isAscending -> " + queryParameters.isAscending() + ", " //
+        );
+
+        dashboard.getBooksGridUI().initFetchFlags();
 
         booksService.countBooks(queryParameters, new AsyncCallbackApp<Integer>() {
 
@@ -178,7 +190,7 @@ public class AppActivity implements //
                 .editors(selectedEditors) //
                 .categories(selectedCategories);
 
-        fetchBooks(0, dashboard.getBooksGridUI().getLength());
+        fetchBooksInternal(0, dashboard.getBooksGridUI().getLength());
     }
 
     @Override
@@ -208,7 +220,7 @@ public class AppActivity implements //
     @Override
     public void searchBooks(final String text) {
         queryParameters.setSearchText(text);
-        fetchBooks(0, dashboard.getBooksGridUI().getLength());
+        fetchBooksInternal(0, dashboard.getBooksGridUI().getLength());
     }
 
     private void initFetchFilters() {
