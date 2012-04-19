@@ -201,7 +201,7 @@ public class BooksGrid extends Composite implements BooksGridUI {
         provider.addDataDisplay(grid);
 
         grid.addColumnSortHandler(new AsyncHandler(grid));
-        grid.getColumnSortList().push(titleColumn); // by default, we know it is sorted by titles
+        //        grid.getColumnSortList().push(titleColumn); // by default, we know it is sorted by titles
     }
 
     private ColumnSortList.ColumnSortInfo getSortInfo() {
