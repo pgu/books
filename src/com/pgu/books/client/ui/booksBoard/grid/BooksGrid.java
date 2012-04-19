@@ -23,7 +23,6 @@ import com.pgu.books.shared.domain.Book;
 import com.pgu.books.shared.utils.SortField;
 
 // TODO PGU EDITION of a book: edition in the grid and a new form to create a new book
-// TODO PGU server sorting on columns
 // TODO PGU edition only for logged admin
 public class BooksGrid extends Composite implements BooksGridUI {
 
@@ -199,9 +198,7 @@ public class BooksGrid extends Composite implements BooksGridUI {
         };
 
         provider.addDataDisplay(grid);
-
         grid.addColumnSortHandler(new AsyncHandler(grid));
-        //        grid.getColumnSortList().push(titleColumn); // by default, we know it is sorted by titles
     }
 
     private ColumnSortList.ColumnSortInfo getSortInfo() {
