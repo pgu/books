@@ -14,6 +14,7 @@ import com.pgu.books.client.ui.booksBoard.grid.BooksGrid;
 import com.pgu.books.client.ui.booksBoard.grid.BooksGridUI;
 import com.pgu.books.client.ui.booksBoard.search.BooksSearch;
 import com.pgu.books.client.ui.booksBoard.search.BooksSearchUI;
+import com.pgu.books.shared.dto.LoginInfo;
 
 public class BooksBoard extends Composite implements BooksBoardUI {
 
@@ -29,7 +30,7 @@ public class BooksBoard extends Composite implements BooksBoardUI {
     private final BooksFilters booksFilters;
     private final BooksSearch  booksSearch;
 
-    public BooksBoard() {
+    public BooksBoard(final LoginInfo loginInfo) {
 
         booksBoard = new DockPanel();
         booksBoard.setSpacing(4);
@@ -41,7 +42,7 @@ public class BooksBoard extends Composite implements BooksBoardUI {
         booksBoard.add(booksSearch, DockPanel.NORTH);
         booksBoard.add(booksFilters, DockPanel.WEST);
 
-        booksGrid = new BooksGrid();
+        booksGrid = new BooksGrid(loginInfo);
         booksGrid.setHeight("600px");
         booksGrid.setWidth("1000px");
         booksBoard.add(booksGrid, DockPanel.CENTER);

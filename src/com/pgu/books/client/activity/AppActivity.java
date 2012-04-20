@@ -61,7 +61,9 @@ public class AppActivity implements //
     public AppUI initView(final LoginInfo loginInfo) {
 
         if (null == dashboard) {
-            dashboard = new Dashboard();
+            // TODO PGU Move rpc to admin/rpc: grid -> edition
+            // TODO PGU Move rpc to admin/rpc: graph -> piles
+            dashboard = new Dashboard(loginInfo);
             dashboard.setPresenter(this);
             //
             dashboard.getBooksMenuUI().setPresenter(this);
@@ -88,13 +90,6 @@ public class AppActivity implements //
                 }
             });
 
-            // TODO PGU Move rpc to admin/rpc: grid -> edition
-            // TODO PGU Move rpc to admin/rpc: graph -> piles
-            if (loginInfo.isLoggedIn()) {
-                dashboard.getBooksMenuUI().showAdminFeatures(loginInfo.getLogoutUrl());
-            } else {
-                dashboard.getBooksMenuUI().hideAdminFeatures(loginInfo.getLoginUrl());
-            }
         }
 
         return dashboard;

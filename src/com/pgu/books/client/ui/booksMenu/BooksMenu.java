@@ -10,6 +10,7 @@ import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Widget;
 import com.pgu.books.client.Books;
 import com.pgu.books.client.activity.booksMenu.BooksMenuPresenter;
+import com.pgu.books.shared.dto.LoginInfo;
 
 public class BooksMenu extends Composite implements BooksMenuUI {
 
@@ -26,7 +27,7 @@ public class BooksMenu extends Composite implements BooksMenuUI {
     @UiField(provided = true)
     Hyperlink       booksLink, graphsLink, importLink;
 
-    public BooksMenu() {
+    public BooksMenu(final LoginInfo loginInfo) {
         booksLink = new Hyperlink("Libros", Books.TAG_BOOKS);
         graphsLink = new Hyperlink("Gráficos", Books.TAG_CHARTS);
         importLink = new Hyperlink("Import", Books.TAG_IMPORT);
@@ -34,6 +35,24 @@ public class BooksMenu extends Composite implements BooksMenuUI {
         initWidget(uiBinder.createAndBindUi(this));
 
         menu.setSpacing(5);
+
+        if (loginInfo.isLoggedIn()) {
+            showAdminFeatures(loginInfo);
+        } else {
+            hideAdminFeatures(loginInfo);
+        }
+    }
+
+    private void hideAdminFeatures(final LoginInfo loginInfo) {
+        importLink.setVisible(false);
+        signin.setText("Sign in");
+        signin.setHref(loginInfo.getLoginUrl());
+    }
+
+    private void showAdminFeatures(final LoginInfo loginInfo) {
+        importLink.setVisible(true);
+        signin.setText("Sign out");
+        signin.setHref(loginInfo.getLogoutUrl());
     }
 
     private BooksMenuPresenter presenter;
@@ -41,20 +60,6 @@ public class BooksMenu extends Composite implements BooksMenuUI {
     @Override
     public void setPresenter(final BooksMenuPresenter presenter) {
         this.presenter = presenter;
-    }
-
-    @Override
-    public void hideAdminFeatures(final String loginUrl) {
-        importLink.setVisible(false);
-        signin.setText("Sign in");
-        signin.setHref(loginUrl);
-    }
-
-    @Override
-    public void showAdminFeatures(final String logoutUrl) {
-        importLink.setVisible(true);
-        signin.setText("Sign out");
-        signin.setHref(logoutUrl);
     }
 
 }

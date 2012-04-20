@@ -21,6 +21,7 @@ import com.pgu.books.client.ui.booksImport.BooksImportUI;
 import com.pgu.books.client.ui.booksMenu.BooksMenu;
 import com.pgu.books.client.ui.booksMenu.BooksMenuUI;
 import com.pgu.books.client.ui.utils.IsFocusable;
+import com.pgu.books.shared.dto.LoginInfo;
 
 public class Dashboard extends Composite implements AppUI {
 
@@ -29,21 +30,26 @@ public class Dashboard extends Composite implements AppUI {
     interface DashboardUiBinder extends UiBinder<Widget, Dashboard> {
     }
 
-    @UiField
+    @UiField(provided = true)
     BooksMenu            booksMenu;
 
-    @UiField
+    @UiField(provided = true)
     BooksBoard           booksBoard;
 
-    @UiField
+    @UiField(provided = true)
     BooksCharts          booksCharts;
 
-    @UiField
+    @UiField(provided = true)
     BooksImport          booksImport;
 
     private AppPresenter dashboardPresenter;
 
-    public Dashboard() {
+    public Dashboard(final LoginInfo loginInfo) {
+        booksMenu = new BooksMenu(loginInfo);
+        booksBoard = new BooksBoard(loginInfo);
+        booksCharts = new BooksCharts(loginInfo);
+        booksImport = new BooksImport(loginInfo);
+
         initWidget(uiBinder.createAndBindUi(this));
     }
 

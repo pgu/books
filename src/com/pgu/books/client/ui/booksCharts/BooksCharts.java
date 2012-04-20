@@ -36,6 +36,7 @@ import com.google.gwt.visualization.client.visualizations.corechart.PieChart;
 import com.google.gwt.visualization.client.visualizations.corechart.PieChart.PieOptions;
 import com.google.gwt.visualization.client.visualizations.corechart.Series;
 import com.pgu.books.client.activity.booksCharts.BooksChartsPresenter;
+import com.pgu.books.shared.dto.LoginInfo;
 
 public class BooksCharts extends Composite implements BooksChartsUI {
 
@@ -62,7 +63,7 @@ public class BooksCharts extends Composite implements BooksChartsUI {
         this.presenter = presenter;
     }
 
-    public BooksCharts() {
+    public BooksCharts(final LoginInfo loginInfo) {
 
         final Runnable onLoadCallback = new Runnable() {
             @Override

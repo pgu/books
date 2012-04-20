@@ -16,6 +16,7 @@ import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.ToggleButton;
 import com.google.gwt.user.client.ui.Widget;
 import com.pgu.books.client.activity.booksImport.BooksImportPresenter;
+import com.pgu.books.shared.dto.LoginInfo;
 import com.pgu.books.shared.utils.BookCategory;
 
 public class BooksImport extends Composite implements BooksImportUI {
@@ -34,7 +35,7 @@ public class BooksImport extends Composite implements BooksImportUI {
     private BooksImportPresenter                presenter;
     private final HashMap<String, ToggleButton> title2btns = new HashMap<String, ToggleButton>();
 
-    public BooksImport() {
+    public BooksImport(final LoginInfo loginInfo) {
         final int cols = 6;
         final ArrayList<String> titles = BookCategory.titles;
         int rows = titles.size() / cols;

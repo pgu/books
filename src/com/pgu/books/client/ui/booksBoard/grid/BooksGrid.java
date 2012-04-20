@@ -3,7 +3,8 @@ package com.pgu.books.client.ui.booksBoard.grid;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.google.gwt.cell.client.TextInputCell;
+import com.google.gwt.cell.client.EditTextCell;
+import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -14,6 +15,7 @@ import com.google.gwt.user.cellview.client.DataGrid;
 import com.google.gwt.user.cellview.client.HasKeyboardSelectionPolicy.KeyboardSelectionPolicy;
 import com.google.gwt.user.cellview.client.SimplePager;
 import com.google.gwt.user.cellview.client.SimplePager.TextLocation;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
@@ -22,6 +24,7 @@ import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.ProvidesKey;
 import com.pgu.books.client.activity.booksBoard.grid.BooksGridPresenter;
 import com.pgu.books.shared.domain.Book;
+import com.pgu.books.shared.dto.LoginInfo;
 import com.pgu.books.shared.utils.SortField;
 
 // TODO PGU EDITION of a book: edition in the grid and a new form to create a new book
@@ -60,14 +63,14 @@ public class BooksGrid extends Composite implements BooksGridUI {
     // https://developers.google.com/web-toolkit/doc/latest/DevGuideUiCellTable
     // http://gwt.google.com/samples/Showcase/Showcase.html#!CwCellTable
     // http://www.mytechtip.com/2010/11/gwt-celltable-example-using_8168.html
-    public BooksGrid() {
+    public BooksGrid(final LoginInfo loginInfo) {
 
-        buildCellTableWithPager();
+        buildCellTableWithPager(loginInfo);
 
         initWidget(uiBinder.createAndBindUi(this));
     }
 
-    private void buildCellTableWithPager() {
+    private void buildCellTableWithPager(final LoginInfo loginInfo) {
         grid = new DataGrid<Book>(KEY_PROVIDER);
         grid.setWidth("100%");
         grid.setKeyboardSelectionPolicy(KeyboardSelectionPolicy.ENABLED);
@@ -77,12 +80,12 @@ public class BooksGrid extends Composite implements BooksGridUI {
         pager = new SimplePager(TextLocation.CENTER, pagerResources, false, 0, true);
         pager.setDisplay(grid);
 
-        final TextInputCell authorCell = new TextInputCell();
-        final TextInputCell titleCell = new TextInputCell();
-        final TextInputCell editorCell = new TextInputCell();
-        final TextInputCell yearCell = new TextInputCell();
-        final TextInputCell commentCell = new TextInputCell();
-        final TextInputCell categoryCell = new TextInputCell();
+        final EditTextCell authorCell = new EditTextCell();
+        final EditTextCell titleCell = new EditTextCell();
+        final EditTextCell editorCell = new EditTextCell();
+        final EditTextCell yearCell = new EditTextCell();
+        final EditTextCell commentCell = new EditTextCell();
+        final EditTextCell categoryCell = new EditTextCell();
 
         final Column<Book, String> authorColumn = new Column<Book, String>(authorCell) {
 
@@ -126,6 +129,23 @@ public class BooksGrid extends Composite implements BooksGridUI {
             }
         };
 
+        authorColumn.setFieldUpdater(new FieldUpdater<Book, String>() {
+
+            @Override
+            public void update(final int index, final Book book, final String author) {
+                if (author.length() < 3) {
+                    Window.alert("Names must be at least three characters long.");
+                    authorCell.clearViewData(KEY_PROVIDER.getKey(book));
+                    grid.redraw();
+                    return;
+                }
+
+                Window.alert("You changed the name of " + book.getAuthor() + " to " + author);
+                book.setAuthor(author);
+                grid.redraw();
+            }
+        });
+
         authorColumn.setSortable(true);
         titleColumn.setSortable(true);
         editorColumn.setSortable(true);
@@ -144,6 +164,7 @@ public class BooksGrid extends Composite implements BooksGridUI {
         grid.addColumn(yearColumn, "Año");
         grid.addColumn(commentColumn, "Comentario");
         grid.addColumn(categoryColumn, "Categoría");
+
     }
 
     private boolean         isGettingNbBooks = false;
