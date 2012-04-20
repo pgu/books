@@ -143,15 +143,16 @@ public class BooksGrid extends Composite implements BooksGridUI {
                 @Override
                 public void update(final int index, final Book book, final String author) {
                     if (author.length() < 3) {
-                        Window.alert("Names must be at least three characters long.");
+                        Window.alert("Por lo menos 3 caracteres");
                         authorCell.clearViewData(KEY_PROVIDER.getKey(book));
                         grid.redraw();
                         return;
                     }
 
-                    Window.alert("You changed the name of " + book.getAuthor() + " to " + author);
+                    Window.alert("Has cambiado " + book.getAuthor() + " por " + author);
                     book.setAuthor(author);
                     grid.redraw();
+                    // TODO PGU send async update
                 }
             });
 
