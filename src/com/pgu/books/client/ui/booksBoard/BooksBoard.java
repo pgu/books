@@ -75,6 +75,7 @@ public class BooksBoard extends Composite implements BooksBoardUI {
         disclosurePanelDelete.add(new Button("Borrar"));
 
         final VerticalPanel westMenu = new VerticalPanel();
+        westMenu.setWidth("150px");
         westMenu.add(disclosurePanelFilters);
         westMenu.add(disclosurePanelForm);
         westMenu.add(disclosurePanelDelete);

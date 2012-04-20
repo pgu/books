@@ -9,4 +9,4 @@
 
     <g:DockPanel ui:field="booksBoard" styleName="{style.dashboard}"></g:DockPanel>
     
-</ui:UiBinder> 
+</ui:UiBinder>
