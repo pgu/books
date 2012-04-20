@@ -320,4 +320,16 @@ public class AppActivity implements //
         dashboard.getBooksChartsUI().showCharts();
 
     }
+
+    @Override
+    public void saveBook(final Book book) {
+        adminBooksService.saveBook(book, new AsyncCallbackApp<Void>() {
+
+            @Override
+            public void onSuccess(final Void result) {
+                // for now, nothing to do 
+            }
+
+        });
+    }
 }

@@ -93,4 +93,9 @@ public class AdminBooksServiceImpl extends RemoteServiceServlet implements Admin
         }
     }
 
+    @Override
+    public void saveBook(final Book book) {
+        dao.ofy().put(book);
+    }
+
 }

@@ -1,11 +1,13 @@
 package com.pgu.books.client.ui.booksBoard.grid;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 
 import com.google.gwt.cell.client.EditTextCell;
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.cellview.client.Column;
@@ -142,6 +144,11 @@ public class BooksGrid extends Composite implements BooksGridUI {
 
                 @Override
                 public void update(final int index, final Book book, final String author) {
+                    if (book.getAuthor().equals(author)) {
+                        authorCell.clearViewData(KEY_PROVIDER.getKey(book));
+                        grid.redraw();
+                        return;
+                    }
                     if (author.length() < 3) {
                         Window.alert("Por lo menos 3 caracteres");
                         authorCell.clearViewData(KEY_PROVIDER.getKey(book));
@@ -149,10 +156,132 @@ public class BooksGrid extends Composite implements BooksGridUI {
                         return;
                     }
 
-                    Window.alert("Has cambiado " + book.getAuthor() + " por " + author);
                     book.setAuthor(author);
                     grid.redraw();
-                    // TODO PGU send async update
+                    presenter.saveBook(book);
+                }
+            });
+            titleColumn.setFieldUpdater(new FieldUpdater<Book, String>() {
+
+                @Override
+                public void update(final int index, final Book book, final String title) {
+                    if (book.getTitle().equals(title)) {
+                        titleCell.clearViewData(KEY_PROVIDER.getKey(book));
+                        grid.redraw();
+                        return;
+                    }
+
+                    if (title.length() < 3) {
+                        Window.alert("Por lo menos 3 caracteres");
+                        titleCell.clearViewData(KEY_PROVIDER.getKey(book));
+                        grid.redraw();
+                        return;
+                    }
+
+                    book.setTitle(title);
+                    grid.redraw();
+                    presenter.saveBook(book);
+                }
+            });
+            editorColumn.setFieldUpdater(new FieldUpdater<Book, String>() {
+
+                @Override
+                public void update(final int index, final Book book, final String editor) {
+                    if (book.getEditor().equals(editor)) {
+                        editorCell.clearViewData(KEY_PROVIDER.getKey(book));
+                        grid.redraw();
+                        return;
+                    }
+
+                    if (editor.length() < 3) {
+                        Window.alert("Por lo menos 3 caracteres");
+                        editorCell.clearViewData(KEY_PROVIDER.getKey(book));
+                        grid.redraw();
+                        return;
+                    }
+
+                    book.setEditor(editor);
+                    grid.redraw();
+                    presenter.saveBook(book);
+                }
+            });
+            yearColumn.setFieldUpdater(new FieldUpdater<Book, String>() {
+
+                @Override
+                public void update(final int index, final Book book, final String year) {
+                    if (book.getYear().equals(year)) {
+                        yearCell.clearViewData(KEY_PROVIDER.getKey(book));
+                        grid.redraw();
+                        return;
+                    }
+
+                    boolean isValidYear = true;
+
+                    int y = 0;
+                    try {
+                        y = Integer.parseInt(year);
+                    } catch (final NumberFormatException nfe) {
+                        isValidYear = false;
+                    }
+                    if (isValidYear) {
+                        final int currentYear = Integer.parseInt(DateTimeFormat.getFormat("yyyy").format(new Date()));
+                        if (y > currentYear) {
+                            isValidYear = false;
+                        }
+                    }
+                    if (!isValidYear) {
+                        Window.alert("No es un año válido");
+                        yearCell.clearViewData(KEY_PROVIDER.getKey(book));
+                        grid.redraw();
+                        return;
+                    }
+
+                    book.setYear(year);
+                    grid.redraw();
+                    presenter.saveBook(book);
+                }
+            });
+            commentColumn.setFieldUpdater(new FieldUpdater<Book, String>() {
+
+                @Override
+                public void update(final int index, final Book book, final String comment) {
+                    if (book.getComment().equals(comment)) {
+                        commentCell.clearViewData(KEY_PROVIDER.getKey(book));
+                        grid.redraw();
+                        return;
+                    }
+
+                    if (book.getComment().equals(comment)) {
+                        commentCell.clearViewData(KEY_PROVIDER.getKey(book));
+                        grid.redraw();
+                        return;
+                    }
+
+                    book.setComment(comment);
+                    grid.redraw();
+                    presenter.saveBook(book);
+                }
+            });
+            categoryColumn.setFieldUpdater(new FieldUpdater<Book, String>() {
+
+                @Override
+                public void update(final int index, final Book book, final String category) {
+                    if (book.getCategory().equals(category)) {
+                        categoryCell.clearViewData(KEY_PROVIDER.getKey(book));
+                        grid.redraw();
+                        return;
+                    }
+
+                    if (category.length() < 3) {
+                        Window.alert("Por lo menos 3 caracteres");
+                        categoryCell.clearViewData(KEY_PROVIDER.getKey(book));
+                        grid.redraw();
+                        return;
+                    }
+
+                    book.setCategory(category);
+                    grid.redraw();
+                    presenter.saveBook(book);
                 }
             });
 
