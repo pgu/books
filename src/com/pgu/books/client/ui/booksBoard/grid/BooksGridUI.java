@@ -20,4 +20,6 @@ public interface BooksGridUI extends IsWidget {
 
     int getLength();
 
+    void refreshGrid();
+
 }

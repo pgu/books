@@ -7,6 +7,6 @@ public interface BooksGridPresenter {
 
     void fetchBooks(int start, int length, SortField sortField, boolean isAscending);
 
-    void saveBook(Book book);
+    void updateBook(Book book);
 
 }

@@ -322,12 +322,24 @@ public class AppActivity implements //
     }
 
     @Override
-    public void saveBook(final Book book) {
+    public void updateBook(final Book book) {
         adminBooksService.saveBook(book, new AsyncCallbackApp<Void>() {
 
             @Override
             public void onSuccess(final Void result) {
-                // for now, nothing to do 
+                // for now, nothing to do
+            }
+
+        });
+    }
+
+    @Override
+    public void createBook(final Book book) {
+        adminBooksService.saveBook(book, new AsyncCallbackApp<Void>() {
+
+            @Override
+            public void onSuccess(final Void result) {
+                dashboard.getBooksGridUI().refreshGrid();
             }
 
         });

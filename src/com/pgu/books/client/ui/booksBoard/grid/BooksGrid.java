@@ -176,7 +176,7 @@ public class BooksGrid extends Composite implements BooksGridUI {
 
                     book.setTitle(title);
                     grid.redraw();
-                    presenter.saveBook(book);
+                    presenter.updateBook(book);
                 }
             });
             authorColumn.setFieldUpdater(new FieldUpdater<Book, String>() {
@@ -197,7 +197,7 @@ public class BooksGrid extends Composite implements BooksGridUI {
 
                     book.setAuthor(author);
                     grid.redraw();
-                    presenter.saveBook(book);
+                    presenter.updateBook(book);
                 }
             });
             editorColumn.setFieldUpdater(new FieldUpdater<Book, String>() {
@@ -219,7 +219,7 @@ public class BooksGrid extends Composite implements BooksGridUI {
 
                     book.setEditor(editor);
                     grid.redraw();
-                    presenter.saveBook(book);
+                    presenter.updateBook(book);
                 }
             });
             yearColumn.setFieldUpdater(new FieldUpdater<Book, String>() {
@@ -241,7 +241,7 @@ public class BooksGrid extends Composite implements BooksGridUI {
 
                     book.setYear(year);
                     grid.redraw();
-                    presenter.saveBook(book);
+                    presenter.updateBook(book);
                 }
             });
             commentColumn.setFieldUpdater(new FieldUpdater<Book, String>() {
@@ -262,7 +262,7 @@ public class BooksGrid extends Composite implements BooksGridUI {
 
                     book.setComment(comment);
                     grid.redraw();
-                    presenter.saveBook(book);
+                    presenter.updateBook(book);
                 }
             });
             categoryColumn.setFieldUpdater(new FieldUpdater<Book, String>() {
@@ -284,7 +284,7 @@ public class BooksGrid extends Composite implements BooksGridUI {
 
                     book.setCategory(category);
                     grid.redraw();
-                    presenter.saveBook(book);
+                    presenter.updateBook(book);
                 }
             });
 
@@ -398,6 +398,8 @@ public class BooksGrid extends Composite implements BooksGridUI {
 
     private AsyncDataProvider<Book> provider;
     private int                     length;
+    private SortField               sortField;
+    private boolean                 isAscending;
 
     @Override
     public void initFetchBooks() {
@@ -412,8 +414,8 @@ public class BooksGrid extends Composite implements BooksGridUI {
 
                 final ColumnSortList.ColumnSortInfo sortInfo = getSortInfo();
 
-                final SortField sortField = col2field.get(sortInfo.getColumn());
-                final boolean isAscending = sortInfo.isAscending();
+                sortField = col2field.get(sortInfo.getColumn());
+                isAscending = sortInfo.isAscending();
 
                 presenter.fetchBooks(currentStart, length, sortField, isAscending);
             }
@@ -442,6 +444,11 @@ public class BooksGrid extends Composite implements BooksGridUI {
     @Override
     public int getLength() {
         return length;
+    }
+
+    @Override
+    public void refreshGrid() {
+        presenter.fetchBooks(currentStart, length, sortField, isAscending);
     }
 
 }

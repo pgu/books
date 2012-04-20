@@ -6,6 +6,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DisclosurePanel;
@@ -23,6 +24,8 @@ import com.pgu.books.client.ui.booksBoard.grid.BooksGrid;
 import com.pgu.books.client.ui.booksBoard.grid.BooksGridUI;
 import com.pgu.books.client.ui.booksBoard.search.BooksSearch;
 import com.pgu.books.client.ui.booksBoard.search.BooksSearchUI;
+import com.pgu.books.client.ui.booksBoard.utils.BookValidator;
+import com.pgu.books.shared.domain.Book;
 import com.pgu.books.shared.dto.LoginInfo;
 
 public class BooksBoard extends Composite implements BooksBoardUI {
@@ -139,7 +142,47 @@ public class BooksBoard extends Composite implements BooksBoardUI {
 
             @Override
             public void onClick(final ClickEvent event) {
+                final String title = titleInput.getText();
+                final String author = authorInput.getText();
+                final String editor = editorInput.getText();
+                final String year = yearInput.getText();
+                final String comment = commentInput.getText();
+                final String category = categoryInput.getText();
 
+                final StringBuilder errors = new StringBuilder();
+
+                if (!BookValidator.isValidTitle(title)) {
+                    errors.append("Por lo menos 3 caracteres para el título \n");
+                }
+                if (!BookValidator.isValidAuthor(author)) {
+                    errors.append("Por lo menos 3 caracteres para el autor \n");
+                }
+                if (!BookValidator.isValidEditor(editor)) {
+                    errors.append("Por lo menos 3 caracteres para el editor \n");
+                }
+                if (!BookValidator.isValidYear(year)) {
+                    errors.append("El año no es válido \n");
+                }
+                if (!BookValidator.isValidComment(comment)) {
+                    errors.append("El comentario no es válido \n");
+                }
+                if (!BookValidator.isValidCategory(category)) {
+                    errors.append("Por lo menos 3 caracteres para la categoría \n");
+                }
+
+                if (errors.length() > 0) {
+                    Window.alert(errors.toString());
+                    return;
+                }
+
+                final Book book = new Book();
+                book.setAuthor(author);
+                book.setCategory(category);
+                book.setComment(comment);
+                book.setEditor(editor);
+                book.setTitle(title);
+                book.setYear(year);
+                presenter.createBook(book);
             }
         });
     }
