@@ -3,21 +3,23 @@ package com.pgu.books.client.ui.booksBoard.grid;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.google.gwt.cell.client.TextInputCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.ColumnSortEvent.AsyncHandler;
 import com.google.gwt.user.cellview.client.ColumnSortList;
 import com.google.gwt.user.cellview.client.DataGrid;
 import com.google.gwt.user.cellview.client.HasKeyboardSelectionPolicy.KeyboardSelectionPolicy;
 import com.google.gwt.user.cellview.client.SimplePager;
 import com.google.gwt.user.cellview.client.SimplePager.TextLocation;
-import com.google.gwt.user.cellview.client.TextColumn;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.HasData;
+import com.google.gwt.view.client.ProvidesKey;
 import com.pgu.books.client.activity.booksBoard.grid.BooksGridPresenter;
 import com.pgu.books.shared.domain.Book;
 import com.pgu.books.shared.utils.SortField;
@@ -32,15 +34,22 @@ public class BooksGrid extends Composite implements BooksGridUI {
     }
 
     @UiField(provided = true)
-    DataGrid<Book>                                     grid;
+    DataGrid<Book>                                         grid;
 
     @UiField(provided = true)
-    SimplePager                                        pager;
+    SimplePager                                            pager;
 
-    private BooksGridPresenter                         presenter;
-    private TextColumn<Book>                           titleColumn;
+    private BooksGridPresenter                             presenter;
+    private Column<Book, String>                           titleColumn;
 
-    private final HashMap<TextColumn<Book>, SortField> col2field = new HashMap<TextColumn<Book>, SortField>();
+    private final HashMap<Column<Book, String>, SortField> col2field    = new HashMap<Column<Book, String>, SortField>();
+
+    private static final ProvidesKey<Book>                 KEY_PROVIDER = new ProvidesKey<Book>() {
+                                                                            @Override
+                                                                            public Object getKey(final Book item) {
+                                                                                return item.getId();
+                                                                            }
+                                                                        };
 
     @Override
     public void setPresenter(final BooksGridPresenter presenter) {
@@ -59,7 +68,7 @@ public class BooksGrid extends Composite implements BooksGridUI {
     }
 
     private void buildCellTableWithPager() {
-        grid = new DataGrid<Book>();
+        grid = new DataGrid<Book>(KEY_PROVIDER);
         grid.setWidth("100%");
         grid.setKeyboardSelectionPolicy(KeyboardSelectionPolicy.ENABLED);
         grid.setEmptyTableWidget(new Label("Ningún libro"));
@@ -68,42 +77,48 @@ public class BooksGrid extends Composite implements BooksGridUI {
         pager = new SimplePager(TextLocation.CENTER, pagerResources, false, 0, true);
         pager.setDisplay(grid);
 
-        final TextColumn<Book> authorColumn = new TextColumn<Book>() {
+        final TextInputCell authorCell = new TextInputCell();
+        final TextInputCell titleCell = new TextInputCell();
+        final TextInputCell editorCell = new TextInputCell();
+        final TextInputCell yearCell = new TextInputCell();
+        final TextInputCell commentCell = new TextInputCell();
+        final TextInputCell categoryCell = new TextInputCell();
+
+        final Column<Book, String> authorColumn = new Column<Book, String>(authorCell) {
 
             @Override
             public String getValue(final Book book) {
                 return book.getAuthor();
             }
         };
-        titleColumn = new TextColumn<Book>() {
+        titleColumn = new Column<Book, String>(titleCell) {
 
             @Override
             public String getValue(final Book book) {
                 return book.getTitle();
             }
         };
-        final TextColumn<Book> editorColumn = new TextColumn<Book>() {
+        final Column<Book, String> editorColumn = new Column<Book, String>(editorCell) {
 
             @Override
             public String getValue(final Book book) {
                 return book.getEditor();
             }
         };
-        final TextColumn<Book> yearColumn = new TextColumn<Book>() {
-
+        final Column<Book, String> yearColumn = new Column<Book, String>(yearCell) {
             @Override
             public String getValue(final Book book) {
                 return book.getYear();
             }
         };
-        final TextColumn<Book> commentColumn = new TextColumn<Book>() {
+        final Column<Book, String> commentColumn = new Column<Book, String>(commentCell) {
 
             @Override
             public String getValue(final Book book) {
                 return book.getComment();
             }
         };
-        final TextColumn<Book> categoryColumn = new TextColumn<Book>() {
+        final Column<Book, String> categoryColumn = new Column<Book, String>(categoryCell) {
 
             @Override
             public String getValue(final Book book) {
