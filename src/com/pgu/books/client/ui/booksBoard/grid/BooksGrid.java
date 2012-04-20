@@ -1,14 +1,12 @@
 package com.pgu.books.client.ui.booksBoard.grid;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 
 import com.google.gwt.cell.client.CheckboxCell;
 import com.google.gwt.cell.client.EditTextCell;
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.cellview.client.Column;
@@ -28,12 +26,11 @@ import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.MultiSelectionModel;
 import com.google.gwt.view.client.ProvidesKey;
 import com.pgu.books.client.activity.booksBoard.grid.BooksGridPresenter;
+import com.pgu.books.client.ui.booksBoard.utils.BookValidator;
 import com.pgu.books.shared.domain.Book;
 import com.pgu.books.shared.dto.LoginInfo;
 import com.pgu.books.shared.utils.SortField;
 
-// TODO PGU EDITION of a book: edition in the grid and a new form to create a new book
-// TODO PGU DELETION of a book: archivage
 public class BooksGrid extends Composite implements BooksGridUI {
 
     private static BooksGridUiBinder uiBinder = GWT.create(BooksGridUiBinder.class);
@@ -93,8 +90,8 @@ public class BooksGrid extends Composite implements BooksGridUI {
 
         if (loginInfo.isLoggedIn()) {
 
-            final EditTextCell authorCell = new EditTextCell();
             final EditTextCell titleCell = new EditTextCell();
+            final EditTextCell authorCell = new EditTextCell();
             final EditTextCell editorCell = new EditTextCell();
             final EditTextCell yearCell = new EditTextCell();
             final EditTextCell commentCell = new EditTextCell();
@@ -102,14 +99,6 @@ public class BooksGrid extends Composite implements BooksGridUI {
 
             final MultiSelectionModel<Book> selectionModel = new MultiSelectionModel<Book>();
             grid.setSelectionModel(selectionModel);
-            // selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
-            // public void onSelectionChange(SelectionChangeEvent event) {
-            // Contact selected = selectionModel.getSelectedObject();
-            // if (selected != null) {
-            // Window.alert("You selected: " + selected.name);
-            // }
-            // }
-            // });
             final Column<Book, Boolean> checkboxColumn = new Column<Book, Boolean>(new CheckboxCell(true, false)) {
 
                 @Override
@@ -126,18 +115,18 @@ public class BooksGrid extends Composite implements BooksGridUI {
             });
             grid.addColumn(checkboxColumn, "");
 
-            authorColumn = new Column<Book, String>(authorCell) {
-
-                @Override
-                public String getValue(final Book book) {
-                    return book.getAuthor();
-                }
-            };
             titleColumn = new Column<Book, String>(titleCell) {
 
                 @Override
                 public String getValue(final Book book) {
                     return book.getTitle();
+                }
+            };
+            authorColumn = new Column<Book, String>(authorCell) {
+
+                @Override
+                public String getValue(final Book book) {
+                    return book.getAuthor();
                 }
             };
             editorColumn = new Column<Book, String>(editorCell) {
@@ -168,27 +157,6 @@ public class BooksGrid extends Composite implements BooksGridUI {
                 }
             };
 
-            authorColumn.setFieldUpdater(new FieldUpdater<Book, String>() {
-
-                @Override
-                public void update(final int index, final Book book, final String author) {
-                    if (book.getAuthor().equals(author)) {
-                        authorCell.clearViewData(KEY_PROVIDER.getKey(book));
-                        grid.redraw();
-                        return;
-                    }
-                    if (author.length() < 3) {
-                        Window.alert("Por lo menos 3 caracteres");
-                        authorCell.clearViewData(KEY_PROVIDER.getKey(book));
-                        grid.redraw();
-                        return;
-                    }
-
-                    book.setAuthor(author);
-                    grid.redraw();
-                    presenter.saveBook(book);
-                }
-            });
             titleColumn.setFieldUpdater(new FieldUpdater<Book, String>() {
 
                 @Override
@@ -199,7 +167,7 @@ public class BooksGrid extends Composite implements BooksGridUI {
                         return;
                     }
 
-                    if (title.length() < 3) {
+                    if (!BookValidator.isValidTitle(title)) {
                         Window.alert("Por lo menos 3 caracteres");
                         titleCell.clearViewData(KEY_PROVIDER.getKey(book));
                         grid.redraw();
@@ -207,6 +175,27 @@ public class BooksGrid extends Composite implements BooksGridUI {
                     }
 
                     book.setTitle(title);
+                    grid.redraw();
+                    presenter.saveBook(book);
+                }
+            });
+            authorColumn.setFieldUpdater(new FieldUpdater<Book, String>() {
+
+                @Override
+                public void update(final int index, final Book book, final String author) {
+                    if (book.getAuthor().equals(author)) {
+                        authorCell.clearViewData(KEY_PROVIDER.getKey(book));
+                        grid.redraw();
+                        return;
+                    }
+                    if (!BookValidator.isValidAuthor(author)) {
+                        Window.alert("Por lo menos 3 caracteres");
+                        authorCell.clearViewData(KEY_PROVIDER.getKey(book));
+                        grid.redraw();
+                        return;
+                    }
+
+                    book.setAuthor(author);
                     grid.redraw();
                     presenter.saveBook(book);
                 }
@@ -221,7 +210,7 @@ public class BooksGrid extends Composite implements BooksGridUI {
                         return;
                     }
 
-                    if (editor.length() < 3) {
+                    if (!BookValidator.isValidEditor(editor)) {
                         Window.alert("Por lo menos 3 caracteres");
                         editorCell.clearViewData(KEY_PROVIDER.getKey(book));
                         grid.redraw();
@@ -243,21 +232,7 @@ public class BooksGrid extends Composite implements BooksGridUI {
                         return;
                     }
 
-                    boolean isValidYear = true;
-
-                    int y = 0;
-                    try {
-                        y = Integer.parseInt(year);
-                    } catch (final NumberFormatException nfe) {
-                        isValidYear = false;
-                    }
-                    if (isValidYear) {
-                        final int currentYear = Integer.parseInt(DateTimeFormat.getFormat("yyyy").format(new Date()));
-                        if (y > currentYear) {
-                            isValidYear = false;
-                        }
-                    }
-                    if (!isValidYear) {
+                    if (!BookValidator.isValidYear(year)) {
                         Window.alert("No es un año válido");
                         yearCell.clearViewData(KEY_PROVIDER.getKey(book));
                         grid.redraw();
@@ -279,7 +254,7 @@ public class BooksGrid extends Composite implements BooksGridUI {
                         return;
                     }
 
-                    if (book.getComment().equals(comment)) {
+                    if (!BookValidator.isValidComment(comment)) {
                         commentCell.clearViewData(KEY_PROVIDER.getKey(book));
                         grid.redraw();
                         return;
@@ -300,7 +275,7 @@ public class BooksGrid extends Composite implements BooksGridUI {
                         return;
                     }
 
-                    if (category.length() < 3) {
+                    if (!BookValidator.isValidCategory(category)) {
                         Window.alert("Por lo menos 3 caracteres");
                         categoryCell.clearViewData(KEY_PROVIDER.getKey(book));
                         grid.redraw();
