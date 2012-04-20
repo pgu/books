@@ -15,6 +15,7 @@ import com.google.gwt.user.cellview.client.DataGrid;
 import com.google.gwt.user.cellview.client.HasKeyboardSelectionPolicy.KeyboardSelectionPolicy;
 import com.google.gwt.user.cellview.client.SimplePager;
 import com.google.gwt.user.cellview.client.SimplePager.TextLocation;
+import com.google.gwt.user.cellview.client.TextColumn;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Label;
@@ -80,76 +81,129 @@ public class BooksGrid extends Composite implements BooksGridUI {
         pager = new SimplePager(TextLocation.CENTER, pagerResources, false, 0, true);
         pager.setDisplay(grid);
 
-        final EditTextCell authorCell = new EditTextCell();
-        final EditTextCell titleCell = new EditTextCell();
-        final EditTextCell editorCell = new EditTextCell();
-        final EditTextCell yearCell = new EditTextCell();
-        final EditTextCell commentCell = new EditTextCell();
-        final EditTextCell categoryCell = new EditTextCell();
+        Column<Book, String> authorColumn;
+        Column<Book, String> editorColumn;
+        Column<Book, String> yearColumn;
+        Column<Book, String> commentColumn;
+        Column<Book, String> categoryColumn;
 
-        final Column<Book, String> authorColumn = new Column<Book, String>(authorCell) {
+        if (loginInfo.isLoggedIn()) {
 
-            @Override
-            public String getValue(final Book book) {
-                return book.getAuthor();
-            }
-        };
-        titleColumn = new Column<Book, String>(titleCell) {
+            final EditTextCell authorCell = new EditTextCell();
+            final EditTextCell titleCell = new EditTextCell();
+            final EditTextCell editorCell = new EditTextCell();
+            final EditTextCell yearCell = new EditTextCell();
+            final EditTextCell commentCell = new EditTextCell();
+            final EditTextCell categoryCell = new EditTextCell();
 
-            @Override
-            public String getValue(final Book book) {
-                return book.getTitle();
-            }
-        };
-        final Column<Book, String> editorColumn = new Column<Book, String>(editorCell) {
+            authorColumn = new Column<Book, String>(authorCell) {
 
-            @Override
-            public String getValue(final Book book) {
-                return book.getEditor();
-            }
-        };
-        final Column<Book, String> yearColumn = new Column<Book, String>(yearCell) {
-            @Override
-            public String getValue(final Book book) {
-                return book.getYear();
-            }
-        };
-        final Column<Book, String> commentColumn = new Column<Book, String>(commentCell) {
-
-            @Override
-            public String getValue(final Book book) {
-                return book.getComment();
-            }
-        };
-        final Column<Book, String> categoryColumn = new Column<Book, String>(categoryCell) {
-
-            @Override
-            public String getValue(final Book book) {
-                return book.getCategory();
-            }
-        };
-
-        authorColumn.setFieldUpdater(new FieldUpdater<Book, String>() {
-
-            @Override
-            public void update(final int index, final Book book, final String author) {
-                if (author.length() < 3) {
-                    Window.alert("Names must be at least three characters long.");
-                    authorCell.clearViewData(KEY_PROVIDER.getKey(book));
-                    grid.redraw();
-                    return;
+                @Override
+                public String getValue(final Book book) {
+                    return book.getAuthor();
                 }
+            };
+            titleColumn = new Column<Book, String>(titleCell) {
 
-                Window.alert("You changed the name of " + book.getAuthor() + " to " + author);
-                book.setAuthor(author);
-                grid.redraw();
-            }
-        });
+                @Override
+                public String getValue(final Book book) {
+                    return book.getTitle();
+                }
+            };
+            editorColumn = new Column<Book, String>(editorCell) {
+
+                @Override
+                public String getValue(final Book book) {
+                    return book.getEditor();
+                }
+            };
+            yearColumn = new Column<Book, String>(yearCell) {
+                @Override
+                public String getValue(final Book book) {
+                    return book.getYear();
+                }
+            };
+            commentColumn = new Column<Book, String>(commentCell) {
+
+                @Override
+                public String getValue(final Book book) {
+                    return book.getComment();
+                }
+            };
+            categoryColumn = new Column<Book, String>(categoryCell) {
+
+                @Override
+                public String getValue(final Book book) {
+                    return book.getCategory();
+                }
+            };
+
+            authorColumn.setFieldUpdater(new FieldUpdater<Book, String>() {
+
+                @Override
+                public void update(final int index, final Book book, final String author) {
+                    if (author.length() < 3) {
+                        Window.alert("Names must be at least three characters long.");
+                        authorCell.clearViewData(KEY_PROVIDER.getKey(book));
+                        grid.redraw();
+                        return;
+                    }
+
+                    Window.alert("You changed the name of " + book.getAuthor() + " to " + author);
+                    book.setAuthor(author);
+                    grid.redraw();
+                }
+            });
+
+        } else {
+            authorColumn = new TextColumn<Book>() {
+
+                @Override
+                public String getValue(final Book book) {
+                    return book.getAuthor();
+                }
+            };
+            titleColumn = new TextColumn<Book>() {
+
+                @Override
+                public String getValue(final Book book) {
+                    return book.getTitle();
+                }
+            };
+            editorColumn = new TextColumn<Book>() {
+
+                @Override
+                public String getValue(final Book book) {
+                    return book.getEditor();
+                }
+            };
+            yearColumn = new TextColumn<Book>() {
+                @Override
+                public String getValue(final Book book) {
+                    return book.getYear();
+                }
+            };
+            commentColumn = new TextColumn<Book>() {
+
+                @Override
+                public String getValue(final Book book) {
+                    return book.getComment();
+                }
+            };
+            categoryColumn = new TextColumn<Book>() {
+
+                @Override
+                public String getValue(final Book book) {
+                    return book.getCategory();
+                }
+            };
+        }
 
         authorColumn.setSortable(true);
         titleColumn.setSortable(true);
         editorColumn.setSortable(true);
         yearColumn.setSortable(true);
+        commentColumn.setSortable(false);
         categoryColumn.setSortable(true);
 
         col2field.put(authorColumn, SortField.AUTHOR);
