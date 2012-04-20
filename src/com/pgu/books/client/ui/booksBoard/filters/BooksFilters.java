@@ -16,6 +16,7 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.ScrollPanel;
@@ -162,11 +163,15 @@ public class BooksFilters extends Composite implements BooksFiltersUI {
 
         final HorizontalPanel hPanel = new HorizontalPanel();
         hPanel.setHeight("100%");
+        hPanel.setWidth("100%");
         hPanel.setSpacing(0);
         hPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
+        hPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
         hPanel.add(headerText);
 
-        return new SimplePanel(hPanel);
+        final SimplePanel simplePanel = new SimplePanel(hPanel);
+        simplePanel.setWidth("100%");
+        return simplePanel;
     }
 
     @UiHandler("btnApplyFilters")
