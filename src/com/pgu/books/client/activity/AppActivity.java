@@ -328,6 +328,7 @@ public class AppActivity implements //
             @Override
             public void onSuccess(final Void result) {
                 // for now, nothing to do
+                // TODO PGU make a discrete popup_panel
             }
 
         });
@@ -339,6 +340,8 @@ public class AppActivity implements //
 
             @Override
             public void onSuccess(final Void result) {
+                // TODO PGU replace all the window.alert by popuppanel
+                Window.alert("El libro está guardado");
                 dashboard.getBooksGridUI().refreshGrid();
             }
 
