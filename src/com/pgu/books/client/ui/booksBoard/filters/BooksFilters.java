@@ -169,9 +169,7 @@ public class BooksFilters extends Composite implements BooksFiltersUI {
         hPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
         hPanel.add(headerText);
 
-        final SimplePanel simplePanel = new SimplePanel(hPanel);
-        simplePanel.setWidth("100%");
-        return simplePanel;
+        return new SimplePanel(hPanel);
     }
 
     @UiHandler("btnApplyFilters")
