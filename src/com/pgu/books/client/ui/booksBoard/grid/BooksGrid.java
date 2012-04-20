@@ -47,14 +47,15 @@ public class BooksGrid extends Composite implements BooksGridUI {
     private BooksGridPresenter                             presenter;
     private Column<Book, String>                           titleColumn;
 
-    private final HashMap<Column<Book, String>, SortField> col2field    = new HashMap<Column<Book, String>, SortField>();
+    private final HashMap<Column<Book, String>, SortField> col2field      = new HashMap<Column<Book, String>, SortField>();
 
-    private static final ProvidesKey<Book>                 KEY_PROVIDER = new ProvidesKey<Book>() {
-                                                                            @Override
-                                                                            public Object getKey(final Book item) {
-                                                                                return item.getId();
-                                                                            }
-                                                                        };
+    private static final ProvidesKey<Book>                 KEY_PROVIDER   = new ProvidesKey<Book>() {
+                                                                              @Override
+                                                                              public Object getKey(final Book item) {
+                                                                                  return item.getId();
+                                                                              }
+                                                                          };
+    private final MultiSelectionModel<Book>                selectionModel = new MultiSelectionModel<Book>();
 
     @Override
     public void setPresenter(final BooksGridPresenter presenter) {
@@ -97,7 +98,6 @@ public class BooksGrid extends Composite implements BooksGridUI {
             final EditTextCell commentCell = new EditTextCell();
             final EditTextCell categoryCell = new EditTextCell();
 
-            final MultiSelectionModel<Book> selectionModel = new MultiSelectionModel<Book>();
             grid.setSelectionModel(selectionModel);
             final Column<Book, Boolean> checkboxColumn = new Column<Book, Boolean>(new CheckboxCell(true, false)) {
 
@@ -449,6 +449,10 @@ public class BooksGrid extends Composite implements BooksGridUI {
     @Override
     public void refreshGrid() {
         presenter.fetchBooks(currentStart, length, sortField, isAscending);
+    }
+
+    public ArrayList<Book> getSelectedBooks() {
+        return new ArrayList<Book>(selectionModel.getSelectedSet());
     }
 
 }

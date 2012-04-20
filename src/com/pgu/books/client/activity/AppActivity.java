@@ -347,4 +347,17 @@ public class AppActivity implements //
 
         });
     }
+
+    @Override
+    public void deleteBooks(final ArrayList<Book> selectedBooks) {
+        adminBooksService.deleteBooks(selectedBooks, new AsyncCallbackApp<Void>() {
+
+            @Override
+            public void onSuccess(final Void result) {
+                Window.alert("Los libros están borrados");
+                dashboard.getBooksGridUI().refreshGrid();
+            }
+
+        });
+    }
 }

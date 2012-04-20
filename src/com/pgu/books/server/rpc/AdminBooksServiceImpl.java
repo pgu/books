@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.logging.Logger;
 
 import com.google.appengine.api.datastore.QueryResultIterator;
@@ -14,6 +15,7 @@ import com.google.appengine.api.utils.SystemProperty;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.pgu.books.client.rpc.AdminBooksService;
 import com.pgu.books.server.access.DAO;
+import com.pgu.books.server.domain.ArchivedBook;
 import com.pgu.books.server.utils.AppQueues;
 import com.pgu.books.server.utils.AppUrls;
 import com.pgu.books.shared.domain.Book;
@@ -96,6 +98,17 @@ public class AdminBooksServiceImpl extends RemoteServiceServlet implements Admin
     @Override
     public void saveBook(final Book book) {
         dao.ofy().put(book);
+    }
+
+    @Override
+    public void deleteBooks(final ArrayList<Book> selectedBooks) {
+        final ArrayList<ArchivedBook> archivedBooks = new ArrayList<ArchivedBook>(selectedBooks.size());
+        for (final Book book : selectedBooks) {
+            archivedBooks.add(new ArchivedBook(book));
+        }
+        dao.ofy().put(archivedBooks);
+
+        dao.ofy().delete(selectedBooks);
     }
 
 }

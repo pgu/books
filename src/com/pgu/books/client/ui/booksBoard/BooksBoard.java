@@ -90,6 +90,7 @@ public class BooksBoard extends Composite implements BooksBoardUI {
         initWidget(uiBinder.createAndBindUi(this));
 
         setSaveHandler();
+        setDeleteHandler();
     }
 
     private VerticalPanel createBookDelete() {
@@ -183,6 +184,16 @@ public class BooksBoard extends Composite implements BooksBoardUI {
                 book.setTitle(title);
                 book.setYear(year);
                 presenter.createBook(book);
+            }
+        });
+    }
+
+    private void setDeleteHandler() {
+        btnDelete.addClickHandler(new ClickHandler() {
+
+            @Override
+            public void onClick(final ClickEvent event) {
+                presenter.deleteBooks(booksGrid.getSelectedBooks());
             }
         });
     }
