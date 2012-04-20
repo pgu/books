@@ -126,7 +126,7 @@ public class BooksFilters extends Composite implements BooksFiltersUI {
         container.setAnimationEnabled(true);
 
         container.setFirstColumnWidth(100);
-        container.setDefaultColumnWidth(250);
+        container.setDefaultColumnWidth(220);
 
         final Button btnClear = new Button("Clear");
         btnClear.addClickHandler(new ClickHandler() {
@@ -187,6 +187,7 @@ public class BooksFilters extends Composite implements BooksFiltersUI {
         return selecteds;
     }
 
+    @Override
     public void setPresenter(final BooksFiltersPresenter presenter) {
         this.presenter = presenter;
         authorTVM.setPresenter(presenter);
@@ -194,6 +195,7 @@ public class BooksFilters extends Composite implements BooksFiltersUI {
         categoryTVM.setPresenter(presenter);
     }
 
+    @Override
     public void setCounts(final ArrayList<String> countsByLetters, final FilterType filterType) {
 
         if (FilterType.AUTHOR == filterType) {
@@ -208,6 +210,7 @@ public class BooksFilters extends Composite implements BooksFiltersUI {
         }
     }
 
+    @Override
     public void setFilters(final ArrayList<String> filters, final Letter letter, final FilterType filterType) {
 
         if (FilterType.AUTHOR == filterType) {

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 
+import com.google.gwt.cell.client.CheckboxCell;
 import com.google.gwt.cell.client.EditTextCell;
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.core.client.GWT;
@@ -24,6 +25,7 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.HasData;
+import com.google.gwt.view.client.MultiSelectionModel;
 import com.google.gwt.view.client.ProvidesKey;
 import com.pgu.books.client.activity.booksBoard.grid.BooksGridPresenter;
 import com.pgu.books.shared.domain.Book;
@@ -31,7 +33,7 @@ import com.pgu.books.shared.dto.LoginInfo;
 import com.pgu.books.shared.utils.SortField;
 
 // TODO PGU EDITION of a book: edition in the grid and a new form to create a new book
-// TODO PGU edition only for logged admin
+// TODO PGU DELETION of a book: archivage
 public class BooksGrid extends Composite implements BooksGridUI {
 
     private static BooksGridUiBinder uiBinder = GWT.create(BooksGridUiBinder.class);
@@ -97,6 +99,32 @@ public class BooksGrid extends Composite implements BooksGridUI {
             final EditTextCell yearCell = new EditTextCell();
             final EditTextCell commentCell = new EditTextCell();
             final EditTextCell categoryCell = new EditTextCell();
+
+            final MultiSelectionModel<Book> selectionModel = new MultiSelectionModel<Book>();
+            grid.setSelectionModel(selectionModel);
+            // selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
+            // public void onSelectionChange(SelectionChangeEvent event) {
+            // Contact selected = selectionModel.getSelectedObject();
+            // if (selected != null) {
+            // Window.alert("You selected: " + selected.name);
+            // }
+            // }
+            // });
+            final Column<Book, Boolean> checkboxColumn = new Column<Book, Boolean>(new CheckboxCell(true, false)) {
+
+                @Override
+                public Boolean getValue(final Book book) {
+                    return selectionModel.isSelected(book);
+                }
+
+            };
+            checkboxColumn.setFieldUpdater(new FieldUpdater<Book, Boolean>() {
+                @Override
+                public void update(final int index, final Book book, final Boolean value) {
+                    selectionModel.setSelected(book, value);
+                }
+            });
+            grid.addColumn(checkboxColumn, "");
 
             authorColumn = new Column<Book, String>(authorCell) {
 

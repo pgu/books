@@ -3,9 +3,15 @@ package com.pgu.books.client.ui.booksBoard;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.TextArea;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.pgu.books.client.activity.booksBoard.BooksBoardPresenter;
 import com.pgu.books.client.ui.booksBoard.filters.BooksFilters;
@@ -40,7 +46,40 @@ public class BooksBoard extends Composite implements BooksBoardUI {
         booksFilters = new BooksFilters();
 
         booksBoard.add(booksSearch, DockPanel.NORTH);
-        booksBoard.add(booksFilters, DockPanel.WEST);
+
+        final VerticalPanel bookForm = new VerticalPanel();
+        bookForm.add(new Label("Título"));
+        bookForm.add(new TextBox());
+        bookForm.add(new Label("Autor"));
+        bookForm.add(new TextBox());
+        bookForm.add(new Label("Editor"));
+        bookForm.add(new TextBox());
+        bookForm.add(new Label("Año"));
+        bookForm.add(new TextBox());
+        bookForm.add(new Label("Comentario"));
+        bookForm.add(new TextArea());
+        bookForm.add(new Label("Categoría"));
+        bookForm.add(new TextBox());
+        bookForm.add(new Button("Guardar"));
+
+        final DisclosurePanel disclosurePanelFilters = new DisclosurePanel("Filtrar los libros");
+        disclosurePanelFilters.setWidth("100%");
+        disclosurePanelFilters.add(booksFilters);
+
+        final DisclosurePanel disclosurePanelForm = new DisclosurePanel("Añadir un libro");
+        disclosurePanelForm.setWidth("100%");
+        disclosurePanelForm.add(bookForm);
+
+        final DisclosurePanel disclosurePanelDelete = new DisclosurePanel("Borrar libros");
+        disclosurePanelDelete.setWidth("100%");
+        disclosurePanelDelete.add(new Button("Borrar"));
+
+        final VerticalPanel westMenu = new VerticalPanel();
+        westMenu.add(disclosurePanelFilters);
+        westMenu.add(disclosurePanelForm);
+        westMenu.add(disclosurePanelDelete);
+
+        booksBoard.add(westMenu, DockPanel.WEST);
 
         booksGrid = new BooksGrid(loginInfo);
         booksGrid.setHeight("600px");
