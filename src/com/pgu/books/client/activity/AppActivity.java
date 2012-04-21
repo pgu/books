@@ -71,12 +71,15 @@ public class AppActivity implements //
             dashboard.getBooksMenuUI().setPresenter(this);
             dashboard.getBooksBoardUI().setPresenter(this);
             dashboard.getBooksChartsUI().setPresenter(this);
-            dashboard.getBooksImportUI().setPresenter(this);
             //
             dashboard.getBooksGridUI().setPresenter(this);
-            dashboard.getBooksFiltersUI().setPresenter(this);
-            dashboard.getBookFormUI().setPresenter(this);
             dashboard.getBooksSearchUI().setPresenter(this);
+
+            if (loginInfo.isLoggedIn()) {
+                dashboard.getBooksFiltersUI().setPresenter(this);
+                dashboard.getBookFormUI().setPresenter(this);
+                dashboard.getBooksImportUI().setPresenter(this);
+            }
 
             Scheduler.get().scheduleDeferred(new ScheduledCommand() {
 

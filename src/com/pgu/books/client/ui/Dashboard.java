@@ -8,6 +8,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.pgu.books.client.activity.AppPresenter;
 import com.pgu.books.client.ui.booksBoard.BooksBoard;
@@ -31,6 +32,9 @@ public class Dashboard extends Composite implements AppUI {
     interface DashboardUiBinder extends UiBinder<Widget, Dashboard> {
     }
 
+    @UiField
+    HTMLPanel            dashboard;
+
     @UiField(provided = true)
     BooksMenu            booksMenu;
 
@@ -40,8 +44,7 @@ public class Dashboard extends Composite implements AppUI {
     @UiField(provided = true)
     BooksCharts          booksCharts;
 
-    @UiField(provided = true)
-    BooksImport          booksImport;
+    private BooksImport  booksImport;
 
     private AppPresenter dashboardPresenter;
 
@@ -49,9 +52,13 @@ public class Dashboard extends Composite implements AppUI {
         booksMenu = new BooksMenu(loginInfo);
         booksBoard = new BooksBoard(loginInfo);
         booksCharts = new BooksCharts(loginInfo);
-        booksImport = new BooksImport(loginInfo);
 
         initWidget(uiBinder.createAndBindUi(this));
+
+        if (loginInfo.isLoggedIn()) {
+            booksImport = new BooksImport(loginInfo);
+            dashboard.add(booksImport);
+        }
     }
 
     @Override
@@ -101,7 +108,9 @@ public class Dashboard extends Composite implements AppUI {
 
     @Override
     public void showImport() {
-        show(booksImport);
+        if (booksImport != null) {
+            show(booksImport);
+        }
     }
 
     @Override
@@ -113,10 +122,16 @@ public class Dashboard extends Composite implements AppUI {
 
     @SuppressWarnings("unchecked")
     private List<? extends IsFocusable> getFocusables() {
-        return Arrays.asList( //
-                getBooksBoardUI(), //
-                getBooksChartsUI(), //
-                getBooksImportUI());
+        if (booksImport == null) {
+            return Arrays.asList( //
+                    getBooksBoardUI(), //
+                    getBooksChartsUI());
+        } else {
+            return Arrays.asList( //
+                    getBooksBoardUI(), //
+                    getBooksChartsUI(), //
+                    getBooksImportUI());
+        }
     }
 
     private void show(final Widget widgetToShow) {
