@@ -5,9 +5,10 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.History;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.pgu.books.client.activity.AppActivity;
-import com.pgu.books.client.app.AsyncCallbackApp;
 import com.pgu.books.client.rpc.LoginService;
 import com.pgu.books.client.rpc.LoginServiceAsync;
 import com.pgu.books.client.ui.AppUI;
@@ -56,7 +57,7 @@ public class Books implements EntryPoint {
 
         //
         // UI
-        loginService.login(GWT.getHostPageBaseURL(), new AsyncCallbackApp<LoginInfo>() {
+        loginService.login(GWT.getHostPageBaseURL(), new AsyncCallback<LoginInfo>() {
 
             @Override
             public void onSuccess(final LoginInfo loginInfo) {
@@ -65,6 +66,11 @@ public class Books implements EntryPoint {
                 RootPanel.get().add(firstView);
                 History.fireCurrentHistoryState();
 
+            }
+
+            @Override
+            public void onFailure(final Throwable caught) {
+                Window.alert("The application can not be loaded");
             }
 
         });

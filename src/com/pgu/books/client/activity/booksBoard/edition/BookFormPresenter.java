@@ -6,4 +6,6 @@ public interface BookFormPresenter {
 
     void createBook(Book book);
 
+    void showFormErrors(String string);
+
 }

@@ -11,7 +11,6 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -273,7 +272,7 @@ public class BooksCharts extends Composite implements BooksChartsUI {
                     }
                 }
 
-                Window.alert(message);
+                presenter.showChartError(message);
             }
         };
     }
@@ -323,9 +322,9 @@ public class BooksCharts extends Composite implements BooksChartsUI {
         clickBtnChart(CoreChart.Type.PIE);
     }
 
-    //    http://code.google.com/p/gwt-google-apis/source/browse/trunk/visualization/visualization/test/com/google/gwt/visualization/client/CoreComboChartTest.java?r=1958&spec=svn1958
+    // http://code.google.com/p/gwt-google-apis/source/browse/trunk/visualization/visualization/test/com/google/gwt/visualization/client/CoreComboChartTest.java?r=1958&spec=svn1958
     private void addExtraCharts() {
-        ////
+        // //
         final com.google.gwt.visualization.client.visualizations.corechart.ComboChart.Options options = ComboChart
                 .createComboOptions();
         options.setTitle("title...");
@@ -349,7 +348,7 @@ public class BooksCharts extends Composite implements BooksChartsUI {
         average.setType(Series.Type.LINE);
         options.setSeries(4, average);
 
-        ////
+        // //
         final DataTable table = DataTable.create();
         table.addColumn(ColumnType.STRING, "Year");
         table.addColumn(ColumnType.NUMBER, "Category A");
@@ -380,7 +379,7 @@ public class BooksCharts extends Composite implements BooksChartsUI {
         table.setValue(2, 4, 35);
         table.setValue(2, 5, 20);
 
-        ////
+        // //
         final ComboChart chart = new ComboChart(table, options);
         container.add(chart);
     }

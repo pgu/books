@@ -9,7 +9,6 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Grid;
@@ -82,13 +81,13 @@ public class BooksImport extends Composite implements BooksImportUI {
     @Override
     public void enableImport(final String categoryTitle) {
         title2btns.get(categoryTitle).setEnabled(true);
-        Window.alert(categoryTitle + ": Error");
+        presenter.showImportError(categoryTitle + ": Error");
     }
 
     @Override
     public void disableImport(final String categoryTitle, final String importResult) {
         title2btns.get(categoryTitle).setEnabled(false);
-        Window.alert(categoryTitle + ": " + importResult);
+        presenter.showImportError(categoryTitle + ": " + importResult);
     }
 
     @UiHandler("btnAll")

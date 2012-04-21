@@ -6,7 +6,6 @@ import java.util.List;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -47,7 +46,7 @@ public class Dashboard extends Composite implements AppUI {
 
     private BooksImport  booksImport;
 
-    private AppPresenter dashboardPresenter;
+    private AppPresenter presenter;
 
     public Dashboard(final LoginInfo loginInfo) {
         booksMenu = new BooksMenu(loginInfo);
@@ -63,8 +62,8 @@ public class Dashboard extends Composite implements AppUI {
     }
 
     @Override
-    public void setPresenter(final AppPresenter dashboardPresenter) {
-        this.dashboardPresenter = dashboardPresenter;
+    public void setPresenter(final AppPresenter presenter) {
+        this.presenter = presenter;
     }
 
     @Override
@@ -116,9 +115,7 @@ public class Dashboard extends Composite implements AppUI {
 
     @Override
     public void showUnknownTag(final String tag) {
-        final String msg = "Unknown tag [" + tag + "]";
-        GWT.log(msg);
-        Window.alert(msg);
+        presenter.showUnknownTag("Unknown tag [" + tag + "]");
     }
 
     @SuppressWarnings("unchecked")

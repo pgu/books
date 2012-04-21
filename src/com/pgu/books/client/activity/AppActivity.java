@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.pgu.books.client.activity.booksBoard.BooksBoardPresenter;
 import com.pgu.books.client.activity.booksBoard.edition.BookFormPresenter;
@@ -25,6 +24,7 @@ import com.pgu.books.client.rpc.BooksServiceAsync;
 import com.pgu.books.client.ui.AppUI;
 import com.pgu.books.client.ui.Dashboard;
 import com.pgu.books.client.ui.booksBoard.filters.Letter;
+import com.pgu.books.client.ui.dashboardInfo.MessageInfo;
 import com.pgu.books.shared.domain.Book;
 import com.pgu.books.shared.dto.BooksQueryParameters;
 import com.pgu.books.shared.dto.LoginInfo;
@@ -58,6 +58,7 @@ public class AppActivity implements //
     private final AdminBooksServiceAsync adminBooksService = GWT.create(AdminBooksService.class);
 
     private AppUI                        dashboard;
+    private final MessageInfo            messageInfo       = new MessageInfo();
 
     // search state
     private final BooksQueryParameters   queryParameters   = new BooksQueryParameters();
@@ -65,8 +66,6 @@ public class AppActivity implements //
     public AppUI initView(final LoginInfo loginInfo) {
 
         if (null == dashboard) {
-            // TODO PGU Move rpc to admin/rpc: grid -> edition
-            // TODO PGU Move rpc to admin/rpc: graph -> piles
             dashboard = new Dashboard(loginInfo);
             dashboard.setPresenter(this);
             //
@@ -123,11 +122,11 @@ public class AppActivity implements //
 
     @Override
     public void testImport() {
-        adminBooksService.testImport(new AsyncCallbackApp<String>() {
+        adminBooksService.testImport(new AsyncCallbackApp<String>(messageInfo) {
 
             @Override
             public void onSuccess(final String importResult) {
-                Window.alert("success: " + importResult);
+                messageInfo.valid("Successful import: " + importResult);
             }
 
         });
@@ -150,7 +149,7 @@ public class AppActivity implements //
 
         dashboard.getBooksGridUI().initFetchFlags();
 
-        booksService.countBooks(queryParameters, new AsyncCallbackApp<Integer>() {
+        booksService.countBooks(queryParameters, new AsyncCallbackApp<Integer>(messageInfo) {
 
             @Override
             public void onSuccess(final Integer count) {
@@ -166,7 +165,7 @@ public class AppActivity implements //
 
         });
 
-        booksService.fetchBooks(queryParameters, start, length, new AsyncCallbackApp<ArrayList<Book>>() {
+        booksService.fetchBooks(queryParameters, start, length, new AsyncCallbackApp<ArrayList<Book>>(messageInfo) {
 
             @Override
             public void onSuccess(final ArrayList<Book> books) {
@@ -199,11 +198,11 @@ public class AppActivity implements //
 
     @Override
     public void deleteBooks() {
-        adminBooksService.deleteAll(new AsyncCallbackApp<Void>() {
+        adminBooksService.deleteAll(new AsyncCallbackApp<Void>(messageInfo) {
 
             @Override
             public void onSuccess(final Void result) {
-                Window.alert("Done");
+                messageInfo.valid("Successful deletion");
             }
 
         });
@@ -211,7 +210,7 @@ public class AppActivity implements //
 
     @Override
     public void getSuggestions(final String text) {
-        booksService.fetchWords(text, new AsyncCallbackApp<ArrayList<String>>() {
+        booksService.fetchWords(text, new AsyncCallbackApp<ArrayList<String>>(messageInfo) {
 
             @Override
             public void onSuccess(final ArrayList<String> words) {
@@ -232,7 +231,7 @@ public class AppActivity implements //
 
             @Override
             public void execute() {
-                booksService.countAuthorsByLetters(new AsyncCallbackApp<ArrayList<String>>() {
+                booksService.countAuthorsByLetters(new AsyncCallbackApp<ArrayList<String>>(messageInfo) {
 
                     @Override
                     public void onSuccess(final ArrayList<String> countsByLetters) {
@@ -246,7 +245,7 @@ public class AppActivity implements //
 
             @Override
             public void execute() {
-                booksService.countEditorsByLetters(new AsyncCallbackApp<ArrayList<String>>() {
+                booksService.countEditorsByLetters(new AsyncCallbackApp<ArrayList<String>>(messageInfo) {
 
                     @Override
                     public void onSuccess(final ArrayList<String> countsByLetters) {
@@ -260,7 +259,7 @@ public class AppActivity implements //
 
             @Override
             public void execute() {
-                booksService.countCategoriesByLetters(new AsyncCallbackApp<ArrayList<String>>() {
+                booksService.countCategoriesByLetters(new AsyncCallbackApp<ArrayList<String>>(messageInfo) {
 
                     @Override
                     public void onSuccess(final ArrayList<String> countsByLetters) {
@@ -276,7 +275,7 @@ public class AppActivity implements //
     public void fetchFiltersByLetter(final Letter letter, final FilterType filterType) {
 
         if (FilterType.AUTHOR == filterType) {
-            booksService.fetchFilterAuthors(letter.getLetter(), new AsyncCallbackApp<ArrayList<String>>() {
+            booksService.fetchFilterAuthors(letter.getLetter(), new AsyncCallbackApp<ArrayList<String>>(messageInfo) {
 
                 @Override
                 public void onSuccess(final ArrayList<String> filters) {
@@ -286,7 +285,7 @@ public class AppActivity implements //
             });
 
         } else if (FilterType.EDITOR == filterType) {
-            booksService.fetchFilterEditors(letter.getLetter(), new AsyncCallbackApp<ArrayList<String>>() {
+            booksService.fetchFilterEditors(letter.getLetter(), new AsyncCallbackApp<ArrayList<String>>(messageInfo) {
 
                 @Override
                 public void onSuccess(final ArrayList<String> filters) {
@@ -296,14 +295,15 @@ public class AppActivity implements //
             });
 
         } else if (FilterType.CATEGORY == filterType) {
-            booksService.fetchFilterCategories(letter.getLetter(), new AsyncCallbackApp<ArrayList<String>>() {
+            booksService.fetchFilterCategories(letter.getLetter(),
+                    new AsyncCallbackApp<ArrayList<String>>(messageInfo) {
 
-                @Override
-                public void onSuccess(final ArrayList<String> filters) {
-                    dashboard.getBooksFiltersUI().setFilters(filters, letter, filterType);
-                }
+                        @Override
+                        public void onSuccess(final ArrayList<String> filters) {
+                            dashboard.getBooksFiltersUI().setFilters(filters, letter, filterType);
+                        }
 
-            });
+                    });
         }
     }
 
@@ -319,6 +319,7 @@ public class AppActivity implements //
         dashboard.showImport();
     }
 
+    @Override
     public void showUnknownTag(final String tag) {
         dashboard.showUnknownTag(tag);
     }
@@ -332,12 +333,11 @@ public class AppActivity implements //
 
     @Override
     public void updateBook(final Book book) {
-        adminBooksService.saveBook(book, new AsyncCallbackApp<Void>() {
+        adminBooksService.saveBook(book, new AsyncCallbackApp<Void>(messageInfo) {
 
             @Override
             public void onSuccess(final Void result) {
-                // for now, nothing to do
-                // TODO PGU make a discrete popup_panel
+                messageInfo.valid("El libro ha sido modificado con éxito");
             }
 
         });
@@ -345,13 +345,12 @@ public class AppActivity implements //
 
     @Override
     public void createBook(final Book book) {
-        adminBooksService.saveBook(book, new AsyncCallbackApp<Void>() {
+        adminBooksService.saveBook(book, new AsyncCallbackApp<Void>(messageInfo) {
 
             @Override
             public void onSuccess(final Void result) {
-                // TODO PGU replace all the window.alert by popuppanel
-                Window.alert("El libro está guardado");
                 dashboard.getBooksGridUI().refreshGrid();
+                messageInfo.valid("El libro ha sido creado con éxito");
             }
 
         });
@@ -359,14 +358,34 @@ public class AppActivity implements //
 
     @Override
     public void deleteBooks(final ArrayList<Book> selectedBooks) {
-        adminBooksService.deleteBooks(selectedBooks, new AsyncCallbackApp<Void>() {
+        adminBooksService.deleteBooks(selectedBooks, new AsyncCallbackApp<Void>(messageInfo) {
 
             @Override
             public void onSuccess(final Void result) {
-                Window.alert("Los libros están borrados");
                 dashboard.getBooksGridUI().refreshGrid();
+                messageInfo.valid("Los libros han sido borrados con éxito");
             }
 
         });
+    }
+
+    @Override
+    public void showFormErrors(final String message) {
+        messageInfo.error(message);
+    }
+
+    @Override
+    public void showEditionError(final String message) {
+        messageInfo.error(message);
+    }
+
+    @Override
+    public void showImportError(final String message) {
+        messageInfo.error(message);
+    }
+
+    @Override
+    public void showChartError(final String message) {
+        messageInfo.error(message);
     }
 }
