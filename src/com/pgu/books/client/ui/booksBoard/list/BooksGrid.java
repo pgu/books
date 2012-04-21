@@ -26,6 +26,7 @@ import com.google.gwt.view.client.MultiSelectionModel;
 import com.google.gwt.view.client.ProvidesKey;
 import com.pgu.books.client.activity.booksBoard.list.BooksGridPresenter;
 import com.pgu.books.client.ui.booksBoard.utils.BookValidator;
+import com.pgu.books.client.ui.utils.Notification;
 import com.pgu.books.shared.domain.Book;
 import com.pgu.books.shared.dto.LoginInfo;
 import com.pgu.books.shared.utils.SortField;
@@ -167,7 +168,7 @@ public class BooksGrid extends Composite implements BooksGridUI {
                     }
 
                     if (!BookValidator.isValidTitle(title)) {
-                        presenter.showEditionError("Por lo menos 3 caracteres");
+                        Notification.error("Por lo menos 3 caracteres");
                         titleCell.clearViewData(KEY_PROVIDER.getKey(book));
                         grid.redraw();
                         return;
@@ -188,7 +189,7 @@ public class BooksGrid extends Composite implements BooksGridUI {
                         return;
                     }
                     if (!BookValidator.isValidAuthor(author)) {
-                        presenter.showEditionError("Por lo menos 3 caracteres");
+                        Notification.error("Por lo menos 3 caracteres");
                         authorCell.clearViewData(KEY_PROVIDER.getKey(book));
                         grid.redraw();
                         return;
@@ -210,7 +211,7 @@ public class BooksGrid extends Composite implements BooksGridUI {
                     }
 
                     if (!BookValidator.isValidEditor(editor)) {
-                        presenter.showEditionError("Por lo menos 3 caracteres");
+                        Notification.error("Por lo menos 3 caracteres");
                         editorCell.clearViewData(KEY_PROVIDER.getKey(book));
                         grid.redraw();
                         return;
@@ -232,7 +233,7 @@ public class BooksGrid extends Composite implements BooksGridUI {
                     }
 
                     if (!BookValidator.isValidYear(year)) {
-                        presenter.showEditionError("No es un año válido");
+                        Notification.error("No es un año válido");
                         yearCell.clearViewData(KEY_PROVIDER.getKey(book));
                         grid.redraw();
                         return;
@@ -275,7 +276,7 @@ public class BooksGrid extends Composite implements BooksGridUI {
                     }
 
                     if (!BookValidator.isValidCategory(category)) {
-                        presenter.showEditionError("Por lo menos 3 caracteres");
+                        Notification.error("Por lo menos 3 caracteres");
                         categoryCell.clearViewData(KEY_PROVIDER.getKey(book));
                         grid.redraw();
                         return;

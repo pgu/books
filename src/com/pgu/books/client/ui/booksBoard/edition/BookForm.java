@@ -13,6 +13,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.pgu.books.client.activity.booksBoard.edition.BookFormPresenter;
 import com.pgu.books.client.ui.booksBoard.utils.BookValidator;
+import com.pgu.books.client.ui.utils.Notification;
 import com.pgu.books.shared.domain.Book;
 
 public class BookForm extends Composite implements BookFormUI {
@@ -78,7 +79,7 @@ public class BookForm extends Composite implements BookFormUI {
         }
 
         if (errors.length() > 0) {
-            presenter.showFormErrors(errors.toString());
+            Notification.error(errors.toString());
             return;
         }
 

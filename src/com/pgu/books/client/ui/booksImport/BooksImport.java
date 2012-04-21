@@ -15,6 +15,7 @@ import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.ToggleButton;
 import com.google.gwt.user.client.ui.Widget;
 import com.pgu.books.client.activity.booksImport.BooksImportPresenter;
+import com.pgu.books.client.ui.utils.Notification;
 import com.pgu.books.shared.dto.LoginInfo;
 import com.pgu.books.shared.utils.BookCategory;
 
@@ -81,13 +82,13 @@ public class BooksImport extends Composite implements BooksImportUI {
     @Override
     public void enableImport(final String categoryTitle) {
         title2btns.get(categoryTitle).setEnabled(true);
-        presenter.showImportError(categoryTitle + ": Error");
+        Notification.error(categoryTitle + ": Error");
     }
 
     @Override
     public void disableImport(final String categoryTitle, final String importResult) {
         title2btns.get(categoryTitle).setEnabled(false);
-        presenter.showImportError(categoryTitle + ": " + importResult);
+        Notification.error(categoryTitle + ": " + importResult);
     }
 
     @UiHandler("btnAll")

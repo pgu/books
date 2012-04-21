@@ -9,6 +9,4 @@ public interface BooksGridPresenter {
 
     void updateBook(Book book);
 
-    void showEditionError(String msg);
-
 }

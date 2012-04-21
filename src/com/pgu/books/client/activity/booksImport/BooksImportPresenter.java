@@ -8,6 +8,4 @@ public interface BooksImportPresenter {
 
     void deleteBooks();
 
-    void showImportError(String message);
-
 }
