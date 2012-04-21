@@ -248,7 +248,7 @@ public class BooksCharts extends Composite implements BooksChartsUI {
 
                 for (int i = 0; i < selections.length(); i++) {
                     // add a new line for each selection
-                    message += i == 0 ? "" : "\n";
+                    message += i == 0 ? "" : "<br/>";
 
                     final Selection selection = selections.get(i);
 

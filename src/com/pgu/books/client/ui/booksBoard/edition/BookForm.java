@@ -60,22 +60,22 @@ public class BookForm extends Composite implements BookFormUI {
         final StringBuilder errors = new StringBuilder();
 
         if (!BookValidator.isValidTitle(title)) {
-            errors.append("Por lo menos 3 caracteres para el título \n");
+            errors.append("Por lo menos 3 caracteres para el título <br/>");
         }
         if (!BookValidator.isValidAuthor(author)) {
-            errors.append("Por lo menos 3 caracteres para el autor \n");
+            errors.append("Por lo menos 3 caracteres para el autor <br/>");
         }
         if (!BookValidator.isValidEditor(editor)) {
-            errors.append("Por lo menos 3 caracteres para el editor \n");
+            errors.append("Por lo menos 3 caracteres para el editor <br/>");
         }
         if (!BookValidator.isValidYear(year)) {
-            errors.append("El año no es válido \n");
+            errors.append("El año no es válido <br/>");
         }
         if (!BookValidator.isValidComment(comment)) {
-            errors.append("El comentario no es válido \n");
+            errors.append("El comentario no es válido <br/>");
         }
         if (!BookValidator.isValidCategory(category)) {
-            errors.append("Por lo menos 3 caracteres para la categoría \n");
+            errors.append("Por lo menos 3 caracteres para la categoría <br/>");
         }
 
         if (errors.length() > 0) {
