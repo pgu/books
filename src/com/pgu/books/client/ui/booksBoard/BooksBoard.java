@@ -31,21 +31,18 @@ public class BooksBoard extends Composite implements BooksBoardUI {
     }
 
     @UiField(provided = true)
-    DockPanel                  booksBoard;
+    DockPanel                 booksBoard;
 
-    private final BooksGrid    booksGrid;
-    private final BooksFilters booksFilters;
-    private final BooksSearch  booksSearch;
-    private final BookForm     bookForm;
+    private final BooksSearch booksSearch;
+    private BooksFilters      booksFilters;
+    private BookForm          bookForm;
+    private final BooksGrid   booksGrid;
 
-    private final Button       btnDelete = new Button("Borrar");
+    private final Button      btnDelete = new Button("Borrar");
 
     public BooksBoard(final LoginInfo loginInfo) {
 
         booksSearch = new BooksSearch();
-        booksFilters = new BooksFilters();
-        bookForm = new BookForm();
-
         booksGrid = new BooksGrid(loginInfo);
 
         booksBoard = new DockPanel();
@@ -53,7 +50,7 @@ public class BooksBoard extends Composite implements BooksBoardUI {
         booksBoard.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 
         booksBoard.add(booksSearch, DockPanel.NORTH);
-        booksBoard.add(createWestMenu(), DockPanel.WEST);
+        booksBoard.add(createWestMenu(loginInfo), DockPanel.WEST);
         booksBoard.add(booksGrid, DockPanel.CENTER);
 
         initWidget(uiBinder.createAndBindUi(this));
@@ -61,25 +58,32 @@ public class BooksBoard extends Composite implements BooksBoardUI {
         setDeleteHandler();
     }
 
-    private VerticalPanel createWestMenu() {
+    private VerticalPanel createWestMenu(final LoginInfo loginInfo) {
 
         final DisclosurePanel disclosurePanelFilters = new DisclosurePanel("Filtrar los libros");
         disclosurePanelFilters.setWidth("100%");
         disclosurePanelFilters.add(booksFilters);
 
-        final DisclosurePanel disclosurePanelForm = new DisclosurePanel("Añadir un libro");
-        disclosurePanelForm.setWidth("100%");
-        disclosurePanelForm.add(bookForm);
-
-        final DisclosurePanel disclosurePanelDelete = new DisclosurePanel("Borrar libros");
-        disclosurePanelDelete.setWidth("100%");
-        disclosurePanelDelete.add(createBookDelete());
-
         final VerticalPanel westMenu = new VerticalPanel();
         westMenu.setWidth("150px");
         westMenu.add(disclosurePanelFilters);
-        westMenu.add(disclosurePanelForm);
-        westMenu.add(disclosurePanelDelete);
+
+        if (loginInfo.isLoggedIn()) {
+            booksFilters = new BooksFilters();
+            bookForm = new BookForm();
+
+            final DisclosurePanel disclosurePanelForm = new DisclosurePanel("Añadir un libro");
+            disclosurePanelForm.setWidth("100%");
+            disclosurePanelForm.add(bookForm);
+
+            final DisclosurePanel disclosurePanelDelete = new DisclosurePanel("Borrar libros");
+            disclosurePanelDelete.setWidth("100%");
+            disclosurePanelDelete.add(createBookDelete());
+
+            westMenu.add(disclosurePanelForm);
+            westMenu.add(disclosurePanelDelete);
+        }
+
         return westMenu;
     }
 
