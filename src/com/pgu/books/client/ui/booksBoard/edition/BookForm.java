@@ -49,6 +49,7 @@ public class BookForm extends Composite implements BookFormUI {
 
     @UiHandler("btnSave")
     public void clickSave(final ClickEvent e) {
+
         final String title = titleInput.getText();
         final String author = authorInput.getText();
         final String editor = editorInput.getText();
