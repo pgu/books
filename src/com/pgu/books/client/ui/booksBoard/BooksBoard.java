@@ -1,11 +1,8 @@
 package com.pgu.books.client.ui.booksBoard;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.user.client.ui.DockPanel;
@@ -17,8 +14,10 @@ import com.pgu.books.client.ui.booksBoard.edition.BookForm;
 import com.pgu.books.client.ui.booksBoard.edition.BookFormUI;
 import com.pgu.books.client.ui.booksBoard.filters.BooksFilters;
 import com.pgu.books.client.ui.booksBoard.filters.BooksFiltersUI;
-import com.pgu.books.client.ui.booksBoard.grid.BooksGrid;
-import com.pgu.books.client.ui.booksBoard.grid.BooksGridUI;
+import com.pgu.books.client.ui.booksBoard.list.BooksDelete;
+import com.pgu.books.client.ui.booksBoard.list.BooksDeleteUI;
+import com.pgu.books.client.ui.booksBoard.list.BooksGrid;
+import com.pgu.books.client.ui.booksBoard.list.BooksGridUI;
 import com.pgu.books.client.ui.booksBoard.search.BooksSearch;
 import com.pgu.books.client.ui.booksBoard.search.BooksSearchUI;
 import com.pgu.books.shared.dto.LoginInfo;
@@ -36,9 +35,8 @@ public class BooksBoard extends Composite implements BooksBoardUI {
     private final BooksSearch booksSearch;
     private BooksFilters      booksFilters;
     private BookForm          bookForm;
+    private BooksDelete       booksDelete;
     private final BooksGrid   booksGrid;
-
-    private final Button      btnDelete = new Button("Borrar");
 
     public BooksBoard(final LoginInfo loginInfo) {
 
@@ -54,11 +52,11 @@ public class BooksBoard extends Composite implements BooksBoardUI {
         booksBoard.add(booksGrid, DockPanel.CENTER);
 
         initWidget(uiBinder.createAndBindUi(this));
-
-        setDeleteHandler();
     }
 
     private VerticalPanel createWestMenu(final LoginInfo loginInfo) {
+
+        booksFilters = new BooksFilters();
 
         final DisclosurePanel disclosurePanelFilters = new DisclosurePanel("Filtrar los libros");
         disclosurePanelFilters.setWidth("100%");
@@ -69,8 +67,8 @@ public class BooksBoard extends Composite implements BooksBoardUI {
         westMenu.add(disclosurePanelFilters);
 
         if (loginInfo.isLoggedIn()) {
-            booksFilters = new BooksFilters();
             bookForm = new BookForm();
+            booksDelete = new BooksDelete(booksGrid);
 
             final DisclosurePanel disclosurePanelForm = new DisclosurePanel("Añadir un libro");
             disclosurePanelForm.setWidth("100%");
@@ -78,32 +76,13 @@ public class BooksBoard extends Composite implements BooksBoardUI {
 
             final DisclosurePanel disclosurePanelDelete = new DisclosurePanel("Borrar libros");
             disclosurePanelDelete.setWidth("100%");
-            disclosurePanelDelete.add(createBookDelete());
+            disclosurePanelDelete.add(booksDelete);
 
             westMenu.add(disclosurePanelForm);
             westMenu.add(disclosurePanelDelete);
         }
 
         return westMenu;
-    }
-
-    private VerticalPanel createBookDelete() {
-        final VerticalPanel bookForm = new VerticalPanel();
-        bookForm.setSpacing(4);
-        bookForm.add(btnDelete);
-
-        btnDelete.setWidth("100%");
-        return bookForm;
-    }
-
-    private void setDeleteHandler() {
-        btnDelete.addClickHandler(new ClickHandler() {
-
-            @Override
-            public void onClick(final ClickEvent event) {
-                presenter.deleteBooks(booksGrid.getSelectedBooks());
-            }
-        });
     }
 
     private BooksBoardPresenter presenter;
@@ -137,6 +116,10 @@ public class BooksBoard extends Composite implements BooksBoardUI {
     @Override
     public void loseFocus() {
         setVisible(false);
+    }
+
+    public BooksDeleteUI getBooksDelete() {
+        return booksDelete;
     }
 
 }

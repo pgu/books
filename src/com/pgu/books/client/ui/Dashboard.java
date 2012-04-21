@@ -15,7 +15,8 @@ import com.pgu.books.client.ui.booksBoard.BooksBoard;
 import com.pgu.books.client.ui.booksBoard.BooksBoardUI;
 import com.pgu.books.client.ui.booksBoard.edition.BookFormUI;
 import com.pgu.books.client.ui.booksBoard.filters.BooksFiltersUI;
-import com.pgu.books.client.ui.booksBoard.grid.BooksGridUI;
+import com.pgu.books.client.ui.booksBoard.list.BooksDeleteUI;
+import com.pgu.books.client.ui.booksBoard.list.BooksGridUI;
 import com.pgu.books.client.ui.booksBoard.search.BooksSearchUI;
 import com.pgu.books.client.ui.booksCharts.BooksCharts;
 import com.pgu.books.client.ui.booksImport.BooksImport;
@@ -157,6 +158,11 @@ public class Dashboard extends Composite implements AppUI {
     @Override
     public BookFormUI getBookFormUI() {
         return booksBoard.getBookForm();
+    }
+
+    @Override
+    public BooksDeleteUI getBooksDeleteUI() {
+        return booksBoard.getBooksDelete();
     }
 
 }

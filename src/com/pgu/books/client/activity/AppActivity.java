@@ -10,7 +10,8 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.pgu.books.client.activity.booksBoard.BooksBoardPresenter;
 import com.pgu.books.client.activity.booksBoard.edition.BookFormPresenter;
 import com.pgu.books.client.activity.booksBoard.filters.BooksFiltersPresenter;
-import com.pgu.books.client.activity.booksBoard.grid.BooksGridPresenter;
+import com.pgu.books.client.activity.booksBoard.list.BooksDeletePresenter;
+import com.pgu.books.client.activity.booksBoard.list.BooksGridPresenter;
 import com.pgu.books.client.activity.booksBoard.search.BooksSearchPresenter;
 import com.pgu.books.client.activity.booksCharts.BooksChartsPresenter;
 import com.pgu.books.client.activity.booksImport.BooksImportPresenter;
@@ -40,6 +41,7 @@ public class AppActivity implements //
         BooksGridPresenter, //
         BooksFiltersPresenter, //
         BookFormPresenter, //
+        BooksDeletePresenter, //
         BooksSearchPresenter //
 {
 
@@ -74,11 +76,12 @@ public class AppActivity implements //
             //
             dashboard.getBooksGridUI().setPresenter(this);
             dashboard.getBooksSearchUI().setPresenter(this);
+            dashboard.getBooksFiltersUI().setPresenter(this);
 
             if (loginInfo.isLoggedIn()) {
-                dashboard.getBooksFiltersUI().setPresenter(this);
-                dashboard.getBookFormUI().setPresenter(this);
                 dashboard.getBooksImportUI().setPresenter(this);
+                dashboard.getBookFormUI().setPresenter(this);
+                dashboard.getBooksDeleteUI().setPresenter(this);
             }
 
             Scheduler.get().scheduleDeferred(new ScheduledCommand() {

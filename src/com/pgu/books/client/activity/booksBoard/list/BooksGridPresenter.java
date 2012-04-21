@@ -1,4 +1,4 @@
-package com.pgu.books.client.activity.booksBoard.grid;
+package com.pgu.books.client.activity.booksBoard.list;
 
 import com.pgu.books.shared.domain.Book;
 import com.pgu.books.shared.utils.SortField;

@@ -5,7 +5,8 @@ import com.pgu.books.client.activity.AppPresenter;
 import com.pgu.books.client.ui.booksBoard.BooksBoardUI;
 import com.pgu.books.client.ui.booksBoard.edition.BookFormUI;
 import com.pgu.books.client.ui.booksBoard.filters.BooksFiltersUI;
-import com.pgu.books.client.ui.booksBoard.grid.BooksGridUI;
+import com.pgu.books.client.ui.booksBoard.list.BooksDeleteUI;
+import com.pgu.books.client.ui.booksBoard.list.BooksGridUI;
 import com.pgu.books.client.ui.booksBoard.search.BooksSearchUI;
 import com.pgu.books.client.ui.booksCharts.BooksChartsUI;
 import com.pgu.books.client.ui.booksImport.BooksImportUI;
@@ -38,5 +39,7 @@ public interface AppUI extends IsWidget {
     BooksMenuUI getBooksMenuUI();
 
     BookFormUI getBookFormUI();
+
+    BooksDeleteUI getBooksDeleteUI();
 
 }

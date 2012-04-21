@@ -1,4 +1,4 @@
-package com.pgu.books.client.ui.booksBoard.grid;
+package com.pgu.books.client.ui.booksBoard.list;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,7 +25,7 @@ import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.MultiSelectionModel;
 import com.google.gwt.view.client.ProvidesKey;
-import com.pgu.books.client.activity.booksBoard.grid.BooksGridPresenter;
+import com.pgu.books.client.activity.booksBoard.list.BooksGridPresenter;
 import com.pgu.books.client.ui.booksBoard.utils.BookValidator;
 import com.pgu.books.shared.domain.Book;
 import com.pgu.books.shared.dto.LoginInfo;

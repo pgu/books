@@ -1,9 +1,9 @@
-package com.pgu.books.client.ui.booksBoard.grid;
+package com.pgu.books.client.ui.booksBoard.list;
 
 import java.util.ArrayList;
 
 import com.google.gwt.user.client.ui.IsWidget;
-import com.pgu.books.client.activity.booksBoard.grid.BooksGridPresenter;
+import com.pgu.books.client.activity.booksBoard.list.BooksGridPresenter;
 import com.pgu.books.shared.domain.Book;
 
 public interface BooksGridUI extends IsWidget {
