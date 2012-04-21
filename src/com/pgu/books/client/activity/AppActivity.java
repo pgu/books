@@ -8,6 +8,7 @@ import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.pgu.books.client.activity.booksBoard.BooksBoardPresenter;
+import com.pgu.books.client.activity.booksBoard.edition.BookFormPresenter;
 import com.pgu.books.client.activity.booksBoard.filters.BooksFiltersPresenter;
 import com.pgu.books.client.activity.booksBoard.grid.BooksGridPresenter;
 import com.pgu.books.client.activity.booksBoard.search.BooksSearchPresenter;
@@ -38,6 +39,7 @@ public class AppActivity implements //
         //
         BooksGridPresenter, //
         BooksFiltersPresenter, //
+        BookFormPresenter, //
         BooksSearchPresenter //
 {
 
@@ -73,6 +75,7 @@ public class AppActivity implements //
             //
             dashboard.getBooksGridUI().setPresenter(this);
             dashboard.getBooksFiltersUI().setPresenter(this);
+            dashboard.getBookFormUI().setPresenter(this);
             dashboard.getBooksSearchUI().setPresenter(this);
 
             Scheduler.get().scheduleDeferred(new ScheduledCommand() {

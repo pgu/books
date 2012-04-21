@@ -1,0 +1,31 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder" xmlns:g="urn:import:com.google.gwt.user.client.ui">
+    <ui:style>
+       .labels {
+            padding-left: 2px;
+        }
+       .commentInput {
+            width: 150px;
+            height: 150px;
+        }
+       .btnSave {
+            width: 100%;
+        }
+    </ui:style>
+    
+    <g:VerticalPanel ui:field="bookForm">
+        <g:Label addStyleNames="{style.labels}">Título</g:Label>
+        <g:TextBox ui:field="titleInput"></g:TextBox>
+        <g:Label addStyleNames="{style.labels}">Autor</g:Label>
+        <g:TextBox ui:field="authorInput"></g:TextBox>
+        <g:Label addStyleNames="{style.labels}">Editor</g:Label>
+        <g:TextBox ui:field="editorInput"></g:TextBox>
+        <g:Label addStyleNames="{style.labels}">Año</g:Label>
+        <g:TextBox ui:field="yearInput"></g:TextBox>
+        <g:Label addStyleNames="{style.labels}">Comentario</g:Label>
+        <g:TextArea ui:field="commentInput" addStyleNames="{style.commentInput}"></g:TextArea>
+        <g:Label addStyleNames="{style.labels}">Categoría</g:Label>
+        <g:TextBox ui:field="categoryInput"></g:TextBox>
+        <g:Button ui:field="btnSave" addStyleNames="{style.btnSave}">Guardar</g:Button>
+    </g:VerticalPanel>
+</ui:UiBinder> 

@@ -9,9 +9,13 @@
             text-align: left;
             margin-bottom: 4px;    
         }
+        .dock {
+            width: 1000px;
+            height: 600px;
+        }
     </ui:style>
     
-    <g:DockLayoutPanel unit="EM">
+    <g:DockLayoutPanel unit="EM" addStyleNames="{style.dock}">
         <g:center>
             <c:DataGrid 
                 ui:field="grid"

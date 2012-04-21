@@ -12,6 +12,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.pgu.books.client.activity.AppPresenter;
 import com.pgu.books.client.ui.booksBoard.BooksBoard;
 import com.pgu.books.client.ui.booksBoard.BooksBoardUI;
+import com.pgu.books.client.ui.booksBoard.edition.BookFormUI;
 import com.pgu.books.client.ui.booksBoard.filters.BooksFiltersUI;
 import com.pgu.books.client.ui.booksBoard.grid.BooksGridUI;
 import com.pgu.books.client.ui.booksBoard.search.BooksSearchUI;
@@ -136,6 +137,11 @@ public class Dashboard extends Composite implements AppUI {
     @Override
     public BooksMenuUI getBooksMenuUI() {
         return booksMenu;
+    }
+
+    @Override
+    public BookFormUI getBookFormUI() {
+        return booksBoard.getBookForm();
     }
 
 }
