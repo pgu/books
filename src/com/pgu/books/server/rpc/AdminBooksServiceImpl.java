@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
@@ -38,7 +39,7 @@ public class AdminBooksServiceImpl extends RemoteServiceServlet implements Admin
         final long startTime = System.currentTimeMillis();
 
         final InputStream is = getServletContext().getResourceAsStream("/WEB-INF/books/" + categoryTitle + ".txt");
-        final BufferedReader br = new BufferedReader(new InputStreamReader(is));
+        final BufferedReader br = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
         try {
 
             int countTotal = 0;
