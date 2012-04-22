@@ -5,13 +5,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.logging.Logger;
 
 import com.google.appengine.api.datastore.QueryResultIterator;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
-import com.ibm.icu.text.SimpleDateFormat;
 import com.pgu.books.client.rpc.AdminBooksService;
 import com.pgu.books.server.access.DAO;
 import com.pgu.books.server.domain.ArchivedBook;
@@ -102,7 +102,9 @@ public class AdminBooksServiceImpl extends RemoteServiceServlet implements Admin
         for (final Book book : selectedBooks) {
 
             final ArchivedBook archivedBook = new ArchivedBook(book);
+            archivedBook.setBookId(book.getId());
             archivedBook.setArchiveDate(date);
+
             archivedBooks.add(archivedBook);
         }
         dao.ofy().put(archivedBooks);

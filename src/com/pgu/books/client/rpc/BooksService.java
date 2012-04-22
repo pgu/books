@@ -1,6 +1,7 @@
 package com.pgu.books.client.rpc;
 
 import java.util.ArrayList;
+import java.util.TreeMap;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
@@ -27,5 +28,9 @@ public interface BooksService extends RemoteService {
     ArrayList<String> fetchFilterEditors(String letter);
 
     ArrayList<String> fetchFilterAuthors(String letter);
+
+    TreeMap<String, Integer> fetchNbBooksByCategories();
+
+    TreeMap<String, Integer> fetchNbBooksByEditors();
 
 }

@@ -1,6 +1,7 @@
 package com.pgu.books.client.activity;
 
 import java.util.ArrayList;
+import java.util.TreeMap;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
@@ -322,9 +323,23 @@ public class AppActivity implements //
 
     @Override
     public void fetchData() {
-        // TODO PGU make a service for getting charts data
-        dashboard.getBooksChartsUI().showCharts();
+        dashboard.getBooksChartsUI().initFetchData();
+        booksService.fetchNbBooksByCategories(new AsyncCallbackApp<TreeMap<String, Integer>>() {
 
+            @Override
+            public void onSuccess(final TreeMap<String, Integer> result) {
+                dashboard.getBooksChartsUI().setNbBooksByCategories(result);
+            }
+
+        });
+        booksService.fetchNbBooksByEditors(new AsyncCallbackApp<TreeMap<String, Integer>>() {
+
+            @Override
+            public void onSuccess(final TreeMap<String, Integer> result) {
+                dashboard.getBooksChartsUI().setNbBooksByEditors(result);
+            }
+
+        });
     }
 
     @Override

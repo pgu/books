@@ -51,12 +51,14 @@ public class BooksCharts extends Composite implements BooksChartsUI {
     @UiField
     RadioButton                                            btnArea, btnBar, btnColumn, btnLine, btnPie;
 
-    private boolean                                        isVisuApiLoaded        = false;
-    private boolean                                        isDataLoaded           = false;
-    private Timer                                          timerForLoadingVisuApi = null;
+    private boolean                                        isVisuApiLoaded             = false;
+    private boolean                                        isNbBooksByCategoriesLoaded = false;
+    private boolean                                        isNbBooksByEditorsLoaded    = false;
+    private boolean                                        isDataLoaded                = false;
+    private Timer                                          timerForLoadingVisuApi      = null;
 
     private BooksChartsPresenter                           presenter;
-    private final HashMap<CoreChart.Type, HorizontalPanel> type2charts            = new HashMap<CoreChart.Type, HorizontalPanel>();
+    private final HashMap<CoreChart.Type, HorizontalPanel> type2charts                 = new HashMap<CoreChart.Type, HorizontalPanel>();
 
     @Override
     public void setPresenter(final BooksChartsPresenter presenter) {
@@ -78,9 +80,13 @@ public class BooksCharts extends Composite implements BooksChartsUI {
     }
 
     // http://code.google.com/p/gwt-google-apis/wiki/VisualizationGettingStarted
-    @Override
-    public void showCharts() {
-        isDataLoaded = true;
+    private void showCharts() {
+
+        isDataLoaded = isNbBooksByCategoriesLoaded //
+                && isNbBooksByEditorsLoaded;
+        if (!isDataLoaded) {
+            return;
+        }
 
         if (!isVisuApiLoaded) {
 
@@ -98,21 +104,8 @@ public class BooksCharts extends Composite implements BooksChartsUI {
             timerForLoadingVisuApi = null;
         }
 
-        // TODO PGU combo charts: for each year, by categories, nb books / 4 categories by chart
-        // TODO PGU column chart : nb books / year
         // TODO PGU bar chart : nb books / author (<!> lots of data or not? for authors with nb books > 1)
         // TODO PGU if get books prices then piles of money, available only for logged admin
-
-        final TreeMap<String, Integer> categoryData = new TreeMap<String, Integer>();
-        categoryData.put("Category A", 10);
-        categoryData.put("Category B", 20);
-        categoryData.put("Category C", 15);
-
-        final TreeMap<String, Integer> editorData = new TreeMap<String, Integer>();
-        editorData.put("Editor A", 100);
-        editorData.put("Editor B", 200);
-        editorData.put("Editor C", 150);
-
         final ChartConfig categoryConfig = new ChartConfig() //
                 .title("Books repartition by categories") //
                 .headerKey("Categories") //
@@ -383,5 +376,28 @@ public class BooksCharts extends Composite implements BooksChartsUI {
         // //
         final ComboChart chart = new ComboChart(table, options);
         container.add(chart);
+    }
+
+    private TreeMap<String, Integer> categoryData;
+    private TreeMap<String, Integer> editorData;
+
+    @Override
+    public void initFetchData() {
+        isNbBooksByCategoriesLoaded = false;
+        isNbBooksByEditorsLoaded = false;
+    }
+
+    @Override
+    public void setNbBooksByCategories(final TreeMap<String, Integer> result) {
+        isNbBooksByCategoriesLoaded = true;
+        categoryData = result;
+        showCharts();
+    }
+
+    @Override
+    public void setNbBooksByEditors(final TreeMap<String, Integer> result) {
+        isNbBooksByEditorsLoaded = true;
+        editorData = result;
+        showCharts();
     }
 }

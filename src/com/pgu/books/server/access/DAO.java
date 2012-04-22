@@ -6,8 +6,10 @@ import com.pgu.books.server.domain.ArchivedBook;
 import com.pgu.books.server.domain.AuthorFilter;
 import com.pgu.books.server.domain.AuthorLetterFilter;
 import com.pgu.books.server.domain.BookWord;
+import com.pgu.books.server.domain.Category2Books;
 import com.pgu.books.server.domain.CategoryFilter;
 import com.pgu.books.server.domain.CategoryLetterFilter;
+import com.pgu.books.server.domain.Editor2Books;
 import com.pgu.books.server.domain.EditorFilter;
 import com.pgu.books.server.domain.EditorLetterFilter;
 import com.pgu.books.server.domain.Word;
@@ -26,6 +28,9 @@ public class DAO extends DAOBase {
         ObjectifyService.register(AuthorLetterFilter.class);
         ObjectifyService.register(EditorLetterFilter.class);
         ObjectifyService.register(CategoryLetterFilter.class);
+
+        ObjectifyService.register(Editor2Books.class);
+        ObjectifyService.register(Category2Books.class);
 
         ObjectifyService.register(BookWord.class);
         ObjectifyService.register(Word.class);

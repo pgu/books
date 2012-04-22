@@ -1,6 +1,7 @@
 package com.pgu.books.client.rpc;
 
 import java.util.ArrayList;
+import java.util.TreeMap;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.pgu.books.shared.domain.Book;
@@ -10,7 +11,8 @@ public interface BooksServiceAsync {
 
     void countBooks(BooksQueryParameters filtersDTO, AsyncCallback<Integer> asyncCallbackApp);
 
-    void fetchBooks(BooksQueryParameters filtersDTO, int start, int length, AsyncCallback<ArrayList<Book>> asyncCallbackApp);
+    void fetchBooks(BooksQueryParameters filtersDTO, int start, int length,
+            AsyncCallback<ArrayList<Book>> asyncCallbackApp);
 
     void fetchWords(String text, AsyncCallback<ArrayList<String>> asyncCallbackApp);
 
@@ -25,5 +27,9 @@ public interface BooksServiceAsync {
     void fetchFilterEditors(String letter, AsyncCallback<ArrayList<String>> asyncCallbackApp);
 
     void fetchFilterAuthors(String letter, AsyncCallback<ArrayList<String>> asyncCallbackApp);
+
+    void fetchNbBooksByCategories(AsyncCallback<TreeMap<String, Integer>> asyncCallbackApp);
+
+    void fetchNbBooksByEditors(AsyncCallback<TreeMap<String, Integer>> asyncCallbackApp);
 
 }

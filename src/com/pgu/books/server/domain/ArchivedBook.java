@@ -5,6 +5,7 @@ import com.pgu.books.shared.domain.Book;
 public class ArchivedBook extends Book {
 
     private String archiveDate;
+    private Long   bookId;
 
     public ArchivedBook() {
     }
@@ -26,9 +27,17 @@ public class ArchivedBook extends Book {
         this.archiveDate = archiveDate;
     }
 
+    public Long getBookId() {
+        return bookId;
+    }
+
+    public void setBookId(final Long bookId) {
+        this.bookId = bookId;
+    }
+
     @Override
     public String toString() {
-        return "ArchivedBook [archiveDate=" + archiveDate + "], " + super.toString();
+        return "ArchivedBook [archiveDate=" + archiveDate + ", bookId=" + bookId + "], " + super.toString();
     }
 
 }

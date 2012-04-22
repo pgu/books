@@ -1,6 +1,7 @@
 package com.pgu.books.server.rpc;
 
 import java.util.ArrayList;
+import java.util.TreeMap;
 import java.util.logging.Logger;
 
 import com.google.appengine.api.datastore.QueryResultIterator;
@@ -11,10 +12,13 @@ import com.pgu.books.server.access.DAO;
 import com.pgu.books.server.domain.AuthorFilter;
 import com.pgu.books.server.domain.AuthorLetterFilter;
 import com.pgu.books.server.domain.BookWord;
+import com.pgu.books.server.domain.Category2Books;
 import com.pgu.books.server.domain.CategoryFilter;
 import com.pgu.books.server.domain.CategoryLetterFilter;
+import com.pgu.books.server.domain.Editor2Books;
 import com.pgu.books.server.domain.EditorFilter;
 import com.pgu.books.server.domain.EditorLetterFilter;
+import com.pgu.books.server.domain.Entity2Books;
 import com.pgu.books.server.domain.Filter;
 import com.pgu.books.server.domain.LetterFilter;
 import com.pgu.books.server.domain.Word;
@@ -32,12 +36,12 @@ public class BooksServiceImpl extends RemoteServiceServlet implements BooksServi
     public ArrayList<Book> fetchBooks(final BooksQueryParameters queryParameters, final int start, final int length) {
 
         final Query<Book> query = dao.ofy().query(Book.class);
-        // 
-        // filters 
+        //
+        // filters
         applyFilters(queryParameters, query);
 
-        // 
-        // order 
+        //
+        // order
         final String sortDirection = queryParameters.isAscending() ? "" : "-";
         final String sortField = queryParameters.getSortField().toString().toLowerCase();
         query.order(sortDirection + sortField);
@@ -190,6 +194,28 @@ public class BooksServiceImpl extends RemoteServiceServlet implements BooksServi
             filters.add(lowerItr.next().getValue());
         }
         return filters;
+    }
+
+    @Override
+    public TreeMap<String, Integer> fetchNbBooksByCategories() {
+        return fetchNbBooksByEntity(Category2Books.class);
+    }
+
+    @Override
+    public TreeMap<String, Integer> fetchNbBooksByEditors() {
+        return fetchNbBooksByEntity(Editor2Books.class);
+    }
+
+    private <T extends Entity2Books> TreeMap<String, Integer> fetchNbBooksByEntity(final Class<T> clazz) {
+        final TreeMap<String, Integer> data = new TreeMap<String, Integer>();
+
+        final QueryResultIterator<T> itr = dao.ofy().query(clazz).iterator();
+
+        while (itr.hasNext()) {
+            final T datum = itr.next();
+            data.put(datum.getLabel(), datum.getCount());
+        }
+        return data;
     }
 
 }
