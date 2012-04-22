@@ -23,6 +23,7 @@ public class Notification {
 
     public static void validation(final String message) {
         final DialogBox popup = createPopup();
+        setPopupPosition(popup);
 
         final HTML label = new HTML(message);
 
@@ -45,9 +46,15 @@ public class Notification {
 
             @Override
             public void onClose(final CloseEvent<PopupPanel> event) {
+                final int height = popup.getOffsetHeight();
+                final int index = notifications.indexOf(popup);
+
                 notifications.remove(popup);
                 popup.removeFromParent();
+
+                updateNotificationPositions(height, index);
             }
+
         });
 
         notifications.add(popup);
@@ -62,8 +69,17 @@ public class Notification {
         timer.schedule(5000);
     }
 
+    private static void setPopupPosition(final DialogBox popup) {
+        int top = 0;
+        for (final DialogBox notif : notifications) {
+            top += notif.getOffsetHeight();
+        }
+        popup.setPopupPosition(0, top);
+    }
+
     public static void error(final String message) {
         final DialogBox popup = createPopup();
+        setPopupPosition(popup);
 
         final HTML label = new HTML(message);
         final Button closeBtn = new Button("X");
@@ -91,8 +107,13 @@ public class Notification {
 
             @Override
             public void onClose(final CloseEvent<PopupPanel> event) {
+                final int height = popup.getOffsetHeight();
+                final int index = notifications.indexOf(popup);
+
                 notifications.remove(popup);
                 popup.removeFromParent();
+
+                updateNotificationPositions(height, index);
             }
         });
 
@@ -111,11 +132,21 @@ public class Notification {
     private static DialogBox createPopup() {
         final DialogBox popup = new DialogBox();
         popup.setAnimationEnabled(true);
-        popup.setPopupPosition(0, 0);
         popup.setAutoHideEnabled(false);
         popup.setGlassEnabled(false);
         popup.setModal(false);
         return popup;
+    }
+
+    private static void updateNotificationPositions(final int height, final int index) {
+        if (index < notifications.size()) {
+            for (int i = index; i < notifications.size(); i++) {
+                final DialogBox dialogBox = notifications.get(i);
+                final int currentTop = dialogBox.getAbsoluteTop();
+
+                dialogBox.setPopupPosition(0, currentTop - height);
+            }
+        }
     }
 
 }
