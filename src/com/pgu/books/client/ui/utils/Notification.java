@@ -2,6 +2,7 @@ package com.pgu.books.client.ui.utils;
 
 import java.util.ArrayList;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.FontWeight;
 import com.google.gwt.dom.client.Style.Unit;
@@ -12,17 +13,43 @@ import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.PopupPanel;
 
 public class Notification {
 
-    private static final ArrayList<DialogBox> notifications = new ArrayList<DialogBox>();
+    private static final ArrayList<PopupPanel> notifications     = new ArrayList<PopupPanel>();
+
+    private static Resources                   resources         = GWT.create(Resources.class);
+    private static final ArrayList<PopupPanel> loadingIndicators = new ArrayList<PopupPanel>();
+
+    public static void loadingStart() {
+        final PopupPanel popup = createPopup();
+        final int top = Window.getClientHeight() - 50;
+        final int left = Window.getClientWidth() / 2 - 50;
+
+        popup.setPopupPosition(left, top);
+
+        popup.add(new Image(resources.loadingIndicator()));
+
+        loadingIndicators.add(popup);
+        popup.show();
+    }
+
+    public static void loadingStop() {
+
+        if (loadingIndicators.isEmpty()) {
+            return;
+        }
+
+        final PopupPanel popup = loadingIndicators.remove(0);
+        popup.removeFromParent();
+    }
 
     public static void validation(final String message) {
-        final DialogBox popup = createPopup();
+        final PopupPanel popup = createPopup();
         setPopupPosition(popup);
 
         final HTML label = new HTML(message);
@@ -32,7 +59,7 @@ public class Notification {
         popup.add(hp);
 
         final Style styleHP = hp.getElement().getStyle();
-        styleHP.setWidth(Window.getClientWidth() - 50, Unit.PX);
+        styleHP.setWidth(Window.getClientWidth() - 12, Unit.PX);
         styleHP.setHeight(100, Unit.PCT);
         styleHP.setBackgroundColor("green");
 
@@ -69,16 +96,16 @@ public class Notification {
         timer.schedule(5000);
     }
 
-    private static void setPopupPosition(final DialogBox popup) {
+    private static void setPopupPosition(final PopupPanel popup) {
         int top = 0;
-        for (final DialogBox notif : notifications) {
+        for (final PopupPanel notif : notifications) {
             top += notif.getOffsetHeight();
         }
         popup.setPopupPosition(0, top);
     }
 
     public static void error(final String message) {
-        final DialogBox popup = createPopup();
+        final PopupPanel popup = createPopup();
         setPopupPosition(popup);
 
         final HTML label = new HTML(message);
@@ -90,7 +117,7 @@ public class Notification {
         popup.add(hp);
 
         final Style styleHP = hp.getElement().getStyle();
-        styleHP.setWidth(Window.getClientWidth() - 50, Unit.PX);
+        styleHP.setWidth(Window.getClientWidth() - 12, Unit.PX);
         styleHP.setHeight(100, Unit.PCT);
         styleHP.setBackgroundColor("red");
 
@@ -129,8 +156,8 @@ public class Notification {
         popup.show();
     }
 
-    private static DialogBox createPopup() {
-        final DialogBox popup = new DialogBox();
+    private static PopupPanel createPopup() {
+        final PopupPanel popup = new PopupPanel();
         popup.setAnimationEnabled(true);
         popup.setAutoHideEnabled(false);
         popup.setGlassEnabled(false);
@@ -141,7 +168,7 @@ public class Notification {
     private static void updateNotificationPositions(final int height, final int index) {
         if (index < notifications.size()) {
             for (int i = index; i < notifications.size(); i++) {
-                final DialogBox dialogBox = notifications.get(i);
+                final PopupPanel dialogBox = notifications.get(i);
                 final int currentTop = dialogBox.getAbsoluteTop();
 
                 dialogBox.setPopupPosition(0, currentTop - height);

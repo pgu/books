@@ -105,7 +105,7 @@ public class BooksImport extends Composite implements BooksImportUI {
 
     @UiHandler("btnDelete")
     public void clickDelete(final ClickEvent e) {
-        presenter.deleteBooks();
+        presenter.deleteAllBooks();
     }
 
     @Override

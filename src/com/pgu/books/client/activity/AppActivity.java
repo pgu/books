@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.pgu.books.client.activity.booksBoard.BooksBoardPresenter;
 import com.pgu.books.client.activity.booksBoard.edition.BookFormPresenter;
 import com.pgu.books.client.activity.booksBoard.filters.BooksFiltersPresenter;
@@ -17,6 +16,7 @@ import com.pgu.books.client.activity.booksImport.BooksImportPresenter;
 import com.pgu.books.client.activity.booksMenu.BooksMenuPresenter;
 import com.pgu.books.client.activity.utils.FilterType;
 import com.pgu.books.client.app.AsyncCallbackApp;
+import com.pgu.books.client.app.AsyncCallbackAppLoading;
 import com.pgu.books.client.rpc.AdminBooksService;
 import com.pgu.books.client.rpc.AdminBooksServiceAsync;
 import com.pgu.books.client.rpc.BooksService;
@@ -104,15 +104,17 @@ public class AppActivity implements //
 
     @Override
     public void importBooks(final String categoryTitle) {
-        adminBooksService.importBooks(categoryTitle, new AsyncCallback<String>() {
+        Notification.loadingStart();
+        adminBooksService.importBooks(categoryTitle, new AsyncCallbackAppLoading<String>() {
 
             @Override
             public void onFailure(final Throwable caught) {
+                super.onFailure(caught);
                 dashboard.getBooksImportUI().enableImport(categoryTitle);
             }
 
             @Override
-            public void onSuccess(final String importResult) {
+            public void onSuccessApp(final String importResult) {
                 dashboard.getBooksImportUI().disableImport(categoryTitle, importResult);
             }
         });
@@ -121,10 +123,11 @@ public class AppActivity implements //
 
     @Override
     public void testImport() {
-        adminBooksService.testImport(new AsyncCallbackApp<String>() {
+        Notification.loadingStart();
+        adminBooksService.testImport(new AsyncCallbackAppLoading<String>() {
 
             @Override
-            public void onSuccess(final String importResult) {
+            public void onSuccessApp(final String importResult) {
                 Notification.validation("Successful import: " + importResult);
             }
 
@@ -187,11 +190,12 @@ public class AppActivity implements //
     }
 
     @Override
-    public void deleteBooks() {
-        adminBooksService.deleteAll(new AsyncCallbackApp<Void>() {
+    public void deleteAllBooks() {
+        Notification.loadingStart();
+        adminBooksService.deleteAll(new AsyncCallbackAppLoading<Void>() {
 
             @Override
-            public void onSuccess(final Void result) {
+            public void onSuccessApp(final Void result) {
                 Notification.validation("Successful deletion");
             }
 
@@ -322,10 +326,11 @@ public class AppActivity implements //
 
     @Override
     public void updateBook(final Book book) {
-        adminBooksService.saveBook(book, new AsyncCallbackApp<Void>() {
+        Notification.loadingStart();
+        adminBooksService.saveBook(book, new AsyncCallbackAppLoading<Void>() {
 
             @Override
-            public void onSuccess(final Void result) {
+            public void onSuccessApp(final Void result) {
                 Notification.validation("El libro ha sido modificado con éxito");
             }
 
@@ -334,10 +339,11 @@ public class AppActivity implements //
 
     @Override
     public void createBook(final Book book) {
-        adminBooksService.saveBook(book, new AsyncCallbackApp<Void>() {
+        Notification.loadingStart();
+        adminBooksService.saveBook(book, new AsyncCallbackAppLoading<Void>() {
 
             @Override
-            public void onSuccess(final Void result) {
+            public void onSuccessApp(final Void result) {
                 dashboard.getBooksGridUI().refreshGrid();
                 Notification.validation("El libro ha sido creado con éxito");
             }
@@ -347,10 +353,11 @@ public class AppActivity implements //
 
     @Override
     public void deleteBooks(final ArrayList<Book> selectedBooks) {
-        adminBooksService.deleteBooks(selectedBooks, new AsyncCallbackApp<Void>() {
+        Notification.loadingStart();
+        adminBooksService.deleteBooks(selectedBooks, new AsyncCallbackAppLoading<Void>() {
 
             @Override
-            public void onSuccess(final Void result) {
+            public void onSuccessApp(final Void result) {
                 dashboard.getBooksGridUI().refreshGrid();
                 Notification.validation("Los libros han sido borrados con éxito");
             }
