@@ -7,6 +7,7 @@ import com.google.gwt.cell.client.CheckboxCell;
 import com.google.gwt.cell.client.EditTextCell;
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.cellview.client.Column;
@@ -114,6 +115,7 @@ public class BooksGrid extends Composite implements BooksGridUI {
                 }
             });
             grid.addColumn(checkboxColumn, "");
+            grid.setColumnWidth(checkboxColumn, 30, Unit.PX);
 
             titleColumn = new Column<Book, String>(titleCell) {
 
@@ -289,18 +291,18 @@ public class BooksGrid extends Composite implements BooksGridUI {
             });
 
         } else {
-            authorColumn = new TextColumn<Book>() {
-
-                @Override
-                public String getValue(final Book book) {
-                    return book.getAuthor();
-                }
-            };
             titleColumn = new TextColumn<Book>() {
 
                 @Override
                 public String getValue(final Book book) {
                     return book.getTitle();
+                }
+            };
+            authorColumn = new TextColumn<Book>() {
+
+                @Override
+                public String getValue(final Book book) {
+                    return book.getAuthor();
                 }
             };
             editorColumn = new TextColumn<Book>() {
@@ -332,15 +334,15 @@ public class BooksGrid extends Composite implements BooksGridUI {
             };
         }
 
-        authorColumn.setSortable(true);
         titleColumn.setSortable(true);
+        authorColumn.setSortable(true);
         editorColumn.setSortable(true);
         yearColumn.setSortable(true);
         commentColumn.setSortable(false);
         categoryColumn.setSortable(true);
 
-        col2field.put(authorColumn, SortField.AUTHOR);
         col2field.put(titleColumn, SortField.TITLE);
+        col2field.put(authorColumn, SortField.AUTHOR);
         col2field.put(editorColumn, SortField.EDITOR);
         col2field.put(yearColumn, SortField.YEAR);
         col2field.put(categoryColumn, SortField.CATEGORY);
@@ -352,6 +354,12 @@ public class BooksGrid extends Composite implements BooksGridUI {
         grid.addColumn(commentColumn, "Comentario");
         grid.addColumn(categoryColumn, "Categoría");
 
+        grid.setColumnWidth(titleColumn, 200, Unit.PX);
+        grid.setColumnWidth(authorColumn, 100, Unit.PX);
+        grid.setColumnWidth(editorColumn, 100, Unit.PX);
+        grid.setColumnWidth(yearColumn, 50, Unit.PX);
+        grid.setColumnWidth(commentColumn, 100, Unit.PX);
+        grid.setColumnWidth(categoryColumn, 100, Unit.PX);
     }
 
     private boolean         isGettingNbBooks = false;
