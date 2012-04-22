@@ -12,6 +12,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Grid;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.ToggleButton;
 import com.google.gwt.user.client.ui.Widget;
 import com.pgu.books.client.activity.booksImport.BooksImportPresenter;
@@ -29,6 +30,8 @@ public class BooksImport extends Composite implements BooksImportUI {
     @UiField(provided = true)
     Grid                                        categories;
 
+    @UiField
+    TextBox                                     importPass;
     @UiField
     Button                                      btnAll, btnTest, btnDelete;
 
@@ -68,10 +71,17 @@ public class BooksImport extends Composite implements BooksImportUI {
 
             @Override
             public void onClick(final ClickEvent event) {
-                toggle.setEnabled(false);
-                presenter.importBooks(toggle.getText());
+                if (isPassOn()) {
+                    toggle.setEnabled(false);
+                    presenter.importBooks(toggle.getText());
+                }
             }
+
         };
+    }
+
+    private boolean isPassOn() {
+        return "just do it".equals(importPass.getText());
     }
 
     @Override
@@ -93,19 +103,25 @@ public class BooksImport extends Composite implements BooksImportUI {
 
     @UiHandler("btnAll")
     public void clickAllCategories(final ClickEvent e) {
-        for (final String title : BookCategory.titles) {
-            presenter.importBooks(title);
+        if (isPassOn()) {
+            for (final String title : BookCategory.titles) {
+                presenter.importBooks(title);
+            }
         }
     }
 
     @UiHandler("btnTest")
     public void clickTest(final ClickEvent e) {
-        presenter.testImport();
+        if (isPassOn()) {
+            presenter.testImport();
+        }
     }
 
     @UiHandler("btnDelete")
     public void clickDelete(final ClickEvent e) {
-        presenter.deleteAllBooks();
+        if (isPassOn()) {
+            presenter.deleteAllBooks();
+        }
     }
 
     @Override
