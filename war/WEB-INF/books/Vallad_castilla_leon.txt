@@ -51,4 +51,4 @@
 "Varios autores", "Libro de la gastronomía de Castilla y León", "Unigraf, S.A.", "1986", "", "Vallad_castilla_leon"
 "Las Edades del Hombre", "Vlaanderen en Castilla y León", "Andrés Martín", "1995", "", "Vallad_castilla_leon"
 "J. Sanz-Zuasti - Tomás Velasco", "Fauna vertebrada de Castilla y León T. I y II", "Náyade", "2005", "", "Vallad_castilla_leon"
-"Varios autores Julio Valdeón Director", "Burgos en la Edad Media", "Junta Cª y León", "1984", "", "Vallad_castilla_leon"    
+"Varios autores Julio Valdeón Director", "Burgos en la Edad Media", "Junta Cª y León", "1984", "", "Vallad_castilla_leon"

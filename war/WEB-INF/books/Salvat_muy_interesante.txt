@@ -144,4 +144,4 @@
 "J. L. Cloudsley - Thompson", "El hombre y la biología de zonas áridas", "Eds. Orbis, S.A.", "1986", "Nº 68", "Salvat_muy_interesante"
 "Lloyd Motz", "El universo (su principio y su fin)", "Eds. Orbis, S.A.", "1986", "Nº 72", "Salvat_muy_interesante"
 "M. Mead, T. Dobzhannsky y otros", "La ciencia y el concepto de raza", "Eds. Orbis, S.A.", "1986", "Nº 74", "Salvat_muy_interesante"
-"Alfred Tomatis", "El oído y el lenguaje", "Eds. Orbis, S.A.", "1986", "Nº 77", "Salvat_muy_interesante"    
+"Alfred Tomatis", "El oído y el lenguaje", "Eds. Orbis, S.A.", "1986", "Nº 77", "Salvat_muy_interesante"

@@ -35,40 +35,40 @@ import com.pgu.books.shared.domain.Book;
 @SuppressWarnings("serial")
 public class BuildFiltersServlet extends HttpServlet {
 
-    private static final Logger LOGGER = Logger.getLogger(BuildFiltersServlet.class.getName());
+    private static final Logger       LOGGER          = Logger.getLogger(BuildFiltersServlet.class.getName());
 
-    private final DAO dao = new DAO();
+    private final DAO                 dao             = new DAO();
 
-    private static final String PARAM_STAGE = "stage";
-    private static final String STAGE_FILTER = "filter";
-    private static final String STAGE_LETTER = "letter";
+    private static final String       PARAM_STAGE     = "stage";
+    private static final String       STAGE_FILTER    = "filter";
+    private static final String       STAGE_LETTER    = "letter";
 
-    private static final String PARAM_ACTION = "action";
-    private static final String ACTION_DELETE = "delete";
-    private static final String ACTION_PUT = "put";
-    private static final String ACTION_CLEANUP = "cleanup";
-    private static final String ACTION_COUNT = "count";
+    private static final String       PARAM_ACTION    = "action";
+    private static final String       ACTION_DELETE   = "delete";
+    private static final String       ACTION_PUT      = "put";
+    private static final String       ACTION_CLEANUP  = "cleanup";
+    private static final String       ACTION_COUNT    = "count";
 
-    private static final String PARAM_FILTER = "filter";
-    private static final String FILTER_AUTHOR = "author";
-    private static final String FILTER_EDITOR = "editor";
-    private static final String FILTER_CATEGORY = "category";
+    private static final String       PARAM_FILTER    = "filter";
+    private static final String       FILTER_AUTHOR   = "author";
+    private static final String       FILTER_EDITOR   = "editor";
+    private static final String       FILTER_CATEGORY = "category";
 
-    private static final List<String> stages = Arrays.asList( //
-            STAGE_FILTER, //
-            STAGE_LETTER //
-            );
-    private static final List<String> actions = Arrays.asList( //
-            ACTION_DELETE, //
-            ACTION_PUT, //
-            ACTION_CLEANUP, //
-            ACTION_COUNT //
-            );
-    private static final List<String> filters = Arrays.asList( //
-            FILTER_AUTHOR, //
-            FILTER_EDITOR, //
-            FILTER_CATEGORY //
-            );
+    private static final List<String> stages          = Arrays.asList( //
+                                                              STAGE_FILTER, //
+                                                              STAGE_LETTER //
+                                                      );
+    private static final List<String> actions         = Arrays.asList( //
+                                                              ACTION_DELETE, //
+                                                              ACTION_PUT, //
+                                                              ACTION_CLEANUP, //
+                                                              ACTION_COUNT //
+                                                      );
+    private static final List<String> filters         = Arrays.asList( //
+                                                              FILTER_AUTHOR, //
+                                                              FILTER_EDITOR, //
+                                                              FILTER_CATEGORY //
+                                                      );
 
     @Override
     protected void doGet(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException,
@@ -462,9 +462,20 @@ public class BuildFiltersServlet extends HttpServlet {
         while (itr.hasNext()) {
             final Book book = itr.next();
 
-            dao.ofy().put(new AuthorFilter().value(book.getAuthor()));
-            dao.ofy().put(new EditorFilter().value(book.getEditor()));
-            dao.ofy().put(new CategoryFilter().value(book.getCategory()));
+            final String author = book.getAuthor();
+            if (!author.isEmpty()) {
+                dao.ofy().put(new AuthorFilter().value(author));
+            }
+
+            final String editor = book.getEditor();
+            if (!editor.isEmpty()) {
+                dao.ofy().put(new EditorFilter().value(editor));
+            }
+
+            final String category = book.getCategory();
+            if (!category.isEmpty()) {
+                dao.ofy().put(new CategoryFilter().value(category));
+            }
 
             if (servletUtils.hasReachedTimeOut()) {
 

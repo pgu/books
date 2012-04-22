@@ -356,4 +356,4 @@
 "W. Schröeder - Devrient", "Tusquets", "1977", "", "Memorias de una cantante alemana", "Sexmujer"
 "Anónimo", "Tusquets", "1980", "", "Cruel Zelanda", "Sexmujer"
 "F. Escardó", "Ateneo", "1964", "3ª ed.", "Sexología de la familia", "Sexmujer"
-"Robert Street", "Hormé", "1973", "", "Técnicas sexuales modernas", "Sexmujer"    
+"Robert Street", "Hormé", "1973", "", "Técnicas sexuales modernas", "Sexmujer"

@@ -48,10 +48,11 @@ public class BuildStatsServlet extends HttpServlet {
         try {
             createEntity2Books("category", Category2Books.class);
             servletUtils.info("Creating stats for categories is done (" + (System.currentTimeMillis() - startTime)
-                    + ")");
+                    + " ms)");
 
             createEntity2Books("editor", Editor2Books.class);
-            servletUtils.info("Creating stats for editors is done (" + (System.currentTimeMillis() - startTime) + ")");
+            servletUtils.info("Creating stats for editors is done (" + (System.currentTimeMillis() - startTime)
+                    + " ms)");
 
         } catch (final InstantiationException e) {
             LOGGER.severe(e.getMessage());

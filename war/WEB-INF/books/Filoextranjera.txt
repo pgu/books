@@ -770,4 +770,4 @@
 "Martin Heidegger", "Desde la experiencia del pensamiento", "Ediciones 62", "1986", "Trilingüe", "Filosofía extranjera"
 "Gianni Vattimo", "Introducción a Nietzsche", "Península", "1987", "", "Filosofía extranjera"
 "Gilles Deleuze", "Spinoza, Kant, Nietzsche", "Labor, S.A.", "1974", "", "Filosofía extranjera"
-"Friedrich Nietzsche", "Schopenhauer como educador y otros textos", "C. Lectores", "1996", "", "Filosofía extranjera"    
+"Friedrich Nietzsche", "Schopenhauer como educador y otros textos", "C. Lectores", "1996", "", "Filosofía extranjera"

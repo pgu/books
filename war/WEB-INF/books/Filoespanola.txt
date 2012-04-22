@@ -386,4 +386,4 @@
 "José jiménez Lozano", "Hª de la Inquisición Española de J. A. Llorente", "Hiperion", "1981", "JUDIOS E INQUISICIÓN", "Filosofía española"
 "Palacio de la Merced", "Maimónides y su época", "Ayto. Córdoba", "2000", "JUDIOS E INQUISICIÓN", "Filosofía española"
 "F. Ramos  -  José Mª  y Jesús Sánchez- Caro", "La muerte: realidad y misterio", "Salvat Eds. S.A.", "1982", "JUDIOS E INQUISICIÓN,Nº 92", "Filosofía española"
-"Carmen Martin Gaite", "Macanaz, otro paciente de la inquisición", "Destino", "1982", "JUDIOS E INQUISICIÓN", "Filosofía española"    
+"Carmen Martin Gaite", "Macanaz, otro paciente de la inquisición", "Destino", "1982", "JUDIOS E INQUISICIÓN", "Filosofía española"

@@ -166,4 +166,4 @@
 "Manuela Amaral", "Fe pagá Poemas", "Gráf. Sintrense", "1961", "", "Repes_frances_italoport"
 "Joao Castro Nunes", "Algunos aspectos  o problemas da moderna lírica port.", "Inst. Est. Port.", "1947", "", "Repes_frances_italoport"
 "Luis de Camôes", "Os Lusiadas", "A. M. Pereira", "1971", "Piel", "Repes_frances_italoport"
-"Portugal", "As cen Melhores poesias (Líricas)", "", "1914", "", "Repes_frances_italoport"    
+"Portugal", "As cen Melhores poesias (Líricas)", "", "1914", "", "Repes_frances_italoport"

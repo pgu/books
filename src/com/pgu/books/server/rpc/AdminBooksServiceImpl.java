@@ -49,10 +49,10 @@ public class AdminBooksServiceImpl extends RemoteServiceServlet implements Admin
                 if (tokens.length == 6) {
                     countImported++;
 
-                    final String authorRaw = tokens[0];
+                    final String authorRaw = tokens[0].trim();
                     final String author = authorRaw.isEmpty() ? "" : authorRaw.substring(1); // removes first "
 
-                    final String categoryRaw = tokens[5];
+                    final String categoryRaw = tokens[5].trim();
                     final String category = categoryRaw.isEmpty() ? "" : categoryRaw.substring(0,
                             categoryRaw.length() - 1); // removes last "
 

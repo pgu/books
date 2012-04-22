@@ -330,4 +330,4 @@
 "María Angustias Moreno", "El Opus Dei. Anexo a una historia", "Planeta", "1976", "", "Teoreligion_2"
 "Gerhard von Rad", "Teología del Antiguo Testamento Volumen I", "Sígueme", "1975", "", "Teoreligion_2"
 "Gerhard von Rad", "Teología del Antiguo Testamento Volumen II", "Sígueme", "1976", "", "Teoreligion_2"
-"Gerhard von Rad", "Estudios sobre el Antiguo Testamento", "Sígueme", "1976", "", "Teoreligion_2"    
+"Gerhard von Rad", "Estudios sobre el Antiguo Testamento", "Sígueme", "1976", "", "Teoreligion_2"

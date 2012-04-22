@@ -600,4 +600,4 @@
 "Francisco Romero", "Fª contemporánea Estudios y notas 1ª serie", "Losada, S. A.", "1944", "2ª ed.", "Lpuerta"
 "Paul Valery", "El alma y la danza Eupalinos o el arquitecto", "Losada, S. A.", "1944", "2ª ed.", "Lpuerta"
 "Santo Tomás de Aquino", "Del ente y de la esencia", "Losada, S. A.", "1945", "2ª ed.", "Lpuerta"
-"O. F. Bollnow", "Esencia y cambio de las virtudes", "R. Occidente", "1960", "", "Lpuerta"    
+"O. F. Bollnow", "Esencia y cambio de las virtudes", "R. Occidente", "1960", "", "Lpuerta"

@@ -385,4 +385,4 @@
 "Conde de Keyserling", "Diario de viaje de un filósofo  II", "Esp. Calpe S.A.", "1928", "", "Lradio"
 "Guillermo Dilthey", "Introducción a las ciencias del espíritu I", "Esp. Calpe S.A.", "1948", "", "Lradio"
 "Guillermo Dilthey", "Introducción a las ciencias del espíritu II", "Esp. Calpe S.A.", "1948", "", "Lradio"
-"Dirigida por François Châtelet", "Historia de la filosofía T. 1", "Esp. Calpe S.A.", "1976", "", "Lradio"    
+"Dirigida por François Châtelet", "Historia de la filosofía T. 1", "Esp. Calpe S.A.", "1976", "", "Lradio"

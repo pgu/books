@@ -102,4 +102,4 @@
 "Giménez Caballero", "España y Franco", "Los combatientes", "1938", "Fascículo 1", "Restos"
 "Giménez Caballero", "Camisa azul y boina colorada", "Los combatientes", "1939", "Fascículo 2", "Restos"
 "Giménez Caballero", "Triunfo del dos de mayo", "Los combatientes", "1939", "Fascículo 3", "Restos"
-"Armando Torrent", "Dº Público Romano y sistema de fuentes II", "G. Grossi", "1980", "", "Restos"    
+"Armando Torrent", "Dº Público Romano y sistema de fuentes II", "G. Grossi", "1980", "", "Restos"
