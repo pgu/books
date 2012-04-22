@@ -9,16 +9,11 @@ import java.util.ArrayList;
 import java.util.logging.Logger;
 
 import com.google.appengine.api.datastore.QueryResultIterator;
-import com.google.appengine.api.taskqueue.Queue;
-import com.google.appengine.api.taskqueue.QueueFactory;
-import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.appengine.api.utils.SystemProperty;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.pgu.books.client.rpc.AdminBooksService;
 import com.pgu.books.server.access.DAO;
 import com.pgu.books.server.domain.ArchivedBook;
-import com.pgu.books.server.utils.AppQueues;
-import com.pgu.books.server.utils.AppUrls;
 import com.pgu.books.shared.domain.Book;
 import com.pgu.books.shared.utils.BookCategory;
 
@@ -71,9 +66,6 @@ public class AdminBooksServiceImpl extends RemoteServiceServlet implements Admin
                     LOG.warning("Not imported: " + line);
                 }
             }
-
-            final Queue queue = QueueFactory.getQueue(AppQueues.BUILD_WORDS);
-            queue.add(TaskOptions.Builder.withUrl(AppUrls.BUILD_WORDS));
 
             return countImported + " / " + countTotal + " (" + (System.currentTimeMillis() - startTime) + " ms)";
 
