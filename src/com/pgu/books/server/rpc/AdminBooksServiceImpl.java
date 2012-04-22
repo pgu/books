@@ -63,7 +63,7 @@ public class AdminBooksServiceImpl extends RemoteServiceServlet implements Admin
                     dao.ofy().put(new Book(author, title, editor, year, comment, category));
 
                 } else {
-                    LOG.warning("Not imported: " + line);
+                    LOG.warning("** Not imported: " + line);
                 }
             }
 
