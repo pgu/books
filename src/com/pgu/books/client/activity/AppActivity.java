@@ -115,6 +115,7 @@ public class AppActivity implements //
 
             @Override
             public void onSuccessApp(final String importResult) {
+                fetchBooksInternal(0, dashboard.getBooksGridUI().getLength());
                 dashboard.getBooksImportUI().disableImport(categoryTitle, importResult);
             }
         });
@@ -128,6 +129,7 @@ public class AppActivity implements //
 
             @Override
             public void onSuccessApp(final String importResult) {
+                fetchBooksInternal(0, dashboard.getBooksGridUI().getLength());
                 Notification.validation("Successful import: " + importResult);
             }
 
@@ -196,6 +198,7 @@ public class AppActivity implements //
 
             @Override
             public void onSuccessApp(final Void result) {
+                fetchBooksInternal(0, dashboard.getBooksGridUI().getLength());
                 Notification.validation("Successful deletion");
             }
 

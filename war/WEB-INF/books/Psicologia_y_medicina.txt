@@ -474,4 +474,4 @@
 "Erich R. Jaensch", "Eidética y exploración tipológica", "Paidos", "1957", "", "Psicología y medicina"
 "Dr. Rafael de Vega y F. Crespo", "El otoño del arte clínico", "Univ. Vallad.", "1980", "Dedicado", "Psicología y medicina"
 "A. Fischel", "Compendio de embriología humana", "Labor, S. A.", "1943", "2ª ed.", "Psicología y medicina"
-"Juan Manuel Jiménez Muñoz", "Médicos y cirujanos en \"Quitaciones de Cortes\"", "Univ. Vallad.", "1977", "Dedicado", "Psicología y medicina"    
+"Juan Manuel Jiménez Muñoz", "Médicos y cirujanos en \"Quitaciones de Cortes\"", "Univ. Vallad.", "1977", "Dedicado", "Psicología y medicina"

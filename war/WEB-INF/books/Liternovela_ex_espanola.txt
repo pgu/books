@@ -676,4 +676,4 @@
 "Lope de Vega", "Fuente Ovejuna El caballero de Olmedo", "Salvat", "1970", "Libro TV", "Literatura, novelas extranjeras y españolas"
 "Fernando Díaz Plaja", "Teatro Español de Hoy Antología 1938-1966", "Alfil", "1958", "", "Literatura, novelas extranjeras y españolas"
 "Biblioteca Parisien", "Un empresario afortunado Volumen 2", "La novela Galante", "", "", "Literatura, novelas extranjeras y españolas"
-"José Mª Badía", "Las tentaciones", "La novela deliciosa", "1932", "", "Literatura, novelas extranjeras y españolas"    
+"José Mª Badía", "Las tentaciones", "La novela deliciosa", "1932", "", "Literatura, novelas extranjeras y españolas"

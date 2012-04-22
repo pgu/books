@@ -55,10 +55,10 @@ public class AdminBooksServiceImpl extends RemoteServiceServlet implements Admin
                     final String category = categoryRaw.isEmpty() ? "" : categoryRaw.substring(0,
                             categoryRaw.length() - 1); // removes last "
 
-                    final String title = tokens[1];
-                    final String editor = tokens[2];
-                    final String year = tokens[3];
-                    final String comment = tokens[4];
+                    final String title = tokens[1].trim();
+                    final String editor = tokens[2].trim();
+                    final String year = tokens[3].trim();
+                    final String comment = tokens[4].trim();
 
                     dao.ofy().put(new Book(author, title, editor, year, comment, category));
 

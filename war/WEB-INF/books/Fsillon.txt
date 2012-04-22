@@ -466,4 +466,4 @@
 "Suetonio y Petronio", "Suetonio: Los doce Césares Petronio: El satiricón", "El Ateneo", "1959", "2ª ed.", "Filosofia sillón"
 "Jean Paul Sartre", "La suerte está echada. El engranaje", "Losada", "1955", "2ª ed.", "Filosofia sillón"
 "Philipp Lersch", "El hombre en la actualidad Nº 16", "Gredos", "1958", "2ª ed.", "Filosofia sillón"
-"Guillermo Fraile, O. P.", "Historia de la filosofía II Judaísmo Nº 190", "B. A. C.", "1966", "2ª ed.", "Filosofia sillón"    
+"Guillermo Fraile, O. P.", "Historia de la filosofía II Judaísmo Nº 190", "B. A. C.", "1966", "2ª ed.", "Filosofia sillón"
