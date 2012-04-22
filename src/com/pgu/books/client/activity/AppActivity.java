@@ -139,20 +139,12 @@ public class AppActivity implements //
     }
 
     private void fetchBooksInternal(final int start, final int length) {
-        GWT.log("---" + //
-                "start -> " + start + ", " + //
-                "length -> " + length + ", " + //
-                "sortField -> " + queryParameters.getSortField() + ", " + //
-                "isAscending -> " + queryParameters.isAscending() + ", " //
-        );
-
         dashboard.getBooksGridUI().initFetchFlags();
 
         booksService.countBooks(queryParameters, new AsyncCallbackApp<Integer>() {
 
             @Override
             public void onSuccess(final Integer count) {
-                GWT.log("success count " + count);
                 dashboard.getBooksGridUI().setNbBooks(count);
             }
 
@@ -168,7 +160,6 @@ public class AppActivity implements //
 
             @Override
             public void onSuccess(final ArrayList<Book> books) {
-                GWT.log("success list " + books.size());
                 dashboard.getBooksGridUI().showBooks(books);
             }
 

@@ -407,8 +407,6 @@ public class BooksGrid extends Composite implements BooksGridUI {
             @Override
             protected void onRangeChanged(final HasData<Book> display) {
 
-                GWT.log("gridStart: " + grid.getPageStart() + ", currentStart: " + display.getVisibleRange().getStart());
-
                 currentStart = display.getVisibleRange().getStart();
                 length = display.getVisibleRange().getLength();
 
