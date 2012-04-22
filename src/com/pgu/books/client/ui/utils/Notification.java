@@ -1,5 +1,7 @@
 package com.pgu.books.client.ui.utils;
 
+import java.util.ArrayList;
+
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.FontWeight;
 import com.google.gwt.dom.client.Style.Unit;
@@ -16,6 +18,8 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.PopupPanel;
 
 public class Notification {
+
+    private static final ArrayList<DialogBox> notifications = new ArrayList<DialogBox>();
 
     public static void validation(final String message) {
         final DialogBox popup = createPopup();
@@ -41,18 +45,20 @@ public class Notification {
 
             @Override
             public void onClose(final CloseEvent<PopupPanel> event) {
+                notifications.remove(popup);
                 popup.removeFromParent();
             }
         });
 
+        notifications.add(popup);
         popup.show();
+
         final Timer timer = new Timer() {
             @Override
             public void run() {
                 CloseEvent.fire(popup, popup);
             }
         };
-
         timer.schedule(5000);
     }
 
@@ -85,6 +91,7 @@ public class Notification {
 
             @Override
             public void onClose(final CloseEvent<PopupPanel> event) {
+                notifications.remove(popup);
                 popup.removeFromParent();
             }
         });
@@ -97,6 +104,7 @@ public class Notification {
             }
         });
 
+        notifications.add(popup);
         popup.show();
     }
 
