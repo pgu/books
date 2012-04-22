@@ -11,6 +11,11 @@
         <schedule>every day 02:00</schedule>
     </cron>
     <cron>
+        <url>/cron/buildStats</url>
+        <description>Builds stats for books</description>
+        <schedule>every day 03:00</schedule>
+    </cron>
+    <cron>
         <url>/cron/test</url>
         <description>Test cron features</description>
         <schedule>every 60 minutes</schedule>

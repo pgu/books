@@ -23,6 +23,10 @@
         <servlet-class>com.pgu.books.server.servlet.BuildWordsServlet</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>buildStats</servlet-name>
+        <servlet-class>com.pgu.books.server.servlet.BuildStatsServlet</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>testCron</servlet-name>
         <servlet-class>com.pgu.books.server.servlet.TestServlet</servlet-class>
     </servlet>
@@ -46,6 +50,10 @@
     <servlet-mapping>
         <servlet-name>buildWords</servlet-name>
         <url-pattern>/cron/buildWords</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>buildStats</servlet-name>
+        <url-pattern>/cron/buildStats</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>testCron</servlet-name>

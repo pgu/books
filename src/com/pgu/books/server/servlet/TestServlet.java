@@ -1,6 +1,8 @@
 package com.pgu.books.server.servlet;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
@@ -23,7 +25,10 @@ public class TestServlet extends HttpServlet {
     @Override
     protected void doGet(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException,
             IOException {
-        LOGGER.info("...GET request ");
+
+        final String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSZ").format(new Date());
+        LOGGER.info("...GET request " + date);
+
         doPost(req, resp);
     }
 
