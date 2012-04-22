@@ -88,7 +88,7 @@ public class BooksImport extends Composite implements BooksImportUI {
     @Override
     public void disableImport(final String categoryTitle, final String importResult) {
         title2btns.get(categoryTitle).setEnabled(false);
-        Notification.error(categoryTitle + ": " + importResult);
+        Notification.validation(categoryTitle + ": " + importResult);
     }
 
     @UiHandler("btnAll")
