@@ -6,11 +6,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.logging.Logger;
 
 import com.google.appengine.api.datastore.QueryResultIterator;
-import com.google.appengine.api.utils.SystemProperty;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
+import com.ibm.icu.text.SimpleDateFormat;
 import com.pgu.books.client.rpc.AdminBooksService;
 import com.pgu.books.server.access.DAO;
 import com.pgu.books.server.domain.ArchivedBook;
@@ -78,9 +79,9 @@ public class AdminBooksServiceImpl extends RemoteServiceServlet implements Admin
 
     @Override
     public void deleteAll() {
-        if (SystemProperty.environment.value() == SystemProperty.Environment.Value.Production) {
-            return; // The app is running on App Engine...
-        }
+        // if (SystemProperty.environment.value() == SystemProperty.Environment.Value.Production) {
+        // return; // The app is running on App Engine...
+        // }
 
         final QueryResultIterator<Book> itr = dao.ofy().query(Book.class).iterator();
         while (itr.hasNext()) {
@@ -95,13 +96,17 @@ public class AdminBooksServiceImpl extends RemoteServiceServlet implements Admin
 
     @Override
     public void deleteBooks(final ArrayList<Book> selectedBooks) {
+        final String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSZ").format(new Date());
+
         final ArrayList<ArchivedBook> archivedBooks = new ArrayList<ArchivedBook>(selectedBooks.size());
         for (final Book book : selectedBooks) {
-            archivedBooks.add(new ArchivedBook(book));
+
+            final ArchivedBook archivedBook = new ArchivedBook(book);
+            archivedBook.setArchiveDate(date);
+            archivedBooks.add(archivedBook);
         }
         dao.ofy().put(archivedBooks);
 
         dao.ofy().delete(selectedBooks);
     }
-
 }
