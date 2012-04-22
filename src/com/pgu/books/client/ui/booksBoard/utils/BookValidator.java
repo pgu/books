@@ -19,6 +19,9 @@ public class BookValidator {
     }
 
     public static boolean isValidYear(final String value) {
+        if ("".equals(value)) {
+            return true;
+        }
 
         int y = 0;
         try {
