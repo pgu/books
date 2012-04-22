@@ -13,7 +13,9 @@ import com.pgu.books.server.access.DAO;
 import com.pgu.books.server.domain.Category2Books;
 import com.pgu.books.server.domain.CategoryFilter;
 import com.pgu.books.server.domain.Editor2Books;
+import com.pgu.books.server.domain.EditorFilter;
 import com.pgu.books.server.domain.Entity2Books;
+import com.pgu.books.server.domain.Filter;
 import com.pgu.books.server.utils.ServletUtils;
 import com.pgu.books.shared.domain.Book;
 
@@ -46,11 +48,11 @@ public class BuildStatsServlet extends HttpServlet {
         ;
 
         try {
-            createEntity2Books("category", Category2Books.class);
+            createEntity2Books("category", Category2Books.class, CategoryFilter.class);
             servletUtils.info("Creating stats for categories is done (" + (System.currentTimeMillis() - startTime)
                     + " ms)");
 
-            createEntity2Books("editor", Editor2Books.class);
+            createEntity2Books("editor", Editor2Books.class, EditorFilter.class);
             servletUtils.info("Creating stats for editors is done (" + (System.currentTimeMillis() - startTime)
                     + " ms)");
 
@@ -61,8 +63,8 @@ public class BuildStatsServlet extends HttpServlet {
         }
     }
 
-    private <T extends Entity2Books> void createEntity2Books(final String attribute, final Class<T> clazz)
-            throws InstantiationException, IllegalAccessException {
+    private <T extends Entity2Books> void createEntity2Books(final String attribute, final Class<T> clazz,
+            final Class<? extends Filter> clazzFilter) throws InstantiationException, IllegalAccessException {
         //
         // clean current stats
         final QueryResultIterator<T> itr2books = dao.ofy().query(clazz).iterator();
@@ -72,10 +74,10 @@ public class BuildStatsServlet extends HttpServlet {
 
         //
         // create new stats
-        final QueryResultIterator<CategoryFilter> itrFilter = dao.ofy().query(CategoryFilter.class).iterator();
+        final QueryResultIterator<? extends Filter> itrFilter = dao.ofy().query(clazzFilter).iterator();
         while (itrFilter.hasNext()) {
 
-            final CategoryFilter filter = itrFilter.next();
+            final Filter filter = itrFilter.next();
 
             final int count = dao.ofy().query(Book.class) //
                     .filter(attribute, filter.getValue()) //
