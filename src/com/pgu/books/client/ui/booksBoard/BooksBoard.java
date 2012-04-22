@@ -58,17 +58,22 @@ public class BooksBoard extends Composite implements BooksBoardUI {
 
         booksFilters = new BooksFilters();
 
-        final DisclosurePanel disclosurePanelFilters = new DisclosurePanel("Filtrar los libros");
-        disclosurePanelFilters.setWidth("100%");
-        disclosurePanelFilters.add(booksFilters);
-
         final VerticalPanel westMenu = new VerticalPanel();
-        westMenu.setWidth("150px");
-        westMenu.add(disclosurePanelFilters);
+        final DisclosurePanel disclosureMenu = new DisclosurePanel(" ");
+        disclosureMenu.setWidth("100%");
 
-        if (loginInfo.isLoggedIn()) {
+        if (!loginInfo.isLoggedIn()) {
+
+            disclosureMenu.add(booksFilters);
+
+        } else {
+
             bookForm = new BookForm();
             booksDelete = new BooksDelete(booksGrid);
+
+            final DisclosurePanel disclosurePanelFilters = new DisclosurePanel("Filtrar los libros");
+            disclosurePanelFilters.setWidth("100%");
+            disclosurePanelFilters.add(booksFilters);
 
             final DisclosurePanel disclosurePanelForm = new DisclosurePanel("Añadir un libro");
             disclosurePanelForm.setWidth("100%");
@@ -78,10 +83,15 @@ public class BooksBoard extends Composite implements BooksBoardUI {
             disclosurePanelDelete.setWidth("100%");
             disclosurePanelDelete.add(booksDelete);
 
-            westMenu.add(disclosurePanelForm);
-            westMenu.add(disclosurePanelDelete);
+            final VerticalPanel menuVP = new VerticalPanel();
+            menuVP.add(disclosurePanelFilters);
+            menuVP.add(disclosurePanelForm);
+            menuVP.add(disclosurePanelDelete);
+
+            disclosureMenu.add(menuVP);
         }
 
+        westMenu.add(disclosureMenu);
         return westMenu;
     }
 
