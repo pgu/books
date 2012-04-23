@@ -27,3 +27,8 @@ TODO: libros P HARRIET
         // 871 ./Filocont_2.txt
         // 7649 total
 
+
+STAND-BY: review the import process and cron tasks because of appengine quotas :-/
+* make files of 1000 records
+* move logic from cron tasks to import/service edition
+
