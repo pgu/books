@@ -16,12 +16,12 @@ import com.pgu.books.server.exception.ProcessException;
 
 public final class ServletUtils {
 
-    public static final long LIMIT_MS = 1000 * 25;
+    public static final long    LIMIT_MS = 1000 * 25;
 
     private HttpServletResponse resp;
-    private Logger logger;
+    private Logger              logger;
 
-    private long startTime;
+    private long                startTime;
 
     public ServletUtils() {
     }
@@ -102,9 +102,11 @@ public final class ServletUtils {
 
         logger.info("******* is production: " + isInProduction);
         logger.info("******* header X-AppEngine-Cron: " + headerCron);
+        logger.info("******* req#query: " + req.getQueryString());
 
         if (isInProduction //
                 && !"true".equalsIgnoreCase(headerCron)) {
+
             throw new IllegalArgumentException("Only cron jobs can call this job");
         }
         return this;

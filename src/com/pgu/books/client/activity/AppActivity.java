@@ -324,18 +324,24 @@ public class AppActivity implements //
     @Override
     public void fetchData() {
         dashboard.getBooksChartsUI().initFetchData();
+
+        Notification.loadingStart();
         booksService.fetchNbBooksByCategories(new AsyncCallbackApp<TreeMap<String, Integer>>() {
 
             @Override
             public void onSuccess(final TreeMap<String, Integer> result) {
+                Notification.loadingStop();
                 dashboard.getBooksChartsUI().setNbBooksByCategories(result);
             }
 
         });
+
+        Notification.loadingStart();
         booksService.fetchNbBooksByEditors(new AsyncCallbackApp<TreeMap<String, Integer>>() {
 
             @Override
             public void onSuccess(final TreeMap<String, Integer> result) {
+                Notification.loadingStop();
                 dashboard.getBooksChartsUI().setNbBooksByEditors(result);
             }
 

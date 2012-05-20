@@ -201,8 +201,8 @@ public class BooksCharts extends Composite implements BooksChartsUI {
 
     private PieOptions createPieOptions(final ChartConfig chartConfig) {
         final PieOptions options = PieOptions.create();
-        options.setWidth(400);
-        options.setHeight(240);
+        options.setWidth(500);
+        options.setHeight(400);
         options.set3D(true);
         options.setTitle(chartConfig.getTitle());
         return options;
