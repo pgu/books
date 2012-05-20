@@ -4,7 +4,13 @@ import java.util.ArrayList;
 import java.util.TreeMap;
 import java.util.logging.Logger;
 
+import javax.servlet.http.HttpServletRequest;
+
 import com.google.appengine.api.datastore.QueryResultIterator;
+import com.google.appengine.api.search.Index;
+import com.google.appengine.api.search.IndexSpec;
+import com.google.appengine.api.search.SearchServiceFactory;
+import com.google.appengine.api.users.User;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.googlecode.objectify.Query;
 import com.pgu.books.client.rpc.BooksService;
@@ -28,9 +34,50 @@ import com.pgu.books.shared.dto.BooksQueryParameters;
 @SuppressWarnings("serial")
 public class BooksServiceImpl extends RemoteServiceServlet implements BooksService {
 
-    private static final Logger LOG = Logger.getLogger(BooksServiceImpl.class.getSimpleName());
+    private static final Logger LOG   = Logger.getLogger(BooksServiceImpl.class.getSimpleName());
 
-    private final DAO           dao = new DAO();
+    private final DAO           dao   = new DAO();
+
+    private static final Index  INDEX = SearchServiceFactory.getSearchService().getIndex(
+                                              IndexSpec.newBuilder().setName("shared_index"));
+
+    /**
+     * TODO http://code.google.com/p/google-app-engine-samples/source/browse/trunk/search/java/src/com/google/appengine/
+     * demos/search/TextSearchServlet.java
+     */
+    public void testSearch() {
+        final HttpServletRequest req = null;
+        final User currentUser = null;
+
+        String outcome = null;
+        // action add
+        outcome = add(req, currentUser);
+
+        // action remove
+        outcome = remove(req);
+
+        // action search
+        final String searchOutcome = search(req);
+
+        // sends result
+        if (outcome == null) {
+            outcome = searchOutcome;
+        }
+
+        req.setAttribute("outcome", outcome);
+    }
+
+    private String search(final HttpServletRequest req) {
+        return null;
+    }
+
+    private String remove(final HttpServletRequest req) {
+        return null;
+    }
+
+    private String add(final HttpServletRequest req, final User currentUser) {
+        return null;
+    }
 
     @Override
     public ArrayList<Book> fetchBooks(final BooksQueryParameters queryParameters, final int start, final int length) {
