@@ -23,8 +23,43 @@ public class Book implements IsSerializable {
         this.category = category;
     }
 
+    public Book id(final String id) {
+        setId(Long.parseLong(id));
+        return this;
+    }
+
+    public Book author(final String author) {
+        setAuthor(author);
+        return this;
+    }
+
+    public Book title(final String title) {
+        setTitle(title);
+        return this;
+    }
+
+    public Book editor(final String editor) {
+        setEditor(editor);
+        return this;
+    }
+
+    public Book year(final String year) {
+        setYear(year);
+        return this;
+    }
+
+    public Book comment(final String comment) {
+        setComment(comment);
+        return this;
+    }
+
+    public Book category(final String category) {
+        setCategory(category);
+        return this;
+    }
+
     @Id
-    private Long id;
+    private Long   id;
 
     private String author;
     private String editor;

@@ -1,16 +1,21 @@
 package com.pgu.books.server.rpc;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.TreeMap;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 
 import com.google.appengine.api.datastore.QueryResultIterator;
+import com.google.appengine.api.search.Document;
+import com.google.appengine.api.search.Field;
 import com.google.appengine.api.search.Index;
 import com.google.appengine.api.search.IndexSpec;
+import com.google.appengine.api.search.QueryOptions;
+import com.google.appengine.api.search.Results;
+import com.google.appengine.api.search.ScoredDocument;
 import com.google.appengine.api.search.SearchServiceFactory;
-import com.google.appengine.api.users.User;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.googlecode.objectify.Query;
 import com.pgu.books.client.rpc.BooksService;
@@ -47,36 +52,73 @@ public class BooksServiceImpl extends RemoteServiceServlet implements BooksServi
      */
     public void testSearch() {
         final HttpServletRequest req = null;
-        final User currentUser = null;
 
-        String outcome = null;
         // action add
-        outcome = add(req, currentUser);
+        add(new Book());
 
         // action remove
-        outcome = remove(req);
+        final ArrayList<Long> bookIds = (ArrayList<Long>) Arrays.asList(1L, 2L);
+        remove(bookIds);
 
         // action search
-        final String searchOutcome = search(req);
+        search(req);
 
         // sends result
-        if (outcome == null) {
-            outcome = searchOutcome;
+    }
+
+    private ArrayList<Book> search(final HttpServletRequest req) {
+
+        final String _queryStr = req.getParameter("query");
+        final String queryStr = _queryStr == null ? "" : _queryStr;
+
+        final Integer limit = Integer.parseInt(req.getParameter("limit")); // 10
+
+        final ArrayList<Book> books = new ArrayList<Book>();
+        final com.google.appengine.api.search.Query query = com.google.appengine.api.search.Query.newBuilder()
+                .setOptions(QueryOptions.newBuilder().setLimit(limit).build()).build(queryStr);
+
+        final Results<ScoredDocument> results = INDEX.search(query);
+
+        for (final ScoredDocument scoredDoc : results) {
+            final Book book = new Book() //
+                    .id(getOnlyField("id", scoredDoc)) //
+                    .author(getOnlyField("author", scoredDoc)) //
+                    .title(getOnlyField("title", scoredDoc)) //
+                    .editor(getOnlyField("editor", scoredDoc)) //
+                    .year(getOnlyField("year", scoredDoc)) //
+                    .comment(getOnlyField("comment", scoredDoc)) //
+                    .category(getOnlyField("category", scoredDoc)) //
+            ;
+            books.add(book);
         }
-
-        req.setAttribute("outcome", outcome);
+        return books;
     }
 
-    private String search(final HttpServletRequest req) {
-        return null;
+    private void remove(final ArrayList<Long> bookIds) {
+        for (final Long bookId : bookIds) {
+            INDEX.remove(Long.toString(bookId));
+        }
     }
 
-    private String remove(final HttpServletRequest req) {
-        return null;
+    private void add(final Book book) {
+        final Document.Builder docBuilder = Document.newBuilder() //
+                .addField(Field.newBuilder().setName("author").setText(book.getAuthor())) //
+                .addField(Field.newBuilder().setName("title").setText(book.getTitle())) //
+                .addField(Field.newBuilder().setName("editor").setText(book.getEditor())) //
+                .addField(Field.newBuilder().setName("year").setText(book.getYear())) //
+                .addField(Field.newBuilder().setName("comment").setText(book.getComment())) //
+                .addField(Field.newBuilder().setName("category").setText(book.getCategory()));
+
+        final Document doc = docBuilder.build();
+        INDEX.add(doc);
     }
 
-    private String add(final HttpServletRequest req, final User currentUser) {
-        return null;
+    private String getOnlyField(final String fieldName, final Document doc) {
+        if (doc.getFieldCount(fieldName) == 1) {
+            return doc.getOnlyField(fieldName).getText();
+        }
+        LOG.severe("Field " + fieldName + " present " + doc.getFieldCount(fieldName));
+        return "";
     }
 
     @Override
