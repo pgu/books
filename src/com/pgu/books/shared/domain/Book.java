@@ -1,7 +1,5 @@
 package com.pgu.books.shared.domain;
 
-import javax.persistence.Id;
-
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class Book implements IsSerializable {
@@ -23,8 +21,8 @@ public class Book implements IsSerializable {
         this.category = category;
     }
 
-    public Book id(final String id) {
-        setId(Long.parseLong(id));
+    public Book id(final String id) { 
+        setId(id);
         return this;
     }
 
@@ -58,9 +56,7 @@ public class Book implements IsSerializable {
         return this;
     }
 
-    @Id
-    private Long   id;
-
+    private String id;
     private String author;
     private String editor;
     private String year;
@@ -104,11 +100,11 @@ public class Book implements IsSerializable {
                 + ", comment=" + comment + ", category=" + category + "]";
     }
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(final Long id) {
+    public void setId(final String id) {
         this.id = id;
     }
 

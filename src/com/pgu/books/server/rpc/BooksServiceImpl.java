@@ -177,7 +177,7 @@ public class BooksServiceImpl extends RemoteServiceServlet implements BooksServi
             final Query<BookWord> qBW = dao.ofy().query(BookWord.class);
             final QueryResultIterator<BookWord> itrBW = qBW.filter("value =", searchText.toLowerCase()).iterator();
 
-            final ArrayList<Long> bookIds = new ArrayList<Long>();
+            final ArrayList<String> bookIds = new ArrayList<String>();
             while (itrBW.hasNext()) {
                 bookIds.add(itrBW.next().getBookId());
             }

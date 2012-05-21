@@ -13,12 +13,10 @@ import com.pgu.books.server.domain.Editor2Books;
 import com.pgu.books.server.domain.EditorFilter;
 import com.pgu.books.server.domain.EditorLetterFilter;
 import com.pgu.books.server.domain.Word;
-import com.pgu.books.shared.domain.Book;
 
 public class DAO extends DAOBase {
 
     static {
-        ObjectifyService.register(Book.class);
         ObjectifyService.register(ArchivedBook.class);
 
         ObjectifyService.register(AuthorFilter.class);
