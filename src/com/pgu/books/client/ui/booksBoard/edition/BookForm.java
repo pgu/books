@@ -89,7 +89,7 @@ public class BookForm extends Composite implements BookFormUI {
         book.setComment(comment);
         book.setEditor(editor);
         book.setTitle(title);
-        book.setYear(year);
+        book.setYear(year.isEmpty() ? null : Integer.valueOf(year));
         presenter.createBook(book);
     }
 

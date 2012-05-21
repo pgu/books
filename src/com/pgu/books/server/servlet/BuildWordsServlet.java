@@ -216,7 +216,7 @@ public class BuildWordsServlet extends HttpServlet {
         return ACTION_BOOK_WORDS.equalsIgnoreCase(action);
     }
 
-    private void extractWordsAndCreateBookWords(String text, final String bookId) {
+    private void extractWordsAndCreateBookWords(String text, final Long bookId) {
         text = text.replaceAll("[^A-Za-z0-9 ÁáÉéÍíÓóÚúñÑ]", SEP);
 
         for (final String part : new HashSet<String>(Arrays.asList(text.split(SEP)))) {

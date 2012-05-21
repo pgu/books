@@ -8,8 +8,6 @@ import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 
 import com.google.appengine.api.datastore.QueryResultIterator;
-import com.google.appengine.api.search.Document;
-import com.google.appengine.api.search.Field;
 import com.google.appengine.api.search.Index;
 import com.google.appengine.api.search.IndexSpec;
 import com.google.appengine.api.search.QueryOptions;
@@ -33,6 +31,7 @@ import com.pgu.books.server.domain.Entity2Books;
 import com.pgu.books.server.domain.Filter;
 import com.pgu.books.server.domain.LetterFilter;
 import com.pgu.books.server.domain.Word;
+import com.pgu.books.server.domain.document.DocUtils;
 import com.pgu.books.shared.domain.Book;
 import com.pgu.books.shared.dto.BooksQueryParameters;
 
@@ -52,9 +51,6 @@ public class BooksServiceImpl extends RemoteServiceServlet implements BooksServi
      */
     public void testSearch() {
         final HttpServletRequest req = null;
-
-        // action add
-        add(new Book());
 
         // action remove
         final ArrayList<Long> bookIds = (ArrayList<Long>) Arrays.asList(1L, 2L);
@@ -81,13 +77,13 @@ public class BooksServiceImpl extends RemoteServiceServlet implements BooksServi
 
         for (final ScoredDocument scoredDoc : results) {
             final Book book = new Book() //
-                    .id(getOnlyField("id", scoredDoc)) //
-                    .author(getOnlyField("author", scoredDoc)) //
-                    .title(getOnlyField("title", scoredDoc)) //
-                    .editor(getOnlyField("editor", scoredDoc)) //
-                    .year(getOnlyField("year", scoredDoc)) //
-                    .comment(getOnlyField("comment", scoredDoc)) //
-                    .category(getOnlyField("category", scoredDoc)) //
+                    .id(DocUtils.getOnlyFieldNumeric("id", scoredDoc).longValue()) //
+                    .author(DocUtils.getOnlyField("author", scoredDoc)) //
+                    .title(DocUtils.getOnlyField("title", scoredDoc)) //
+                    .editor(DocUtils.getOnlyField("editor", scoredDoc)) //
+                    .year(DocUtils.getOnlyFieldNumeric("year", scoredDoc).intValue()) //
+                    .comment(DocUtils.getOnlyField("comment", scoredDoc)) //
+                    .category(DocUtils.getOnlyField("category", scoredDoc)) //
             ;
             books.add(book);
         }
@@ -98,27 +94,6 @@ public class BooksServiceImpl extends RemoteServiceServlet implements BooksServi
         for (final Long bookId : bookIds) {
             INDEX.remove(Long.toString(bookId));
         }
-    }
-
-    private void add(final Book book) {
-        final Document.Builder docBuilder = Document.newBuilder() //
-                .addField(Field.newBuilder().setName("author").setText(book.getAuthor())) //
-                .addField(Field.newBuilder().setName("title").setText(book.getTitle())) //
-                .addField(Field.newBuilder().setName("editor").setText(book.getEditor())) //
-                .addField(Field.newBuilder().setName("year").setText(book.getYear())) //
-                .addField(Field.newBuilder().setName("comment").setText(book.getComment())) //
-                .addField(Field.newBuilder().setName("category").setText(book.getCategory()));
-
-        final Document doc = docBuilder.build();
-        INDEX.add(doc);
-    }
-
-    private String getOnlyField(final String fieldName, final Document doc) {
-        if (doc.getFieldCount(fieldName) == 1) {
-            return doc.getOnlyField(fieldName).getText();
-        }
-        LOG.severe("Field " + fieldName + " present " + doc.getFieldCount(fieldName));
-        return "";
     }
 
     @Override
@@ -177,7 +152,7 @@ public class BooksServiceImpl extends RemoteServiceServlet implements BooksServi
             final Query<BookWord> qBW = dao.ofy().query(BookWord.class);
             final QueryResultIterator<BookWord> itrBW = qBW.filter("value =", searchText.toLowerCase()).iterator();
 
-            final ArrayList<String> bookIds = new ArrayList<String>();
+            final ArrayList<Long> bookIds = new ArrayList<Long>();
             while (itrBW.hasNext()) {
                 bookIds.add(itrBW.next().getBookId());
             }

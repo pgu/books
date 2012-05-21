@@ -40,23 +40,24 @@ public class BooksGrid extends Composite implements BooksGridUI {
     }
 
     @UiField(provided = true)
-    DataGrid<Book>                                         grid;
+    DataGrid<Book>                                                   grid;
 
     @UiField(provided = true)
-    SimplePager                                            pager;
+    SimplePager                                                      pager;
 
-    private BooksGridPresenter                             presenter;
-    private Column<Book, String>                           titleColumn;
+    private BooksGridPresenter                                       presenter;
+    private Column<Book, String>                                     titleColumn;
 
-    private final HashMap<Column<Book, String>, SortField> col2field      = new HashMap<Column<Book, String>, SortField>();
+    private final HashMap<Column<Book, ? extends Object>, SortField> col2field      = new HashMap<Column<Book, ? extends Object>, SortField>();
 
-    private static final ProvidesKey<Book>                 KEY_PROVIDER   = new ProvidesKey<Book>() {
-                                                                              @Override
-                                                                              public Object getKey(final Book item) {
-                                                                                  return item.getId();
-                                                                              }
-                                                                          };
-    private final MultiSelectionModel<Book>                selectionModel = new MultiSelectionModel<Book>();
+    private static final ProvidesKey<Book>                           KEY_PROVIDER   = new ProvidesKey<Book>() {
+                                                                                        @Override
+                                                                                        public Object getKey(
+                                                                                                final Book item) {
+                                                                                            return item.getId();
+                                                                                        }
+                                                                                    };
+    private final MultiSelectionModel<Book>                          selectionModel = new MultiSelectionModel<Book>();
 
     @Override
     public void setPresenter(final BooksGridPresenter presenter) {
@@ -141,7 +142,7 @@ public class BooksGrid extends Composite implements BooksGridUI {
             yearColumn = new Column<Book, String>(yearCell) {
                 @Override
                 public String getValue(final Book book) {
-                    return book.getYear();
+                    return String.valueOf(book.getYear());
                 }
             };
             commentColumn = new Column<Book, String>(commentCell) {
@@ -241,7 +242,7 @@ public class BooksGrid extends Composite implements BooksGridUI {
                         return;
                     }
 
-                    book.setYear(year);
+                    book.setYear("".equals(year) ? null : Integer.valueOf(year));
                     grid.redraw();
                     presenter.updateBook(book);
                 }
@@ -313,10 +314,12 @@ public class BooksGrid extends Composite implements BooksGridUI {
                 }
             };
             yearColumn = new TextColumn<Book>() {
+
                 @Override
                 public String getValue(final Book book) {
-                    return book.getYear();
+                    return String.valueOf(book.getYear());
                 }
+
             };
             commentColumn = new TextColumn<Book>() {
 

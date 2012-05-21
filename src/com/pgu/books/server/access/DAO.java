@@ -5,6 +5,7 @@ import com.googlecode.objectify.util.DAOBase;
 import com.pgu.books.server.domain.ArchivedBook;
 import com.pgu.books.server.domain.AuthorFilter;
 import com.pgu.books.server.domain.AuthorLetterFilter;
+import com.pgu.books.server.domain.BookId;
 import com.pgu.books.server.domain.BookWord;
 import com.pgu.books.server.domain.Category2Books;
 import com.pgu.books.server.domain.CategoryFilter;
@@ -17,6 +18,7 @@ import com.pgu.books.server.domain.Word;
 public class DAO extends DAOBase {
 
     static {
+        ObjectifyService.register(BookId.class);
         ObjectifyService.register(ArchivedBook.class);
 
         ObjectifyService.register(AuthorFilter.class);

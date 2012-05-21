@@ -11,7 +11,7 @@ public class BookWord implements IsSerializable, IsWord {
 
     private String value;
     private String display;
-    private String bookId;
+    private Long   bookId;
 
     public BookWord() {
     }
@@ -91,11 +91,11 @@ public class BookWord implements IsSerializable, IsWord {
         this.display = display;
     }
 
-    public String getBookId() {
+    public Long getBookId() {
         return bookId;
     }
 
-    public void setBookId(final String bookId) {
+    public void setBookId(final Long bookId) {
         this.bookId = bookId;
     }
 
@@ -105,7 +105,7 @@ public class BookWord implements IsSerializable, IsWord {
         return this;
     }
 
-    public BookWord bookId(final String bookId) {
+    public BookWord bookId(final Long bookId) {
         setBookId(bookId);
         return this;
     }

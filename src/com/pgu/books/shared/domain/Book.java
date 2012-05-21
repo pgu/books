@@ -10,7 +10,7 @@ public class Book implements IsSerializable {
     public Book(final String author, //
             final String title, //
             final String editor, //
-            final String year, //
+            final Integer year, //
             final String comment, //
             final String category) {
         this.author = author;
@@ -21,7 +21,7 @@ public class Book implements IsSerializable {
         this.category = category;
     }
 
-    public Book id(final String id) { 
+    public Book id(final Long id) {
         setId(id);
         return this;
     }
@@ -41,7 +41,7 @@ public class Book implements IsSerializable {
         return this;
     }
 
-    public Book year(final String year) {
+    public Book year(final Integer year) {
         setYear(year);
         return this;
     }
@@ -56,13 +56,13 @@ public class Book implements IsSerializable {
         return this;
     }
 
-    private String id;
-    private String author;
-    private String editor;
-    private String year;
-    private String title;
-    private String comment;
-    private String category;
+    private Long    id;
+    private String  author;
+    private String  editor;
+    private Integer year;
+    private String  title;
+    private String  comment;
+    private String  category;
 
     @Override
     public int hashCode() {
@@ -100,11 +100,11 @@ public class Book implements IsSerializable {
                 + ", comment=" + comment + ", category=" + category + "]";
     }
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(final String id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -124,11 +124,11 @@ public class Book implements IsSerializable {
         this.editor = editor;
     }
 
-    public String getYear() {
+    public Integer getYear() {
         return year;
     }
 
-    public void setYear(final String year) {
+    public void setYear(final Integer year) {
         this.year = year;
     }
 
