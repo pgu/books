@@ -69,12 +69,11 @@ public class BooksServiceImpl extends RemoteServiceServlet implements BooksServi
 
         final Integer limit = Integer.parseInt(req.getParameter("limit")); // 10
 
-        final ArrayList<Book> books = new ArrayList<Book>();
         final com.google.appengine.api.search.Query query = com.google.appengine.api.search.Query.newBuilder()
                 .setOptions(QueryOptions.newBuilder().setLimit(limit).build()).build(queryStr);
-
         final Results<ScoredDocument> results = INDEX.search(query);
 
+        final ArrayList<Book> books = new ArrayList<Book>(limit);
         for (final ScoredDocument scoredDoc : results) {
             final Book book = new Book() //
                     .id(DocUtils.getOnlyFieldNumeric("id", scoredDoc).longValue()) //
