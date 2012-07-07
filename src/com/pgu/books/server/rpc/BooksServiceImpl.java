@@ -1,11 +1,16 @@
 package com.pgu.books.server.rpc;
 
+import static com.pgu.books.server.domain.document.BookDoc.AUTHOR;
+import static com.pgu.books.server.domain.document.BookDoc.BOOK_ID;
+import static com.pgu.books.server.domain.document.BookDoc.CATEGORY;
+import static com.pgu.books.server.domain.document.BookDoc.COMMENT;
+import static com.pgu.books.server.domain.document.BookDoc.EDITOR;
+import static com.pgu.books.server.domain.document.BookDoc.TITLE;
+import static com.pgu.books.server.domain.document.BookDoc.YEAR;
+
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.TreeMap;
 import java.util.logging.Logger;
-
-import javax.servlet.http.HttpServletRequest;
 
 import com.google.appengine.api.datastore.QueryResultIterator;
 import com.google.appengine.api.search.Index;
@@ -48,55 +53,9 @@ public class BooksServiceImpl extends RemoteServiceServlet implements BooksServi
                                               IndexSpec.newBuilder().setName("shared_index"));
 
     /**
-     * TODO http://code.google.com/p/google-app-engine-samples/source/browse/trunk/search/java/src/com/google/appengine/
+     * http://code.google.com/p/google-app-engine-samples/source/browse/trunk/search/java/src/com/google/appengine/
      * demos/search/TextSearchServlet.java
      */
-    public void testSearch() {
-        final HttpServletRequest req = null;
-
-        // action remove
-        final ArrayList<Long> bookIds = (ArrayList<Long>) Arrays.asList(1L, 2L);
-        remove(bookIds);
-
-        // action search
-        search(req);
-
-        // sends result
-    }
-
-    private ArrayList<Book> search(final HttpServletRequest req) {
-
-        final String _queryStr = req.getParameter("query");
-        final String queryStr = _queryStr == null ? "" : _queryStr;
-
-        final Integer limit = Integer.parseInt(req.getParameter("limit")); // 10
-
-        final com.google.appengine.api.search.Query query = com.google.appengine.api.search.Query.newBuilder()
-                .setOptions(QueryOptions.newBuilder().setLimit(limit).build()).build(queryStr);
-        final Results<ScoredDocument> results = INDEX.search(query);
-
-        final ArrayList<Book> books = new ArrayList<Book>(limit);
-        for (final ScoredDocument scoredDoc : results) {
-            final Book book = new Book() //
-                    .id(DocUtils.getOnlyFieldNumeric("id", scoredDoc).longValue()) //
-                    .author(DocUtils.getOnlyField("author", scoredDoc)) //
-                    .title(DocUtils.getOnlyField("title", scoredDoc)) //
-                    .editor(DocUtils.getOnlyField("editor", scoredDoc)) //
-                    .year(DocUtils.getOnlyFieldNumeric("year", scoredDoc).intValue()) //
-                    .comment(DocUtils.getOnlyField("comment", scoredDoc)) //
-                    .category(DocUtils.getOnlyField("category", scoredDoc)) //
-            ;
-            books.add(book);
-        }
-        return books;
-    }
-
-    private void remove(final ArrayList<Long> bookIds) {
-        for (final Long bookId : bookIds) {
-            INDEX.remove(Long.toString(bookId));
-        }
-    }
-
     @Override
     public ArrayList<Book> fetchBooks(final BooksQueryParameters queryParameters, final int start, final int length) {
 
@@ -107,7 +66,7 @@ public class BooksServiceImpl extends RemoteServiceServlet implements BooksServi
                 .addSortExpression(
                         SortExpression
                                 .newBuilder()
-                                .setExpression(queryParameters.getSortField().toString().toLowerCase())
+                                .setExpression(queryParameters.getSortField().toString().toUpperCase())
                                 .setDirection(
                                         queryParameters.isAscending() ? SortExpression.SortDirection.DESCENDING
                                                 : SortExpression.SortDirection.ASCENDING).setDefaultValue("")).build();
@@ -123,13 +82,13 @@ public class BooksServiceImpl extends RemoteServiceServlet implements BooksServi
         final ArrayList<Book> books = new ArrayList<Book>(limit);
         for (final ScoredDocument scoredDoc : results) {
             final Book book = new Book() //
-                    .id(DocUtils.getOnlyFieldNumeric("id", scoredDoc).longValue()) //
-                    .author(DocUtils.getOnlyField("author", scoredDoc)) //
-                    .title(DocUtils.getOnlyField("title", scoredDoc)) //
-                    .editor(DocUtils.getOnlyField("editor", scoredDoc)) //
-                    .year(DocUtils.getOnlyFieldNumeric("year", scoredDoc).intValue()) //
-                    .comment(DocUtils.getOnlyField("comment", scoredDoc)) //
-                    .category(DocUtils.getOnlyField("category", scoredDoc)) //
+                    .id(DocUtils.getOnlyFieldNumeric(BOOK_ID._(), scoredDoc).longValue()) //
+                    .author(DocUtils.getOnlyField(AUTHOR._(), scoredDoc)) //
+                    .title(DocUtils.getOnlyField(TITLE._(), scoredDoc)) //
+                    .editor(DocUtils.getOnlyField(EDITOR._(), scoredDoc)) //
+                    .year(DocUtils.getOnlyFieldNumeric(YEAR._(), scoredDoc).intValue()) //
+                    .comment(DocUtils.getOnlyField(COMMENT._(), scoredDoc)) //
+                    .category(DocUtils.getOnlyField(CATEGORY._(), scoredDoc)) //
             ;
             books.add(book);
         }

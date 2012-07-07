@@ -5,10 +5,10 @@ import static com.pgu.books.server.domain.document.BookDoc.AUTHOR;
 import static com.pgu.books.server.domain.document.BookDoc.BOOK_ID;
 import static com.pgu.books.server.domain.document.BookDoc.CATEGORY;
 import static com.pgu.books.server.domain.document.BookDoc.COMMENT;
+import static com.pgu.books.server.domain.document.BookDoc.DOC_TYPE;
 import static com.pgu.books.server.domain.document.BookDoc.EDITOR;
 import static com.pgu.books.server.domain.document.BookDoc.TITLE;
 import static com.pgu.books.server.domain.document.BookDoc.YEAR;
-import static com.pgu.books.server.domain.document.BookDoc._DOC_TYPE;
 import static com.pgu.books.server.domain.document.DocType.ARCHIVE_BOOK;
 import static com.pgu.books.server.domain.document.DocType.BOOK;
 import static com.pgu.books.server.domain.document.DocUtils.getOnlyField;
@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -93,7 +94,7 @@ public class AdminBooksServiceImpl extends RemoteServiceServlet implements Admin
                     final Integer year = Strings.isNullOrEmpty(_year) ? null : Integer.valueOf(_year);
                     final String comment = tokens[4].trim();
 
-                    // TODO PGU 
+                    // TODO PGU
 
                     dao.ofy().put(new Book(author, title, editor, year, comment, category));
 
@@ -113,7 +114,7 @@ public class AdminBooksServiceImpl extends RemoteServiceServlet implements Admin
 
     @Override
     public void deleteAll() {
-        // if (SystemProperty.environment.value() == SystemProperty.Environment.Value.Production) {
+        // TODO if (SystemProperty.environment.value() == SystemProperty.Environment.Value.Production) {
         // return; // The app is running on App Engine...
         // }
 
@@ -124,13 +125,13 @@ public class AdminBooksServiceImpl extends RemoteServiceServlet implements Admin
         }
 
         final Iterator<ScoredDocument> results = INDEX.search(Query.newBuilder().build("" + //
-                _DOC_TYPE._() + ":" + BOOK._())).iterator();
+                DOC_TYPE._() + ":" + BOOK._())).iterator();
         while (results.hasNext()) {
             INDEX.remove(results.next().getId());
         }
 
         final Iterator<ScoredDocument> archiveResults = INDEX.search(Query.newBuilder().build("" + //
-                _DOC_TYPE._() + ":" + ARCHIVE_BOOK._())).iterator();
+                DOC_TYPE._() + ":" + ARCHIVE_BOOK._())).iterator();
         while (archiveResults.hasNext()) {
             ARCHIVE_INDEX.remove(archiveResults.next().getId());
         }
@@ -148,7 +149,7 @@ public class AdminBooksServiceImpl extends RemoteServiceServlet implements Admin
 
             // create a doc for the book
             final Document.Builder docBuilder = Document.newBuilder() //
-                    .addField(Field.newBuilder().setName(_DOC_TYPE._()).setText(BOOK._())) //
+                    .addField(Field.newBuilder().setName(DOC_TYPE._()).setText(BOOK._())) //
                     .addField(Field.newBuilder().setName(BOOK_ID._()).setNumber(bookId.getId())) //
                     .addField(Field.newBuilder().setName(AUTHOR._()).setText(book.getAuthor())) //
                     .addField(Field.newBuilder().setName(TITLE._()).setText(book.getTitle())) //
@@ -163,17 +164,17 @@ public class AdminBooksServiceImpl extends RemoteServiceServlet implements Admin
 
             // retrieves the doc for the book id
             final Results<ScoredDocument> results = INDEX.search(Query.newBuilder().build("" + //
-                    _DOC_TYPE._() + ":book " + //
+                    DOC_TYPE._() + ":book " + //
                     BOOK_ID._() + ":" + book.getId()) //
                     );
 
             final ScoredDocument doc = results.iterator().next();
-            // removes it from the index 
+            // removes it from the index
             INDEX.remove(doc.getId());
 
             // creates a new one with the same book id
             final Document.Builder docBuilder = Document.newBuilder() //
-                    .addField(Field.newBuilder().setName(_DOC_TYPE._()).setText(BOOK._())) //
+                    .addField(Field.newBuilder().setName(DOC_TYPE._()).setText(BOOK._())) //
                     .addField(Field.newBuilder().setName(BOOK_ID._()).setNumber(book.getId())) //
                     .addField(Field.newBuilder().setName(AUTHOR._()).setText(book.getAuthor())) //
                     .addField(Field.newBuilder().setName(TITLE._()).setText(book.getTitle())) //
@@ -189,8 +190,7 @@ public class AdminBooksServiceImpl extends RemoteServiceServlet implements Admin
 
     @Override
     public void deleteBooks(final ArrayList<Book> selectedBooks) {
-        //        final String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSZ").format(new Date());
-        final Date now = new Date();
+        final String now = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSZ").format(new Date());
 
         final ArrayList<Long> bookIds = new ArrayList<Long>(selectedBooks.size());
 
@@ -198,7 +198,7 @@ public class AdminBooksServiceImpl extends RemoteServiceServlet implements Admin
             final Long bookId = book.getId();
 
             final Results<ScoredDocument> results = INDEX.search(Query.newBuilder().build("" + //
-                    _DOC_TYPE._() + ":" + BOOK._() + " " + //
+                    DOC_TYPE._() + ":" + BOOK._() + " " + //
                     BOOK_ID._() + ":" + bookId) //
                     );
 
@@ -207,7 +207,7 @@ public class AdminBooksServiceImpl extends RemoteServiceServlet implements Admin
             final Document.Builder archiveDocBuilder = Document
                     .newBuilder()
                     //
-                    .addField(Field.newBuilder().setName(_DOC_TYPE._()).setText(ARCHIVE_BOOK._()))
+                    .addField(Field.newBuilder().setName(DOC_TYPE._()).setText(ARCHIVE_BOOK._()))
                     //
                     .addField(
                             Field.newBuilder().setName(BOOK_ID._())
@@ -221,7 +221,7 @@ public class AdminBooksServiceImpl extends RemoteServiceServlet implements Admin
                                     .setNumber(DocUtils.getOnlyFieldNumeric(YEAR._(), doc).intValue())) //
                     .addField(Field.newBuilder().setName(COMMENT._()).setText(getOnlyField(COMMENT._(), doc))) //
                     .addField(Field.newBuilder().setName(CATEGORY._()).setText(getOnlyField(CATEGORY._(), doc))) //
-                    .addField(Field.newBuilder().setName(ARCHIVE_DATE._()).setDate(now)) //
+                    .addField(Field.newBuilder().setName(ARCHIVE_DATE._()).setText(now)) //
             ;
 
             INDEX.remove(doc.getId()); // removes it from the index
