@@ -14,6 +14,8 @@ import com.google.appengine.api.search.QueryOptions;
 import com.google.appengine.api.search.Results;
 import com.google.appengine.api.search.ScoredDocument;
 import com.google.appengine.api.search.SearchServiceFactory;
+import com.google.appengine.api.search.SortExpression;
+import com.google.appengine.api.search.SortOptions;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.googlecode.objectify.Query;
 import com.pgu.books.client.rpc.BooksService;
@@ -98,6 +100,46 @@ public class BooksServiceImpl extends RemoteServiceServlet implements BooksServi
     @Override
     public ArrayList<Book> fetchBooks(final BooksQueryParameters queryParameters, final int start, final int length) {
 
+        final int limit = length;
+
+        final SortOptions sortOptions = SortOptions
+                .newBuilder()
+                .addSortExpression(
+                        SortExpression
+                                .newBuilder()
+                                .setExpression(queryParameters.getSortField().toString().toLowerCase())
+                                .setDirection(
+                                        queryParameters.isAscending() ? SortExpression.SortDirection.DESCENDING
+                                                : SortExpression.SortDirection.ASCENDING).setDefaultValue("")).build();
+
+        final com.google.appengine.api.search.Query query = com.google.appengine.api.search.Query.newBuilder()
+                .setOptions(QueryOptions.newBuilder() //
+                        .setOffset(start) //
+                        .setLimit(limit) //
+                        .setSortOptions(sortOptions) //
+                        .build()).build("");
+        final Results<ScoredDocument> results = INDEX.search(query);
+
+        final ArrayList<Book> books = new ArrayList<Book>(limit);
+        for (final ScoredDocument scoredDoc : results) {
+            final Book book = new Book() //
+                    .id(DocUtils.getOnlyFieldNumeric("id", scoredDoc).longValue()) //
+                    .author(DocUtils.getOnlyField("author", scoredDoc)) //
+                    .title(DocUtils.getOnlyField("title", scoredDoc)) //
+                    .editor(DocUtils.getOnlyField("editor", scoredDoc)) //
+                    .year(DocUtils.getOnlyFieldNumeric("year", scoredDoc).intValue()) //
+                    .comment(DocUtils.getOnlyField("comment", scoredDoc)) //
+                    .category(DocUtils.getOnlyField("category", scoredDoc)) //
+            ;
+            books.add(book);
+        }
+        return books;
+
+        // return fetchBooksWithObjectify(queryParameters, start, length);
+    }
+
+    private ArrayList<Book> fetchBooksWithObjectify(final BooksQueryParameters queryParameters, final int start,
+            final int length) {
         final Query<Book> query = dao.ofy().query(Book.class);
         //
         // filters

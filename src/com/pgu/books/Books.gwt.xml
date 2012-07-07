@@ -10,6 +10,9 @@
     <!-- Specify the app entry point class. -->
     <entry-point class='com.pgu.books.client.Books' />
 
+    <set-property name="user.agent" value="safari"/>
+    <set-property name="locale" value="default" />
+
     <!-- Specify the paths for translatable code -->
     <source path='client' />
     <source path='shared' />
