@@ -2,9 +2,7 @@ package com.pgu.books.client.activity.booksImport;
 
 public interface BooksImportPresenter {
 
-    void importBooks(String categoryTitle);
-
-    void testImport();
+    void importBooks(int start, int length);
 
     void deleteAllBooks();
 

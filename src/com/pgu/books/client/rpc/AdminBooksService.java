@@ -9,9 +9,7 @@ import com.pgu.books.shared.domain.Book;
 @RemoteServiceRelativePath("admin/books")
 public interface AdminBooksService extends RemoteService {
 
-    String importBooks(String categoryTitle);
-
-    String testImport();
+    String importBooks(int start, int length);
 
     void deleteAll();
 

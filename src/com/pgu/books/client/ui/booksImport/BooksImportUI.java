@@ -8,8 +8,4 @@ public interface BooksImportUI extends IsWidget, IsFocusable {
 
     void setPresenter(BooksImportPresenter booksImportPresenter);
 
-    void enableImport(String categoryTitle);
-
-    void disableImport(String categoryTitle, String importResult);
-
 }

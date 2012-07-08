@@ -7,9 +7,7 @@ import com.pgu.books.shared.domain.Book;
 
 public interface AdminBooksServiceAsync {
 
-    void testImport(AsyncCallback<String> asyncCallbackApp);
-
-    void importBooks(String categoryTitle, AsyncCallback<String> asyncCallback);
+    void importBooks(int start, int length, AsyncCallback<String> asyncCallback);
 
     void deleteAll(AsyncCallback<Void> asyncCallbackApp);
 

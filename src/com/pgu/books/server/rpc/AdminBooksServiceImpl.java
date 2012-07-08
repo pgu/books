@@ -35,13 +35,13 @@ import com.google.appengine.api.search.Query;
 import com.google.appengine.api.search.Results;
 import com.google.appengine.api.search.ScoredDocument;
 import com.google.appengine.api.search.SearchServiceFactory;
-import com.google.gwt.thirdparty.guava.common.base.Strings;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.pgu.books.client.rpc.AdminBooksService;
 import com.pgu.books.server.access.DAO;
 import com.pgu.books.server.domain.BookId;
 import com.pgu.books.server.domain.document.DocUtils;
 import com.pgu.books.shared.domain.Book;
+import com.pgu.books.shared.utils.U;
 
 @SuppressWarnings("serial")
 public class AdminBooksServiceImpl extends RemoteServiceServlet implements AdminBooksService {
@@ -56,27 +56,35 @@ public class AdminBooksServiceImpl extends RemoteServiceServlet implements Admin
 
     private final DAO           dao           = new DAO();
 
-    @Override
-    public String testImport() {
-        return importBooks("00");
-    }
+    private final U             u             = new U();
 
     @Override
-    public String importBooks(final String nb) {
+    public String importBooks(final int start, final int length) {
         final long startTime = System.currentTimeMillis();
+        final int stop = start + length;
 
         // final InputStream is = getServletContext().getResourceAsStream("/WEB-INF/books/" + categoryTitle + ".txt");
-        final InputStream is = getServletContext().getResourceAsStream("/WEB-INF/books/import/books_" + nb + ".txt");
+        final InputStream is = getServletContext().getResourceAsStream("/WEB-INF/books/import/books.txt");
         final BufferedReader br = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
         try {
 
-            int countTotal = 0;
+            int counter = 0;
             int countImported = 0;
 
             String line = null;
             while ((line = br.readLine()) != null) {
-                countTotal++;
 
+                if (counter < start) {
+                    counter++;
+                    continue;
+                }
+
+                if (counter >= stop) {
+                    break;
+                }
+
+                // in the interval
+                counter++;
                 final String[] tokens = line.split("\", \"");
                 if (tokens.length == 6) {
                     countImported++;
@@ -91,19 +99,17 @@ public class AdminBooksServiceImpl extends RemoteServiceServlet implements Admin
                     final String title = tokens[1].trim();
                     final String editor = tokens[2].trim();
                     final String _year = tokens[3].trim();
-                    final Integer year = Strings.isNullOrEmpty(_year) ? null : Integer.valueOf(_year);
+                    final Integer year = u.isVoid(_year) ? null : Integer.valueOf(_year);
                     final String comment = tokens[4].trim();
 
-                    // TODO PGU
-
-                    dao.ofy().put(new Book(author, title, editor, year, comment, category));
+                    saveBook(new Book(author, title, editor, year, comment, category));
 
                 } else {
                     LOG.warning("** Not imported: " + line);
                 }
             }
 
-            return countImported + " / " + countTotal + " (" + (System.currentTimeMillis() - startTime) + " ms)";
+            return countImported + " / " + counter + " (" + (System.currentTimeMillis() - startTime) + " ms)";
 
         } catch (final IOException e) {
             e.printStackTrace();
@@ -130,7 +136,7 @@ public class AdminBooksServiceImpl extends RemoteServiceServlet implements Admin
             INDEX.remove(results.next().getId());
         }
 
-        final Iterator<ScoredDocument> archiveResults = INDEX.search(Query.newBuilder().build("" + //
+        final Iterator<ScoredDocument> archiveResults = ARCHIVE_INDEX.search(Query.newBuilder().build("" + //
                 DOC_TYPE._() + ":" + ARCHIVE_BOOK._())).iterator();
         while (archiveResults.hasNext()) {
             ARCHIVE_INDEX.remove(archiveResults.next().getId());

@@ -9,6 +9,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Grid;
@@ -16,7 +17,6 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.ToggleButton;
 import com.google.gwt.user.client.ui.Widget;
 import com.pgu.books.client.activity.booksImport.BooksImportPresenter;
-import com.pgu.books.client.ui.utils.Notification;
 import com.pgu.books.shared.dto.LoginInfo;
 import com.pgu.books.shared.utils.BookCategory;
 
@@ -31,14 +31,15 @@ public class BooksImport extends Composite implements BooksImportUI {
     Grid                                        categories;
 
     @UiField
-    TextBox                                     importPass;
+    TextBox                                     importPass, importStart, importLength;
     @UiField
-    Button                                      btnAll, btnTest, btnDelete;
+    Button                                      btnImport, btnDelete;
 
     private BooksImportPresenter                presenter;
     private final HashMap<String, ToggleButton> title2btns = new HashMap<String, ToggleButton>();
 
     public BooksImport(final LoginInfo loginInfo) {
+
         final int cols = 6;
         final ArrayList<String> titles = BookCategory.titles;
         int rows = titles.size() / cols;
@@ -49,6 +50,8 @@ public class BooksImport extends Composite implements BooksImportUI {
         categories = new Grid(rows, cols);
 
         initWidget(uiBinder.createAndBindUi(this));
+        importStart.setValue("0");
+        importLength.setValue("10");
 
         int i = 0;
         for (int row = 0; row < rows; row++) {
@@ -58,6 +61,7 @@ public class BooksImport extends Composite implements BooksImportUI {
 
                 final ToggleButton toggle = new ToggleButton(title);
                 toggle.addClickHandler(newClickOnToggle(toggle));
+                toggle.setEnabled(false); // TODO PGU remove this for the start/length strategy
 
                 categories.setWidget(row, col, toggle);
                 title2btns.put(title, toggle);
@@ -73,7 +77,8 @@ public class BooksImport extends Composite implements BooksImportUI {
             public void onClick(final ClickEvent event) {
                 if (isPassOn()) {
                     toggle.setEnabled(false);
-                    presenter.importBooks(toggle.getText());
+                    // presenter.importBooks(toggle.getText());
+                    // TODO PGU to remove
                 }
             }
 
@@ -89,31 +94,12 @@ public class BooksImport extends Composite implements BooksImportUI {
         this.presenter = presenter;
     }
 
-    @Override
-    public void enableImport(final String categoryTitle) {
-        title2btns.get(categoryTitle).setEnabled(true);
-        Notification.error(categoryTitle + ": Error");
-    }
-
-    @Override
-    public void disableImport(final String categoryTitle, final String importResult) {
-        title2btns.get(categoryTitle).setEnabled(false);
-        Notification.validation(categoryTitle + ": " + importResult);
-    }
-
-    @UiHandler("btnAll")
-    public void clickAllCategories(final ClickEvent e) {
-        if (isPassOn()) {
-            for (final String title : BookCategory.titles) {
-                presenter.importBooks(title);
-            }
-        }
-    }
-
-    @UiHandler("btnTest")
+    @UiHandler("btnImport")
     public void clickTest(final ClickEvent e) {
         if (isPassOn()) {
-            presenter.testImport();
+            presenter.importBooks(Integer.parseInt(importStart.getValue()), Integer.parseInt(importLength.getValue()));
+        } else {
+            Window.alert("Missing pwd!");
         }
     }
 
@@ -121,6 +107,8 @@ public class BooksImport extends Composite implements BooksImportUI {
     public void clickDelete(final ClickEvent e) {
         if (isPassOn()) {
             presenter.deleteAllBooks();
+        } else {
+            Window.alert("Missing pwd!");
         }
     }
 

@@ -104,37 +104,21 @@ public class AppActivity implements //
     }
 
     @Override
-    public void importBooks(final String categoryTitle) {
+    public void importBooks(final int start, final int length) {
         Notification.loadingStart();
-        adminBooksService.importBooks(categoryTitle, new AsyncCallbackAppLoading<String>() {
+        adminBooksService.importBooks(start, length, new AsyncCallbackAppLoading<String>() {
 
             @Override
             public void onFailure(final Throwable caught) {
                 super.onFailure(caught);
-                dashboard.getBooksImportUI().enableImport(categoryTitle);
             }
 
             @Override
             public void onSuccessApp(final String importResult) {
                 fetchBooksInternal(0, dashboard.getBooksGridUI().getLength());
-                dashboard.getBooksImportUI().disableImport(categoryTitle, importResult);
             }
         });
 
-    }
-
-    @Override
-    public void testImport() {
-        Notification.loadingStart();
-        adminBooksService.testImport(new AsyncCallbackAppLoading<String>() {
-
-            @Override
-            public void onSuccessApp(final String importResult) {
-                fetchBooksInternal(0, dashboard.getBooksGridUI().getLength());
-                Notification.validation("Successful import: " + importResult);
-            }
-
-        });
     }
 
     @Override
