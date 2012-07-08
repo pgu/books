@@ -1,8 +1,8 @@
-package com.pgu.books.server.domain.document;
+package com.pgu.books.server;
 
 import com.google.appengine.api.search.Document;
 import com.google.appengine.api.search.Field;
-import com.pgu.books.server.AppLog;
+import com.pgu.books.server.domain.document.BookDoc;
 
 public class DocUtils {
 

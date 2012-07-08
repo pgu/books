@@ -21,6 +21,7 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.googlecode.objectify.Query;
 import com.pgu.books.client.rpc.BooksService;
 import com.pgu.books.server.AppLog;
+import com.pgu.books.server.DocUtils;
 import com.pgu.books.server.Search;
 import com.pgu.books.server.access.DAO;
 import com.pgu.books.server.domain.AuthorFilter;
@@ -36,7 +37,6 @@ import com.pgu.books.server.domain.Entity2Books;
 import com.pgu.books.server.domain.Filter;
 import com.pgu.books.server.domain.LetterFilter;
 import com.pgu.books.server.domain.Word;
-import com.pgu.books.server.domain.document.DocUtils;
 import com.pgu.books.shared.domain.Book;
 import com.pgu.books.shared.dto.BooksQueryParameters;
 import com.pgu.books.shared.dto.BooksResult;
@@ -155,6 +155,9 @@ public class BooksServiceImpl extends RemoteServiceServlet implements BooksServi
 
     @Override
     public ArrayList<String> fetchWords(final String text) {
+
+        // TODO PGU do a query on docs
+
         if (text == null || text.isEmpty() || text.trim().isEmpty()) {
             return new ArrayList<String>();
         }

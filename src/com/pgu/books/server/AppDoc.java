@@ -4,7 +4,6 @@ import com.google.appengine.api.search.Document;
 import com.google.appengine.api.search.Field;
 import com.google.appengine.api.search.ScoredDocument;
 import com.pgu.books.server.domain.document.BookDoc;
-import com.pgu.books.server.domain.document.DocUtils;
 
 public class AppDoc {
 
