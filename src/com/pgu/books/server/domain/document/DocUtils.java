@@ -1,27 +1,41 @@
 package com.pgu.books.server.domain.document;
 
-import java.util.logging.Logger;
-
 import com.google.appengine.api.search.Document;
+import com.google.appengine.api.search.Field;
+import com.pgu.books.server.AppLog;
 
 public class DocUtils {
 
-    private static final Logger LOG = Logger.getLogger(DocUtils.class.getSimpleName());
+    private final AppLog log = new AppLog();
 
-    public static String getOnlyField(final String fieldName, final Document doc) {
-        if (doc.getFieldCount(fieldName) == 1) {
-            return doc.getOnlyField(fieldName).getText();
-        }
-        LOG.severe("Field " + fieldName + " present " + doc.getFieldCount(fieldName));
-        return "";
+    public String text(final BookDoc fieldName, final Document doc) {
+        final Field field = field(fieldName, doc);
+        return field == null ? "" : field.getText();
     }
 
-    public static Double getOnlyFieldNumeric(final String fieldName, final Document doc) {
-        if (doc.getFieldCount(fieldName) == 1) {
-            return doc.getOnlyField(fieldName).getNumber();
+    public Long numLong(final BookDoc fieldName, final Document doc) {
+        final String text = text(fieldName, doc);
+        return "".equals(text) ? 0L : Long.getLong(text);
+    }
+
+    public Integer numInt(final BookDoc fieldName, final Document doc) {
+        final String text = text(fieldName, doc);
+        return "".equals(text) ? 0 : Integer.getInteger(text);
+    }
+
+    public Double num(final BookDoc fieldName, final Document doc) {
+        final Field field = field(fieldName, doc);
+        return field == null ? 0D : field.getNumber();
+    }
+
+    private Field field(final BookDoc fieldName, final Document doc) {
+        final String name = fieldName._();
+        if (doc.getFieldCount(name) == 1) {
+            return doc.getOnlyField(name);
         }
-        LOG.severe("Field " + fieldName + " present " + doc.getFieldCount(fieldName));
-        return 0D;
+
+        log.warning(this, "The field %s is present %s times", name, doc.getFieldCount(name));
+        return null;
     }
 
 }

@@ -11,8 +11,6 @@ import static com.pgu.books.server.domain.document.BookDoc.TITLE;
 import static com.pgu.books.server.domain.document.BookDoc.YEAR;
 import static com.pgu.books.server.domain.document.DocType.ARCHIVE_BOOK;
 import static com.pgu.books.server.domain.document.DocType.BOOK;
-import static com.pgu.books.server.domain.document.DocUtils.getOnlyField;
-import static com.pgu.books.server.domain.document.DocUtils.getOnlyFieldNumeric;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -26,8 +24,6 @@ import java.util.Iterator;
 import java.util.Map;
 
 import com.google.appengine.api.datastore.QueryResultIterator;
-import com.google.appengine.api.search.Document;
-import com.google.appengine.api.search.Field;
 import com.google.appengine.api.search.Query;
 import com.google.appengine.api.search.Results;
 import com.google.appengine.api.search.ScoredDocument;
@@ -38,17 +34,16 @@ import com.pgu.books.server.AppLog;
 import com.pgu.books.server.Search;
 import com.pgu.books.server.access.DAO;
 import com.pgu.books.server.domain.BookId;
-import com.pgu.books.server.domain.document.DocUtils;
 import com.pgu.books.shared.domain.Book;
-import com.pgu.books.shared.utils.Utils;
+import com.pgu.books.shared.utils.AppUtils;
 
 @SuppressWarnings("serial")
 public class AdminBooksServiceImpl extends RemoteServiceServlet implements AdminBooksService {
 
-    private final AppLog log = new AppLog();
-    private final Search s   = new Search();
-    private final DAO    dao = new DAO();
-    private final Utils  u   = new Utils();
+    private final AppLog   log = new AppLog();
+    private final Search   s   = new Search();
+    private final DAO      dao = new DAO();
+    private final AppUtils u   = new AppUtils();
 
     @Override
     public String importBooks(final int start, final int length) {
@@ -165,25 +160,13 @@ public class AdminBooksServiceImpl extends RemoteServiceServlet implements Admin
 
         } else { // update
 
-            // retrieves the doc for the book id
-            final Results<ScoredDocument> docs = s.idx().search(Query.newBuilder().build("" + //
-                    DOC_TYPE._() + ":" + BOOK._() + //
-                    BOOK_ID._() + ":" + book.getId()) //
-                    );
+            // retrieves the doc with the book id
+            final ScoredDocument currentDoc = fetchDocByBook(book);
 
-            if (docs.getNumberReturned() != 1) {
-                final IllegalArgumentException e = new IllegalArgumentException(String.format(
-                        "%s results have been found for the book id %s", docs.getNumberReturned(), book.getId()));
-                log.error(this, e);
-                throw e;
-            }
-
-            // removes it from the index
-            final ScoredDocument theDoc = docs.iterator().next();
-            s.idx().remove(theDoc.getId());
+            s.idx().remove(currentDoc.getId());
 
             // creates a new one with the same book id
-            final AppDoc doc = new AppDoc() //
+            final AppDoc newDoc = new AppDoc() //
                     .text(DOC_TYPE, BOOK._()) //
                     .num(BOOK_ID, book.getId()) //
                     .text(AUTHOR, book.getAuthor()) //
@@ -193,54 +176,60 @@ public class AdminBooksServiceImpl extends RemoteServiceServlet implements Admin
                     .text(COMMENT, book.getComment()) //
                     .text(CATEGORY, book.getCategory()) //
             ;
-            s.idx().add(doc.build());
+            s.idx().add(newDoc.build());
         }
+
+        // TODO PGU update number of authors, categories, editor, year
     }
 
     @Override
     public void deleteBooks(final ArrayList<Book> selectedBooks) {
-        final String now = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSZ").format(new Date());
 
+        final String now = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
         final ArrayList<Long> bookIds = new ArrayList<Long>(selectedBooks.size());
 
         for (final Book book : selectedBooks) {
-            final Long bookId = book.getId();
+            final ScoredDocument doc = fetchDocByBook(book);
 
-            final Results<ScoredDocument> results = s.idx().search(Query.newBuilder().build("" + //
-                    DOC_TYPE._() + ":" + BOOK._() + " " + //
-                    BOOK_ID._() + ":" + bookId) //
-                    );
-
-            final ScoredDocument doc = results.iterator().next();
-
-            final Document.Builder archiveDocBuilder = Document
-                    .newBuilder()
-                    //
-                    .addField(Field.newBuilder().setName(DOC_TYPE._()).setText(ARCHIVE_BOOK._()))
-                    //
-                    .addField(
-                            Field.newBuilder().setName(BOOK_ID._())
-                                    .setNumber(getOnlyFieldNumeric(BOOK_ID._(), doc).longValue())) //
-
-                    .addField(Field.newBuilder().setName(AUTHOR._()).setText(getOnlyField(AUTHOR._(), doc))) //
-                    .addField(Field.newBuilder().setName(TITLE._()).setText(getOnlyField(TITLE._(), doc))) //
-                    .addField(Field.newBuilder().setName(EDITOR._()).setText(getOnlyField(EDITOR._(), doc))) //
-                    .addField(
-                            Field.newBuilder().setName(YEAR._())
-                                    .setNumber(DocUtils.getOnlyFieldNumeric(YEAR._(), doc).intValue())) //
-                    .addField(Field.newBuilder().setName(COMMENT._()).setText(getOnlyField(COMMENT._(), doc))) //
-                    .addField(Field.newBuilder().setName(CATEGORY._()).setText(getOnlyField(CATEGORY._(), doc))) //
-                    .addField(Field.newBuilder().setName(ARCHIVE_DATE._()).setText(now)) //
+            final AppDoc archiveDoc = new AppDoc() //
+                    .text(DOC_TYPE, ARCHIVE_BOOK._()) //
+                    .copyNumLong(BOOK_ID, doc) //
+                    .copyText(AUTHOR, doc) //
+                    .copyText(TITLE, doc) //
+                    .copyText(EDITOR, doc) //
+                    .copyNumInt(YEAR, doc) //
+                    .copyText(COMMENT, doc) //
+                    .copyText(CATEGORY, doc) //
+                    .text(ARCHIVE_DATE, now) //
             ;
 
             s.idx().remove(doc.getId()); // removes it from the index
-            s.archiveIdx().add(archiveDocBuilder.build()); // adds the archive
+            s.archiveIdx().add(archiveDoc.build()); // adds the archive
 
-            bookIds.add(bookId);
+            bookIds.add(book.getId());
+
+            // TODO PGU update number of authors, categories, editor, year
         }
 
         // clean bookIds
         final Map<Long, BookId> id2bookId = dao.ofy().get(BookId.class, bookIds);
         dao.ofy().delete(id2bookId.values());
+    }
+
+    private ScoredDocument fetchDocByBook(final Book book) {
+        final Results<ScoredDocument> docs = s.idx().search(Query.newBuilder().build("" + //
+                DOC_TYPE._() + ":" + BOOK._() + " " + //
+                BOOK_ID._() + ":" + book.getId()) //
+                );
+
+        if (docs.getNumberReturned() == 1) {
+            return docs.iterator().next();
+
+        } else {
+            final IllegalArgumentException e = new IllegalArgumentException(String.format(
+                    "%s results have been found for the book id %s", docs.getNumberReturned(), book.getId()));
+            log.error(this, e);
+            throw e;
+        }
     }
 }

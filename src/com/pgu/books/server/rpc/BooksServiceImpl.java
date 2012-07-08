@@ -82,13 +82,13 @@ public class BooksServiceImpl extends RemoteServiceServlet implements BooksServi
         final ArrayList<Book> books = new ArrayList<Book>(limit);
         for (final ScoredDocument scoredDoc : results) {
             final Book book = new Book() //
-                    .id(DocUtils.getOnlyFieldNumeric(BOOK_ID._(), scoredDoc).longValue()) //
-                    .author(DocUtils.getOnlyField(AUTHOR._(), scoredDoc)) //
-                    .title(DocUtils.getOnlyField(TITLE._(), scoredDoc)) //
-                    .editor(DocUtils.getOnlyField(EDITOR._(), scoredDoc)) //
-                    .year(DocUtils.getOnlyFieldNumeric(YEAR._(), scoredDoc).intValue()) //
-                    .comment(DocUtils.getOnlyField(COMMENT._(), scoredDoc)) //
-                    .category(DocUtils.getOnlyField(CATEGORY._(), scoredDoc)) //
+                    .id(DocUtils.num(BOOK_ID._(), scoredDoc).longValue()) //
+                    .author(DocUtils.text(AUTHOR._(), scoredDoc)) //
+                    .title(DocUtils.text(TITLE._(), scoredDoc)) //
+                    .editor(DocUtils.text(EDITOR._(), scoredDoc)) //
+                    .year(DocUtils.num(YEAR._(), scoredDoc).intValue()) //
+                    .comment(DocUtils.text(COMMENT._(), scoredDoc)) //
+                    .category(DocUtils.text(CATEGORY._(), scoredDoc)) //
             ;
             books.add(book);
         }

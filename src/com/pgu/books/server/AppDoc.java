@@ -2,9 +2,13 @@ package com.pgu.books.server;
 
 import com.google.appengine.api.search.Document;
 import com.google.appengine.api.search.Field;
+import com.google.appengine.api.search.ScoredDocument;
 import com.pgu.books.server.domain.document.BookDoc;
+import com.pgu.books.server.domain.document.DocUtils;
 
 public class AppDoc {
+
+    private final DocUtils         docU       = new DocUtils();
 
     private final Document.Builder docBuilder = Document.newBuilder();
 
@@ -25,5 +29,17 @@ public class AppDoc {
 
     public Document build() {
         return docBuilder.build();
+    }
+
+    public AppDoc copyNumLong(final BookDoc bookDoc, final ScoredDocument originalDoc) {
+        return num(bookDoc, docU.numLong(bookDoc, originalDoc));
+    }
+
+    public AppDoc copyText(final BookDoc bookDoc, final ScoredDocument originalDoc) {
+        return text(bookDoc, docU.text(bookDoc, originalDoc));
+    }
+
+    public AppDoc copyNumInt(final BookDoc bookDoc, final ScoredDocument originalDoc) {
+        return num(bookDoc, docU.numInt(bookDoc, originalDoc));
     }
 }
