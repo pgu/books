@@ -33,7 +33,7 @@ import com.pgu.books.server.AppDoc;
 import com.pgu.books.server.AppLog;
 import com.pgu.books.server.Search;
 import com.pgu.books.server.access.DAO;
-import com.pgu.books.server.domain.BookId;
+import com.pgu.books.server.domain.sql.BookId;
 import com.pgu.books.shared.domain.Book;
 import com.pgu.books.shared.utils.AppUtils;
 

@@ -1,4 +1,4 @@
-package com.pgu.books.server.domain;
+package com.pgu.books.server.domain.sql;
 
 import javax.persistence.Id;
 
