@@ -10,22 +10,22 @@ public class DocUtils {
 
     public String text(final BookDoc fieldName, final Document doc) {
         final Field field = field(fieldName, doc);
-        return field == null ? "" : field.getText();
+        return field == null ? null : field.getText();
     }
 
     public Long numLong(final BookDoc fieldName, final Document doc) {
         final String text = text(fieldName, doc);
-        return "".equals(text) ? 0L : Long.getLong(text);
+        return text == null ? null : Long.getLong(text);
     }
 
     public Integer numInt(final BookDoc fieldName, final Document doc) {
         final String text = text(fieldName, doc);
-        return "".equals(text) ? 0 : Integer.getInteger(text);
+        return text == null ? null : Integer.getInteger(text);
     }
 
     public Double num(final BookDoc fieldName, final Document doc) {
         final Field field = field(fieldName, doc);
-        return field == null ? 0D : field.getNumber();
+        return field == null ? null : field.getNumber();
     }
 
     private Field field(final BookDoc fieldName, final Document doc) {

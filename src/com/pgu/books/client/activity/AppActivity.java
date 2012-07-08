@@ -28,6 +28,7 @@ import com.pgu.books.client.ui.booksBoard.filters.Letter;
 import com.pgu.books.client.ui.utils.Notification;
 import com.pgu.books.shared.domain.Book;
 import com.pgu.books.shared.dto.BooksQueryParameters;
+import com.pgu.books.shared.dto.BooksResult;
 import com.pgu.books.shared.dto.LoginInfo;
 import com.pgu.books.shared.utils.SortField;
 
@@ -131,26 +132,12 @@ public class AppActivity implements //
     private void fetchBooksInternal(final int start, final int length) {
         dashboard.getBooksGridUI().initFetchFlags();
 
-        booksService.countBooks(queryParameters, new AsyncCallbackApp<Integer>() {
+        booksService.fetchBooks(queryParameters, start, length, new AsyncCallbackApp<BooksResult>() {
 
             @Override
-            public void onSuccess(final Integer count) {
-                dashboard.getBooksGridUI().setNbBooks(count);
-            }
-
-            @Override
-            public void onFailure(final Throwable caught) {
-                super.onFailure(caught);
-                dashboard.getBooksGridUI().setNbBooks(0);
-            }
-
-        });
-
-        booksService.fetchBooks(queryParameters, start, length, new AsyncCallbackApp<ArrayList<Book>>() {
-
-            @Override
-            public void onSuccess(final ArrayList<Book> books) {
-                dashboard.getBooksGridUI().showBooks(books);
+            public void onSuccess(final BooksResult booksResult) {
+                dashboard.getBooksGridUI().setNbBooks(Integer.getInteger(Long.toString(booksResult.getNbFound())));
+                dashboard.getBooksGridUI().showBooks(booksResult.getBooks());
             }
 
             @Override

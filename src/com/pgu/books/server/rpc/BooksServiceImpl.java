@@ -10,20 +10,18 @@ import static com.pgu.books.server.domain.document.BookDoc.YEAR;
 
 import java.util.ArrayList;
 import java.util.TreeMap;
-import java.util.logging.Logger;
 
 import com.google.appengine.api.datastore.QueryResultIterator;
-import com.google.appengine.api.search.Index;
-import com.google.appengine.api.search.IndexSpec;
 import com.google.appengine.api.search.QueryOptions;
 import com.google.appengine.api.search.Results;
 import com.google.appengine.api.search.ScoredDocument;
-import com.google.appengine.api.search.SearchServiceFactory;
 import com.google.appengine.api.search.SortExpression;
 import com.google.appengine.api.search.SortOptions;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.googlecode.objectify.Query;
 import com.pgu.books.client.rpc.BooksService;
+import com.pgu.books.server.AppLog;
+import com.pgu.books.server.Search;
 import com.pgu.books.server.access.DAO;
 import com.pgu.books.server.domain.AuthorFilter;
 import com.pgu.books.server.domain.AuthorLetterFilter;
@@ -41,23 +39,22 @@ import com.pgu.books.server.domain.Word;
 import com.pgu.books.server.domain.document.DocUtils;
 import com.pgu.books.shared.domain.Book;
 import com.pgu.books.shared.dto.BooksQueryParameters;
+import com.pgu.books.shared.dto.BooksResult;
 
 @SuppressWarnings("serial")
 public class BooksServiceImpl extends RemoteServiceServlet implements BooksService {
 
-    private static final Logger LOG   = Logger.getLogger(BooksServiceImpl.class.getSimpleName());
-
-    private final DAO           dao   = new DAO();
-
-    private static final Index  INDEX = SearchServiceFactory.getSearchService().getIndex(
-                                              IndexSpec.newBuilder().setName("shared_index"));
+    private final AppLog   log  = new AppLog();
+    private final DAO      dao  = new DAO();
+    private final Search   s    = new Search();
+    private final DocUtils docU = new DocUtils();
 
     /**
      * http://code.google.com/p/google-app-engine-samples/source/browse/trunk/search/java/src/com/google/appengine/
      * demos/search/TextSearchServlet.java
      */
     @Override
-    public ArrayList<Book> fetchBooks(final BooksQueryParameters queryParameters, final int start, final int length) {
+    public BooksResult fetchBooks(final BooksQueryParameters queryParameters, final int start, final int length) {
 
         final int limit = length;
 
@@ -77,24 +74,26 @@ public class BooksServiceImpl extends RemoteServiceServlet implements BooksServi
                         .setLimit(limit) //
                         .setSortOptions(sortOptions) //
                         .build()).build("");
-        final Results<ScoredDocument> results = INDEX.search(query);
+        final Results<ScoredDocument> results = s.idx().search(query);
 
         final ArrayList<Book> books = new ArrayList<Book>(limit);
-        for (final ScoredDocument scoredDoc : results) {
+        for (final ScoredDocument doc : results) {
             final Book book = new Book() //
-                    .id(DocUtils.num(BOOK_ID._(), scoredDoc).longValue()) //
-                    .author(DocUtils.text(AUTHOR._(), scoredDoc)) //
-                    .title(DocUtils.text(TITLE._(), scoredDoc)) //
-                    .editor(DocUtils.text(EDITOR._(), scoredDoc)) //
-                    .year(DocUtils.num(YEAR._(), scoredDoc).intValue()) //
-                    .comment(DocUtils.text(COMMENT._(), scoredDoc)) //
-                    .category(DocUtils.text(CATEGORY._(), scoredDoc)) //
+                    .id(docU.numLong(BOOK_ID, doc)) //
+                    .author(docU.text(AUTHOR, doc)) //
+                    .title(docU.text(TITLE, doc)) //
+                    .editor(docU.text(EDITOR, doc)) //
+                    .year(docU.numInt(YEAR, doc)) //
+                    .comment(docU.text(COMMENT, doc)) //
+                    .category(docU.text(CATEGORY, doc)) //
             ;
             books.add(book);
         }
-        return books;
 
-        // return fetchBooksWithObjectify(queryParameters, start, length);
+        final BooksResult booksResult = new BooksResult();
+        booksResult.setBooks(books);
+        booksResult.setNbFound(results.getNumberFound());
+        return booksResult;
     }
 
     private ArrayList<Book> fetchBooksWithObjectify(final BooksQueryParameters queryParameters, final int start,
@@ -102,6 +101,7 @@ public class BooksServiceImpl extends RemoteServiceServlet implements BooksServi
         final Query<Book> query = dao.ofy().query(Book.class);
         //
         // filters
+        // TODO PGU update fetch books by search with the filters
         applyFilters(queryParameters, query);
 
         //
@@ -120,16 +120,6 @@ public class BooksServiceImpl extends RemoteServiceServlet implements BooksServi
         }
 
         return books;
-    }
-
-    @Override
-    public int countBooks(final BooksQueryParameters filtersDTO) {
-
-        final Query<Book> query = dao.ofy().query(Book.class);
-
-        applyFilters(filtersDTO, query);
-
-        return query.count();
     }
 
     private void applyFilters(final BooksQueryParameters filtersDTO, final Query<Book> query) {
