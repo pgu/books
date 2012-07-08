@@ -33,7 +33,9 @@ import com.pgu.books.server.AppDoc;
 import com.pgu.books.server.AppLog;
 import com.pgu.books.server.Search;
 import com.pgu.books.server.access.DAO;
+import com.pgu.books.server.domain.sql.BookFilter;
 import com.pgu.books.server.domain.sql.BookId;
+import com.pgu.books.server.domain.sql.BookLetter;
 import com.pgu.books.shared.domain.Book;
 import com.pgu.books.shared.utils.AppUtils;
 
@@ -157,6 +159,39 @@ public class AdminBooksServiceImpl extends RemoteServiceServlet implements Admin
                     .text(CATEGORY, book.getCategory()) //
             ;
             s.idx().add(doc.build());
+
+            // TODO PGU
+            final String filterValue = book.getAuthor();
+            if (!u.isVoid(filterValue)) {
+
+                final com.googlecode.objectify.Query<BookFilter> filterQuery = dao.ofy().query(BookFilter.class);
+                filterQuery.filter("type =", BookFilter.Type.AUTHOR);
+                filterQuery.filter("value =", filterValue);
+
+                if (0 == filterQuery.count()) {
+                    final BookFilter filterAuthor = new BookFilter(BookFilter.Type.AUTHOR);
+                    filterAuthor.setValue(filterValue);
+                    dao.ofy().put(filterAuthor);
+
+                    final String upperLetter = filterValue.substring(0, 1).toUpperCase();
+
+                    final com.googlecode.objectify.Query<BookLetter> letterQuery = dao.ofy().query(BookLetter.class);
+                    letterQuery.filter("type =", BookFilter.Type.AUTHOR);
+                    letterQuery.filter("upperLetter =", upperLetter);
+
+                    if (0 == letterQuery.count()) {
+                        final BookLetter letterAuthor = new BookLetter(BookFilter.Type.AUTHOR);
+                        letterAuthor.setNb(1);
+                        letterAuthor.setUpperLetter(upperLetter);
+                        dao.ofy().put(letterAuthor);
+                    } else {
+                        final BookLetter letterAuthor = letterQuery.get();
+                        letterAuthor.setNb(letterAuthor.getNb() + 1);
+                        dao.ofy().put(letterAuthor);
+                    }
+
+                }
+            }
 
         } else { // update
 

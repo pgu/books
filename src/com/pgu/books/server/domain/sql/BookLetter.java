@@ -3,19 +3,17 @@ package com.pgu.books.server.domain.sql;
 import javax.persistence.Id;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
+import com.pgu.books.server.domain.sql.BookFilter.Type;
 
-public class BookFilter implements IsSerializable {
-
-    public enum Type {
-        AUTHOR, EDITOR, CATEGORY, YEAR
-    }
+public class BookLetter implements IsSerializable {
 
     @Id
     private Long   id;
     private Type   type;
-    private String value;
+    private String upperLetter;
+    private int    nb;
 
-    public BookFilter(final Type type) {
+    public BookLetter(final Type type) {
         this.type = type;
     }
 
@@ -24,7 +22,7 @@ public class BookFilter implements IsSerializable {
         final int prime = 31;
         int result = 1;
         result = prime * result + (type == null ? 0 : type.hashCode());
-        result = prime * result + (value == null ? 0 : value.hashCode());
+        result = prime * result + (upperLetter == null ? 0 : upperLetter.hashCode());
         return result;
     }
 
@@ -39,15 +37,15 @@ public class BookFilter implements IsSerializable {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final BookFilter other = (BookFilter) obj;
+        final BookLetter other = (BookLetter) obj;
         if (type != other.type) {
             return false;
         }
-        if (value == null) {
-            if (other.value != null) {
+        if (upperLetter == null) {
+            if (other.upperLetter != null) {
                 return false;
             }
-        } else if (!value.equals(other.value)) {
+        } else if (!upperLetter.equals(other.upperLetter)) {
             return false;
         }
         return true;
@@ -55,7 +53,7 @@ public class BookFilter implements IsSerializable {
 
     @Override
     public String toString() {
-        return "BookFilter [id=" + id + ", type=" + type + ", value=" + value + "]";
+        return "BookLetter [id=" + id + ", type=" + type + ", upperLetter=" + upperLetter + ", nb=" + nb + "]";
     }
 
     public Long getId() {
@@ -74,12 +72,27 @@ public class BookFilter implements IsSerializable {
         this.type = type;
     }
 
-    public String getValue() {
-        return value;
+    public String getUpperLetter() {
+        return upperLetter;
     }
 
-    public void setValue(final String value) {
-        this.value = value;
+    public void setUpperLetter(final String upperLetter) {
+        if (upperLetter == null) {
+            this.upperLetter = null;
+        } else {
+            if (upperLetter.length() != 1) {
+                throw new IllegalArgumentException("upperletter has an invalid length: " + upperLetter);
+            }
+            this.upperLetter = upperLetter.toUpperCase();
+        }
+    }
+
+    public int getNb() {
+        return nb;
+    }
+
+    public void setNb(final int nb) {
+        this.nb = nb;
     }
 
 }
