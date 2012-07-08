@@ -33,6 +33,7 @@ import com.google.appengine.api.search.Results;
 import com.google.appengine.api.search.ScoredDocument;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.pgu.books.client.rpc.AdminBooksService;
+import com.pgu.books.server.AppDoc;
 import com.pgu.books.server.AppLog;
 import com.pgu.books.server.Search;
 import com.pgu.books.server.access.DAO;
@@ -150,43 +151,49 @@ public class AdminBooksServiceImpl extends RemoteServiceServlet implements Admin
             dao.ofy().put(bookId);
 
             // create a doc for the book
-            final Document.Builder docBuilder = Document.newBuilder() //
-                    .addField(Field.newBuilder().setName(DOC_TYPE._()).setText(BOOK._())) //
-                    .addField(Field.newBuilder().setName(BOOK_ID._()).setNumber(bookId.getId())) //
-                    .addField(Field.newBuilder().setName(AUTHOR._()).setText(book.getAuthor())) //
-                    .addField(Field.newBuilder().setName(TITLE._()).setText(book.getTitle())) //
-                    .addField(Field.newBuilder().setName(EDITOR._()).setText(book.getEditor())) //
-                    .addField(Field.newBuilder().setName(YEAR._()).setNumber(book.getYear())) //
-                    .addField(Field.newBuilder().setName(COMMENT._()).setText(book.getComment())) //
-                    .addField(Field.newBuilder().setName(CATEGORY._()).setText(book.getCategory()));
-
-            s.idx().add(docBuilder.build());
+            final AppDoc doc = new AppDoc() //
+                    .text(DOC_TYPE, BOOK._()) //
+                    .num(BOOK_ID, bookId.getId()) //
+                    .text(AUTHOR, book.getAuthor()) //
+                    .text(TITLE, book.getTitle()) //
+                    .text(EDITOR, book.getEditor()) //
+                    .num(YEAR, book.getYear()) //
+                    .text(COMMENT, book.getComment()) //
+                    .text(CATEGORY, book.getCategory()) //
+            ;
+            s.idx().add(doc.build());
 
         } else { // update
 
             // retrieves the doc for the book id
-            final Results<ScoredDocument> results = s.idx().search(Query.newBuilder().build("" + //
-                    DOC_TYPE._() + ":book " + //
+            final Results<ScoredDocument> docs = s.idx().search(Query.newBuilder().build("" + //
+                    DOC_TYPE._() + ":" + BOOK._() + //
                     BOOK_ID._() + ":" + book.getId()) //
                     );
 
-            final ScoredDocument doc = results.iterator().next();
+            if (docs.getNumberReturned() != 1) {
+                final IllegalArgumentException e = new IllegalArgumentException(String.format(
+                        "%s results have been found for the book id %s", docs.getNumberReturned(), book.getId()));
+                log.error(this, e);
+                throw e;
+            }
+
             // removes it from the index
-            s.idx().remove(doc.getId());
+            final ScoredDocument theDoc = docs.iterator().next();
+            s.idx().remove(theDoc.getId());
 
             // creates a new one with the same book id
-            final Document.Builder docBuilder = Document.newBuilder() //
-                    .addField(Field.newBuilder().setName(DOC_TYPE._()).setText(BOOK._())) //
-                    .addField(Field.newBuilder().setName(BOOK_ID._()).setNumber(book.getId())) //
-                    .addField(Field.newBuilder().setName(AUTHOR._()).setText(book.getAuthor())) //
-                    .addField(Field.newBuilder().setName(TITLE._()).setText(book.getTitle())) //
-                    .addField(Field.newBuilder().setName(EDITOR._()).setText(book.getEditor())) //
-                    .addField(Field.newBuilder().setName(YEAR._()).setNumber(book.getYear())) //
-                    .addField(Field.newBuilder().setName(COMMENT._()).setText(book.getComment())) //
-                    .addField(Field.newBuilder().setName(CATEGORY._()).setText(book.getCategory()));
-
-            s.idx().add(docBuilder.build());
-
+            final AppDoc doc = new AppDoc() //
+                    .text(DOC_TYPE, BOOK._()) //
+                    .num(BOOK_ID, book.getId()) //
+                    .text(AUTHOR, book.getAuthor()) //
+                    .text(TITLE, book.getTitle()) //
+                    .text(EDITOR, book.getEditor()) //
+                    .num(YEAR, book.getYear()) //
+                    .text(COMMENT, book.getComment()) //
+                    .text(CATEGORY, book.getCategory()) //
+            ;
+            s.idx().add(doc.build());
         }
     }
 
