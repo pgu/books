@@ -24,49 +24,43 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import com.google.appengine.api.datastore.QueryResultIterator;
 import com.google.appengine.api.search.Document;
 import com.google.appengine.api.search.Field;
-import com.google.appengine.api.search.Index;
-import com.google.appengine.api.search.IndexSpec;
 import com.google.appengine.api.search.Query;
 import com.google.appengine.api.search.Results;
 import com.google.appengine.api.search.ScoredDocument;
-import com.google.appengine.api.search.SearchServiceFactory;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.pgu.books.client.rpc.AdminBooksService;
+import com.pgu.books.server.AppLog;
+import com.pgu.books.server.Search;
 import com.pgu.books.server.access.DAO;
 import com.pgu.books.server.domain.BookId;
 import com.pgu.books.server.domain.document.DocUtils;
 import com.pgu.books.shared.domain.Book;
-import com.pgu.books.shared.utils.U;
+import com.pgu.books.shared.utils.Utils;
 
 @SuppressWarnings("serial")
 public class AdminBooksServiceImpl extends RemoteServiceServlet implements AdminBooksService {
 
-    private static final Logger LOG           = Logger.getLogger(AdminBooksServiceImpl.class.getSimpleName());
-
-    private static final Index  INDEX         = SearchServiceFactory.getSearchService().getIndex(
-                                                      IndexSpec.newBuilder().setName("shared_index"));
-
-    private static final Index  ARCHIVE_INDEX = SearchServiceFactory.getSearchService().getIndex(
-                                                      IndexSpec.newBuilder().setName("archive_shared_index"));
-
-    private final DAO           dao           = new DAO();
-
-    private final U             u             = new U();
+    private final AppLog log = new AppLog();
+    private final Search s   = new Search();
+    private final DAO    dao = new DAO();
+    private final Utils  u   = new Utils();
 
     @Override
     public String importBooks(final int start, final int length) {
+
         final long startTime = System.currentTimeMillis();
         final int stop = start + length;
+        log.info(this, "Importing books from %s to %s", start, stop);
 
-        // final InputStream is = getServletContext().getResourceAsStream("/WEB-INF/books/" + categoryTitle + ".txt");
         final InputStream is = getServletContext().getResourceAsStream("/WEB-INF/books/import/books.txt");
         final BufferedReader br = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
         try {
+
+            boolean hasWarning = false;
 
             int counter = 0;
             int countImported = 0;
@@ -83,7 +77,6 @@ public class AdminBooksServiceImpl extends RemoteServiceServlet implements Admin
                     break;
                 }
 
-                // in the interval
                 counter++;
                 final String[] tokens = line.split("\", \"");
                 if (tokens.length == 6) {
@@ -105,17 +98,21 @@ public class AdminBooksServiceImpl extends RemoteServiceServlet implements Admin
                     saveBook(new Book(author, title, editor, year, comment, category));
 
                 } else {
-                    LOG.warning("** Not imported: " + line);
+                    hasWarning = true;
+                    log.warning(this, "The book %s has not been imported: %s", counter, line);
                 }
             }
 
-            return countImported + " / " + counter + " (" + (System.currentTimeMillis() - startTime) + " ms)";
+            log.info(this, "Imported books: %s/%s in %s ms", countImported, length, System.currentTimeMillis()
+                    - startTime);
+
+            return hasWarning ? "Warning: not all the books have been imported"
+                    : "Success: All the books have been imported";
 
         } catch (final IOException e) {
-            e.printStackTrace();
+            log.error(this, e);
+            return e.getMessage();
         }
-
-        return "An error occurred!";
     }
 
     @Override
@@ -124,22 +121,21 @@ public class AdminBooksServiceImpl extends RemoteServiceServlet implements Admin
         // return; // The app is running on App Engine...
         // }
 
-        final QueryResultIterator<BookId> itr = dao.ofy().query(BookId.class).iterator();
-        while (itr.hasNext()) {
-            final BookId bookId = itr.next();
-            dao.ofy().delete(bookId);
+        final QueryResultIterator<BookId> bookIdItr = dao.ofy().query(BookId.class).iterator();
+        while (bookIdItr.hasNext()) {
+            dao.ofy().delete(bookIdItr.next());
         }
 
-        final Iterator<ScoredDocument> results = INDEX.search(Query.newBuilder().build("" + //
+        final Iterator<ScoredDocument> bookDocItr = s.idx().search(Query.newBuilder().build("" + //
                 DOC_TYPE._() + ":" + BOOK._())).iterator();
-        while (results.hasNext()) {
-            INDEX.remove(results.next().getId());
+        while (bookDocItr.hasNext()) {
+            s.idx().remove(bookDocItr.next().getId());
         }
 
-        final Iterator<ScoredDocument> archiveResults = ARCHIVE_INDEX.search(Query.newBuilder().build("" + //
+        final Iterator<ScoredDocument> archiveDocItr = s.archiveIdx().search(Query.newBuilder().build("" + //
                 DOC_TYPE._() + ":" + ARCHIVE_BOOK._())).iterator();
-        while (archiveResults.hasNext()) {
-            ARCHIVE_INDEX.remove(archiveResults.next().getId());
+        while (archiveDocItr.hasNext()) {
+            s.archiveIdx().remove(archiveDocItr.next().getId());
         }
     }
 
@@ -164,19 +160,19 @@ public class AdminBooksServiceImpl extends RemoteServiceServlet implements Admin
                     .addField(Field.newBuilder().setName(COMMENT._()).setText(book.getComment())) //
                     .addField(Field.newBuilder().setName(CATEGORY._()).setText(book.getCategory()));
 
-            INDEX.add(docBuilder.build());
+            s.idx().add(docBuilder.build());
 
         } else { // update
 
             // retrieves the doc for the book id
-            final Results<ScoredDocument> results = INDEX.search(Query.newBuilder().build("" + //
+            final Results<ScoredDocument> results = s.idx().search(Query.newBuilder().build("" + //
                     DOC_TYPE._() + ":book " + //
                     BOOK_ID._() + ":" + book.getId()) //
                     );
 
             final ScoredDocument doc = results.iterator().next();
             // removes it from the index
-            INDEX.remove(doc.getId());
+            s.idx().remove(doc.getId());
 
             // creates a new one with the same book id
             final Document.Builder docBuilder = Document.newBuilder() //
@@ -189,7 +185,7 @@ public class AdminBooksServiceImpl extends RemoteServiceServlet implements Admin
                     .addField(Field.newBuilder().setName(COMMENT._()).setText(book.getComment())) //
                     .addField(Field.newBuilder().setName(CATEGORY._()).setText(book.getCategory()));
 
-            INDEX.add(docBuilder.build());
+            s.idx().add(docBuilder.build());
 
         }
     }
@@ -203,7 +199,7 @@ public class AdminBooksServiceImpl extends RemoteServiceServlet implements Admin
         for (final Book book : selectedBooks) {
             final Long bookId = book.getId();
 
-            final Results<ScoredDocument> results = INDEX.search(Query.newBuilder().build("" + //
+            final Results<ScoredDocument> results = s.idx().search(Query.newBuilder().build("" + //
                     DOC_TYPE._() + ":" + BOOK._() + " " + //
                     BOOK_ID._() + ":" + bookId) //
                     );
@@ -230,8 +226,8 @@ public class AdminBooksServiceImpl extends RemoteServiceServlet implements Admin
                     .addField(Field.newBuilder().setName(ARCHIVE_DATE._()).setText(now)) //
             ;
 
-            INDEX.remove(doc.getId()); // removes it from the index
-            ARCHIVE_INDEX.add(archiveDocBuilder.build()); // adds the archive
+            s.idx().remove(doc.getId()); // removes it from the index
+            s.archiveIdx().add(archiveDocBuilder.build()); // adds the archive
 
             bookIds.add(bookId);
         }
