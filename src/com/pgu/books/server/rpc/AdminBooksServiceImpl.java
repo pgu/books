@@ -42,7 +42,6 @@ import com.pgu.books.server.access.DAO;
 import com.pgu.books.server.domain.BookId;
 import com.pgu.books.server.domain.document.DocUtils;
 import com.pgu.books.shared.domain.Book;
-import com.pgu.books.shared.utils.BookCategory;
 
 @SuppressWarnings("serial")
 public class AdminBooksServiceImpl extends RemoteServiceServlet implements AdminBooksService {
@@ -59,14 +58,15 @@ public class AdminBooksServiceImpl extends RemoteServiceServlet implements Admin
 
     @Override
     public String testImport() {
-        return importBooks(BookCategory.titles.get(0));
+        return importBooks("00");
     }
 
     @Override
-    public String importBooks(final String categoryTitle) {
+    public String importBooks(final String nb) {
         final long startTime = System.currentTimeMillis();
 
-        final InputStream is = getServletContext().getResourceAsStream("/WEB-INF/books/" + categoryTitle + ".txt");
+        // final InputStream is = getServletContext().getResourceAsStream("/WEB-INF/books/" + categoryTitle + ".txt");
+        final InputStream is = getServletContext().getResourceAsStream("/WEB-INF/books/import/books_" + nb + ".txt");
         final BufferedReader br = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
         try {
 
