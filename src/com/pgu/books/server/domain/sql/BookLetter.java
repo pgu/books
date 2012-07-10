@@ -13,10 +13,6 @@ public class BookLetter implements IsSerializable {
     private String upperLetter;
     private int    nb;
 
-    public BookLetter(final Type type) {
-        this.type = type;
-    }
-
     @Override
     public int hashCode() {
         final int prime = 31;

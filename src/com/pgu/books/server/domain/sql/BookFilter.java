@@ -15,10 +15,6 @@ public class BookFilter implements IsSerializable {
     private Type   type;
     private String value;
 
-    public BookFilter(final Type type) {
-        this.type = type;
-    }
-
     @Override
     public int hashCode() {
         final int prime = 31;

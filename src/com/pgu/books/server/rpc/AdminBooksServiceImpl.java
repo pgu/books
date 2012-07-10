@@ -34,6 +34,7 @@ import com.pgu.books.server.AppLog;
 import com.pgu.books.server.Search;
 import com.pgu.books.server.access.DAO;
 import com.pgu.books.server.domain.sql.BookFilter;
+import com.pgu.books.server.domain.sql.BookFilter.Type;
 import com.pgu.books.server.domain.sql.BookId;
 import com.pgu.books.server.domain.sql.BookLetter;
 import com.pgu.books.shared.domain.Book;
@@ -169,7 +170,8 @@ public class AdminBooksServiceImpl extends RemoteServiceServlet implements Admin
                 filterQuery.filter("value =", filterValue);
 
                 if (0 == filterQuery.count()) {
-                    final BookFilter filterAuthor = new BookFilter(BookFilter.Type.AUTHOR);
+                    final BookFilter filterAuthor = new BookFilter();
+                    filterAuthor.setType(BookFilter.Type.AUTHOR);
                     filterAuthor.setValue(filterValue);
                     dao.ofy().put(filterAuthor);
 
@@ -180,7 +182,8 @@ public class AdminBooksServiceImpl extends RemoteServiceServlet implements Admin
                     letterQuery.filter("upperLetter =", upperLetter);
 
                     if (0 == letterQuery.count()) {
-                        final BookLetter letterAuthor = new BookLetter(BookFilter.Type.AUTHOR);
+                        final BookLetter letterAuthor = new BookLetter();
+                        letterAuthor.setType(BookFilter.Type.AUTHOR);
                         letterAuthor.setNb(1);
                         letterAuthor.setUpperLetter(upperLetter);
                         dao.ofy().put(letterAuthor);
