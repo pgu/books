@@ -14,7 +14,7 @@ public interface BooksGridUI extends IsWidget {
 
     void initFetchFlags();
 
-    void setNbBooks(Integer count);
+    void setNbBooks(long count);
 
     void showBooks(ArrayList<Book> books);
 

@@ -136,7 +136,7 @@ public class AppActivity implements //
 
             @Override
             public void onSuccess(final BooksResult booksResult) {
-                dashboard.getBooksGridUI().setNbBooks(Integer.getInteger(Long.toString(booksResult.getNbFound())));
+                dashboard.getBooksGridUI().setNbBooks(booksResult.getNbFound());
                 dashboard.getBooksGridUI().showBooks(booksResult.getBooks());
             }
 

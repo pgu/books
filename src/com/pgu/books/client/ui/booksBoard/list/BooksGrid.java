@@ -367,7 +367,7 @@ public class BooksGrid extends Composite implements BooksGridUI {
 
     private boolean         isGettingNbBooks = false;
     private boolean         isGettingBooks   = false;
-    private Integer         nbBooks          = 0;
+    private long            nbBooks          = 0;
     private ArrayList<Book> books;
     private int             currentStart     = 0;
 
@@ -386,7 +386,7 @@ public class BooksGrid extends Composite implements BooksGridUI {
     }
 
     @Override
-    public void setNbBooks(final Integer count) {
+    public void setNbBooks(final long count) {
         nbBooks = count;
         isGettingBooks = false;
 
@@ -403,7 +403,7 @@ public class BooksGrid extends Composite implements BooksGridUI {
 
         final boolean isExact = currentStart + books.size() == nbBooks;
 
-        grid.setRowCount(nbBooks, isExact);
+        grid.setRowCount((int) nbBooks, isExact);
         provider.updateRowData(currentStart, books);
     }
 
