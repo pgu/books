@@ -160,42 +160,42 @@ public class AdminBooksServiceImpl extends RemoteServiceServlet implements Admin
             ;
             s.idx().add(doc.build());
 
-            // TODO PGU
-            final String filterValue = book.getAuthor();
-            if (!u.isVoid(filterValue)) {
-
-                // save a filter if it does not exist
-                final com.googlecode.objectify.Query<BookFilter> filterQuery = dao.ofy().query(BookFilter.class);
-                filterQuery.filter("type =", BookFilter.Type.AUTHOR);
-                filterQuery.filter("value =", filterValue);
-
-                if (0 == filterQuery.count()) {
-                    final BookFilter filterAuthor = new BookFilter();
-                    filterAuthor.setType(BookFilter.Type.AUTHOR);
-                    filterAuthor.setValue(filterValue);
-                    dao.ofy().put(filterAuthor);
-                }
-
-                // save a its letter it the filter does not exist OR increment by 1
-                final String upperLetter = filterValue.substring(0, 1).toUpperCase();
-
-                final com.googlecode.objectify.Query<BookLetter> letterQuery = dao.ofy().query(BookLetter.class);
-                letterQuery.filter("type =", BookFilter.Type.AUTHOR);
-                letterQuery.filter("upperLetter =", upperLetter);
-
-                if (0 == letterQuery.count()) {
-                    final BookLetter letterAuthor = new BookLetter();
-                    letterAuthor.setType(BookFilter.Type.AUTHOR);
-                    letterAuthor.setNb(1);
-                    letterAuthor.setUpperLetter(upperLetter);
-                    dao.ofy().put(letterAuthor);
-                } else {
-                    final BookLetter letterAuthor = letterQuery.get();
-                    letterAuthor.setNb(letterAuthor.getNb() + 1);
-                    dao.ofy().put(letterAuthor);
-                }
-
-            }
+            // TODO PGU Jul 11, 2012 see the added value of doing this..
+//            final String filterValue = book.getAuthor();
+//            if (!u.isVoid(filterValue)) {
+//
+//                // save a filter if it does not exist
+//                final com.googlecode.objectify.Query<BookFilter> filterQuery = dao.ofy().query(BookFilter.class);
+//                filterQuery.filter("type =", BookFilter.Type.AUTHOR);
+//                filterQuery.filter("value =", filterValue);
+//
+//                if (0 == filterQuery.count()) {
+//                    final BookFilter filterAuthor = new BookFilter();
+//                    filterAuthor.setType(BookFilter.Type.AUTHOR);
+//                    filterAuthor.setValue(filterValue);
+//                    dao.ofy().put(filterAuthor);
+//                }
+//
+//                // save a its letter it the filter does not exist OR increment by 1
+//                final String upperLetter = filterValue.substring(0, 1).toUpperCase();
+//
+//                final com.googlecode.objectify.Query<BookLetter> letterQuery = dao.ofy().query(BookLetter.class);
+//                letterQuery.filter("type =", BookFilter.Type.AUTHOR);
+//                letterQuery.filter("upperLetter =", upperLetter);
+//
+//                if (0 == letterQuery.count()) {
+//                    final BookLetter letterAuthor = new BookLetter();
+//                    letterAuthor.setType(BookFilter.Type.AUTHOR);
+//                    letterAuthor.setNb(1);
+//                    letterAuthor.setUpperLetter(upperLetter);
+//                    dao.ofy().put(letterAuthor);
+//                } else {
+//                    final BookLetter letterAuthor = letterQuery.get();
+//                    letterAuthor.setNb(letterAuthor.getNb() + 1);
+//                    dao.ofy().put(letterAuthor);
+//                }
+//
+//            }
 
         } else { // update
 

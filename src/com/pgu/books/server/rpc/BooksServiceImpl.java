@@ -4,9 +4,11 @@ import static com.pgu.books.server.domain.document.BookDoc.AUTHOR;
 import static com.pgu.books.server.domain.document.BookDoc.BOOK_ID;
 import static com.pgu.books.server.domain.document.BookDoc.CATEGORY;
 import static com.pgu.books.server.domain.document.BookDoc.COMMENT;
+import static com.pgu.books.server.domain.document.BookDoc.DOC_TYPE;
 import static com.pgu.books.server.domain.document.BookDoc.EDITOR;
 import static com.pgu.books.server.domain.document.BookDoc.TITLE;
 import static com.pgu.books.server.domain.document.BookDoc.YEAR;
+import static com.pgu.books.server.domain.document.DocType.BOOK;
 
 import java.util.ArrayList;
 import java.util.TreeMap;
@@ -62,11 +64,11 @@ public class BooksServiceImpl extends RemoteServiceServlet implements BooksServi
                 .newBuilder()
                 .addSortExpression(
                         SortExpression
-                                .newBuilder()
-                                .setExpression(queryParameters.getSortField().toString().toUpperCase())
-                                .setDirection(
-                                        queryParameters.isAscending() ? SortExpression.SortDirection.DESCENDING
-                                                : SortExpression.SortDirection.ASCENDING).setDefaultValue("")).build();
+                        .newBuilder()
+                        .setExpression(queryParameters.getSortField().toString().toUpperCase())
+                        .setDirection(
+                                queryParameters.isAscending() ? SortExpression.SortDirection.DESCENDING
+                                        : SortExpression.SortDirection.ASCENDING).setDefaultValue("")).build();
 
         final com.google.appengine.api.search.Query query = com.google.appengine.api.search.Query.newBuilder()
                 .setOptions(QueryOptions.newBuilder() //
@@ -79,13 +81,13 @@ public class BooksServiceImpl extends RemoteServiceServlet implements BooksServi
         final ArrayList<Book> books = new ArrayList<Book>(limit);
         for (final ScoredDocument doc : results) {
             final Book book = new Book() //
-                    .id(docU.numLong(BOOK_ID, doc)) //
-                    .author(docU.text(AUTHOR, doc)) //
-                    .title(docU.text(TITLE, doc)) //
-                    .editor(docU.text(EDITOR, doc)) //
-                    .year(docU.numInt(YEAR, doc)) //
-                    .comment(docU.text(COMMENT, doc)) //
-                    .category(docU.text(CATEGORY, doc)) //
+            .id(docU.numLong(BOOK_ID, doc)) //
+            .author(docU.text(AUTHOR, doc)) //
+            .title(docU.text(TITLE, doc)) //
+            .editor(docU.text(EDITOR, doc)) //
+            .year(docU.numInt(YEAR, doc)) //
+            .comment(docU.text(COMMENT, doc)) //
+            .category(docU.text(CATEGORY, doc)) //
             ;
             books.add(book);
         }
@@ -155,8 +157,26 @@ public class BooksServiceImpl extends RemoteServiceServlet implements BooksServi
 
     @Override
     public ArrayList<String> fetchWords(final String text) {
+        if (text == null || text.isEmpty() || text.trim().isEmpty()) {
+            return new ArrayList<String>();
+        }
+
+        final String value = text.trim();
+
+        final Results<ScoredDocument> docs = s.idx().search(com.google.appengine.api.search.Query.newBuilder().build("" + //
+                DOC_TYPE._() + ":" + BOOK._() + //
+                " AND \"" + value+ "\"") //
+                );
 
         // TODO PGU do a query on docs
+        final ArrayList<String> words= new ArrayList<String>();
+        for (final ScoredDocument doc : docs) {
+            words.add(docU.text(TITLE, doc));
+        }
+        return words;
+    }
+
+    private ArrayList<String> fetchWordsObjectify(final String text) {
 
         if (text == null || text.isEmpty() || text.trim().isEmpty()) {
             return new ArrayList<String>();
