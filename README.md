@@ -1,4 +1,8 @@
-TODO: libros P HARRIET
+<strong>@deprecated</strong>
+
+<p>
+After the launch of Google's search API and GWT's bootstrap, this project has been redesigned and became <a href="https://github.com/pgu/pgu-books/">pgu-books</a>
+</p>
 
         // wc -l $( find -name '*.txt' ) | sort -n
         // 0 ./Galicia_ling_miscelanea.txt
@@ -26,9 +30,4 @@ TODO: libros P HARRIET
         // 773 ./Filoextranjera.txt
         // 871 ./Filocont_2.txt
         // 7649 total
-
-
-STAND-BY: review the import process and cron tasks because of appengine quotas :-/
-* make files of 1000 records
-* move logic from cron tasks to import/service edition
 
