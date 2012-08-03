@@ -1,7 +1,7 @@
 <strong>@deprecated</strong>
 
 <p>
-After the launch of Google's search API and GWT's bootstrap, this project has been redesigned and became <a href="https://github.com/pgu/pgu-books/">pgu-books</a>
+After the launch of the Google's Search API and the GWT-Bootstrap project, this project has been redesigned and became <a href="https://github.com/pgu/pgu-books/">pgu-books</a>
 </p>
 
         // wc -l $( find -name '*.txt' ) | sort -n
